@@ -30,6 +30,11 @@ class Button:
         self.text_color = text_color
 
         self.on_touch_action = on_touch_action
+        self.on_press_action = on_press_action
+        self.on_release_action = on_release_action
+
+        self.leftButton = 1
+        self.rightButton = 0
 
     def create(self):
         pygame.draw.rect(self.surface, self.color)
@@ -48,7 +53,7 @@ class Button:
 
     def getPress(self, event, button) -> bool:
         """
-        button variable contained 0 (for left button), 1 (for right button)
+        button variable contained 1 (for left button), 0 (for right button)
         :param self:
         :param event:
         :param button:
@@ -64,7 +69,7 @@ class Button:
 
     def getRelease(self, event, button):
         """
-        button variable contained 0 (for left button), 1 (for right button)
+        button variable contained 1 (for left button), 0 (for right button)
         :param event:
         :param button:
         :return:
@@ -84,3 +89,19 @@ class Button:
             except Exception as bug:
              print(bug)
              print("No action to run")
+
+    def onPress(self, event, button):
+        if self.getPress(event, button):
+            try:
+                self.on_press_action()
+            except Exception as bug:
+                print(bug)
+                print("No action to run")
+
+    def onRelease(self, event, button):
+        if self.getRelease(event, button):
+            try:
+                self.on_release_action()
+            except Exception as bug:
+                print(bug)
+                print("No action to run")
