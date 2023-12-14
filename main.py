@@ -36,12 +36,15 @@ class RockPaperScissor:
 
     def run(self):
         while True:
-            # Item
+            # Initialize any object on screen here
+            button = uix.Button(self.screen, (100, 100, 100, 100))
             # Event
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.close()
             self.screen.fill(BLACK)
+
+            button.create()
 
             pygame.display.flip()
             pygame.display.update()

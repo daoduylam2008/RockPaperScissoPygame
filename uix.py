@@ -1,11 +1,12 @@
 import pygame
 
+pygame.init()
+
 
 class Button:
     def __init__(self,
                  surface,
                  rect: tuple,
-                 mouse_pos: tuple,
                  event=...,
                  text="",
                  color=(180, 180, 180),
@@ -18,16 +19,13 @@ class Button:
                  ):
         self.surface = surface
         self.rect = pygame.Rect(rect[0], rect[1], rect[2], rect[3])
-        self.mouse_pos = mouse_pos
-
-        self.event = event
-
-        self.text = self._textForButton(text)
 
         self.color = color
         self.press_color = press_color
         self.on_touch_color = on_touch_color
         self.text_color = text_color
+
+        self.text = self._textForButton(text)
 
         self.on_touch_action = on_touch_action
         self.on_press_action = on_press_action
@@ -37,69 +35,68 @@ class Button:
         self.rightButton = 0
 
     def create(self):
-        pygame.draw.rect(self.surface, self.color)
+        pygame.draw.rect(self.surface, self.color, self.rect)
 
     def _textForButton(self, text):
-        font = pygame.font.Font("times new roman", 15)
+        font = pygame.font.SysFont('timesnewroman',  30)
         txt = font.render(text, True, self.text_color)
         return txt
 
-    def getTouch(self, event) -> bool:
-        self.event = event
-        if self.rect.collidepoint(self.mouse_pos):
+    def getTouch(self, mouse_pos) -> bool:
+        if self.rect.collidepoint(mouse_pos):
             return True
         else:
             return False
 
-    def getPress(self, event, button) -> bool:
+    def getPress(self, event, button, mouse_pos) -> bool:
         """
         button variable contained 1 (for left button), 0 (for right button)
-        :param self:
+        :param mouse_pos:
         :param event:
+        :param self:
         :param button:
         :return:
         """
-        self.event = event
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == button:
-                if self.rect.collidepoint(self.mouse_pos):
+                if self.rect.collidepoint(mouse_pos):
                     return True
                 else:
                     return False
 
-    def getRelease(self, event, button):
+    def getRelease(self, event, button, mouse_pos):
         """
         button variable contained 1 (for left button), 0 (for right button)
+        :param mouse_pos:
         :param event:
         :param button:
         :return:
         """
-        self.event = event
         if event.type == pygame.MOUSEBUTTONUP:
             if event.button == button:
-                if self.rect.collidepoint(self.mouse_pos):
+                if self.rect.collidepoint(mouse_pos):
                     return True
                 else:
                     return False
 
-    def onTouch(self, event):
-        if self.getTouch(event):
+    def onTouch(self, event, mouse_pos):
+        if self.getTouch(mouse_pos):
             try:
                 self.on_touch_action()
             except Exception as bug:
              print(bug)
              print("No action to run")
 
-    def onPress(self, event, button):
-        if self.getPress(event, button):
+    def onPress(self, event, button, mouse_pos):
+        if self.getPress(event, button, mouse_pos):
             try:
                 self.on_press_action()
             except Exception as bug:
                 print(bug)
                 print("No action to run")
 
-    def onRelease(self, event, button):
-        if self.getRelease(event, button):
+    def onRelease(self, event, button, mouse_pos):
+        if self.getRelease(event, button, mouse_pos):
             try:
                 self.on_release_action()
             except Exception as bug:
