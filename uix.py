@@ -6,7 +6,7 @@ class Button:
                  surface,
                  rect: tuple,
                  mouse_pos: tuple,
-                 event,
+                 event=...,
                  text="",
                  color=(180, 180, 180),
                  press_color=(100, 100, 100),
@@ -21,8 +21,15 @@ class Button:
         self.press_color = press_color
         self.on_touch_color = on_touch_color
 
-    def on_touch(self): pass
+    def on_touch(self, event):
+        self.event = event
 
-    def on_press(self): pass
+    def on_press(self, event):
+        self.event = event
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                if self.rect.collidepoint(self.mouse_pos):
+                    pass
 
-    def on_release(self): pass
+    def on_release(self, event):
+        self.event = event

@@ -40,13 +40,13 @@ class RockPaperScissor:
             # Event
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    self.closeProgram()
+                    self.close()
             self.screen.fill(BLACK)
 
             pygame.display.flip()
             pygame.display.update()
 
-    def closeProgram(self):
+    def close(self):
         pygame.quit()
         sys.exit()
 
@@ -57,4 +57,4 @@ if __name__ == "__main__":
         game.run()
     except Exception as bug:
         print(bug)
-        game.closeProgram()
+        game.close()
