@@ -43,7 +43,6 @@ class RockPaperScissor:
                 if event.type == pygame.QUIT:
                     self.close()
             self.screen.fill(BLACK)
-
             button.create()
 
             pygame.display.flip()
@@ -52,6 +51,8 @@ class RockPaperScissor:
     def close(self):
         pygame.quit()
         sys.exit()
+
+    def action(self): print("Hello")
 
 
 if __name__ == "__main__":
