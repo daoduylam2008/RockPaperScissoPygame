@@ -95,6 +95,7 @@ class Button:
                 print(bug)
                 print("No action to run")
 
+<<<<<<< Updated upstream
     def onRelease(self, event, button, mouse_pos):
         if self.getRelease(event, button, mouse_pos):
             try:
@@ -102,3 +103,8 @@ class Button:
             except Exception as bug:
                 print(bug)
                 print("No action to run")
+=======
+
+class Input:
+    pass
+>>>>>>> Stashed changes
