@@ -34,17 +34,17 @@ class RockPaperScissor:
         self.height = 700
         self.screen = pygame.display.set_mode((self.width, self.height))
 
+        # Initialize any object on screen here
+        self.button = uix.Button(self.screen, (100, 200, 300, 100))
+
     def run(self):
         while True:
-            # Initialize any object on screen here
-            button = uix.Button(self.screen, (100, 100, 100, 100))
             # Event
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.close()
             self.screen.fill(BLACK)
-            button.create()
-
+            self.button.create()
             pygame.display.flip()
             pygame.display.update()
 
