@@ -10,24 +10,18 @@ import pygame
 
 # System Module and Libaries
 import sys
+
 import uix
+import scripts
+from scripts import Color
 
 # Autorize information, gmail
 __author1__ = "daoduylam2020@gmail.com"  # DAO DUY LAM
 __author2__ = ""  # PHAM MINH KHOI
 __author3__ = ""  # LE CONG TIEN
 
+
 # ___ MAIN ___
-
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-
-
-class MenuView:
-    def __init__(self, surface):
-        self.surface = surface
-
-
 class RockPaperScissor:
     def __init__(self):
         self.width = 900
@@ -35,7 +29,6 @@ class RockPaperScissor:
         self.screen = pygame.display.set_mode((self.width, self.height))
 
         # Initialize any object on screen here
-        self.button = uix.Button(self.screen, (100, 200, 300, 100))
 
     def run(self):
         while True:
@@ -43,16 +36,14 @@ class RockPaperScissor:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.close()
-            self.screen.fill(BLACK)
-            self.button.create()
+            self.screen.fill(Color.black)
+
             pygame.display.flip()
             pygame.display.update()
 
     def close(self):
         pygame.quit()
         sys.exit()
-
-    def action(self): print("Hello")
 
 
 if __name__ == "__main__":
