@@ -37,18 +37,23 @@ class Button:
         self.on_touch_action = on_touch_action
         self.button = button
 
+        self._on_press = False
+        self._on_release = False
+
     def create(self):
         mouse_pos = pygame.mouse.get_pos()
 
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == self.button:
+                    self._on_press = True
+            else: self._on_press = False
+
         if self.rect.collidepoint(mouse_pos):
-            pygame.draw.rect(self.surface, self.on_touch_color, self.rect)
-            for event in pygame.event.get():
-
-                if event.type == pygame.MOUSEBUTTONDOWN:
-
-                    if event.button == self.button:
-                        pygame.draw.rect(self.surface, self.on_press_color, self.rect)
-                        print(123)
+            if self._on_press:
+                pygame.draw.rect(self.surface, self.on_press_color, self.rect)
+            else:
+                pygame.draw.rect(self.surface, self.on_touch_color, self.rect)
         else:
             pygame.draw.rect(self.surface, self.color, self.rect)
 
