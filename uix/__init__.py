@@ -14,7 +14,6 @@ class Button:
                  on_touch_color=(150, 150, 150),
                  text_color=(0, 0, 0),
                  on_press_action=...,
-                 on_release_action=...,
                  on_touch_action=...,
                  button=1,
                  alignment="center",
@@ -31,7 +30,6 @@ class Button:
         self.text = self._textForButton(text)
 
         self.on_press_action = on_press_action
-        self.on_release_action = on_release_action
         self.on_touch_action = on_touch_action
 
         self.button = button
