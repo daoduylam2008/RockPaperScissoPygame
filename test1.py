@@ -43,6 +43,9 @@ class RockPaperScissor:
         self.button = uix.Button(self.screen, (100, 200, 300, 100), on_press_action=self.action)
         self.groupWidgets.widgets.append(self.button)
 
+        self.inputBox = uix.InputBox(self.screen, (50, 50, 100, 30))
+        self.groupWidgets.widgets.append(self.inputBox)
+
     def run(self):
         while True:
             # Fill the screen with BLACK instead of an empty screen
@@ -59,7 +62,7 @@ class RockPaperScissor:
             self.groupWidgets.update(events)
 
             # Create all widget on screen
-            self.button.create()
+            self.groupWidgets.create_widget()
 
             pygame.display.flip()
             pygame.display.update()

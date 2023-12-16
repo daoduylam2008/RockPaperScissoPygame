@@ -28,16 +28,30 @@ class RockPaperScissor:
         self.height = 700
         self.screen = pygame.display.set_mode((self.width, self.height))
 
+        # Main widgets which contain all widget on screen but at first it's empty
+        # You have to add your own widget after creating it
+        # Use this code to add widget: self.groupWidgets.widgets.append(<widget>)
+        self.groupWidgets = uix.GroupWidget()
+
         # Initialize any object on screen here
 
     def run(self):
         while True:
             # Event
-            for event in pygame.event.get():
+            events = pygame.event.get()
+            for event in events:
                 if event.type == pygame.QUIT:
                     self.close()
             self.screen.fill(Color.black)
 
+            # Update all widget on screen (GroupWidgets optimize your code by add all widget into a list
+            # Then update itself once
+            self.groupWidgets.update(events)
+
+            # Create all widget on screen
+            self.groupWidgets.create_widget()
+
+            # Update screen
             pygame.display.flip()
             pygame.display.update()
 
