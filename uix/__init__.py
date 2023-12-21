@@ -40,6 +40,28 @@ class GroupWidget:
                 print("There is no widget or your widget is not recognize as Widget")
 
 
+class Text(Widget):
+    def __init__(self,
+                 surface,
+                 rect,
+                 text="text",
+                 color=(0,0,0)
+                 ):
+        super().__init__(surface, rect)
+        self.text = text
+        self.color = color
+
+        self._font = pygame.font.Font("timesnewroman", 15)
+        self._txt = self._font.render(self.text, True, self.color)
+
+    def create(self):
+        self.surface.blit(self._txt, self.rect)
+
+    def font(self, name, size, color):
+        self._font = pygame.font.Font(name, size)
+        self._txt = self._font.render(self.text, True, color)
+
+
 class Button(Widget):
     def __init__(self,
                  surface,
@@ -53,6 +75,7 @@ class Button(Widget):
                  on_touch_action=...,
                  button=1,
                  alignment="center",
+                 text_size=30
                  ):
         super().__init__(surface, rect)
 
@@ -69,6 +92,8 @@ class Button(Widget):
         self.button = button
 
         self.alignment = alignment
+
+        self.text_size = text_size
 
     def create(self):
         mouse_pos = pygame.mouse.get_pos()
@@ -135,7 +160,7 @@ class Button(Widget):
         return x, y
 
     def _textForButton(self, text):
-        font = pygame.font.SysFont('timesnewroman', 30)
+        font = pygame.font.SysFont('timesnewroman', self.text_size)
         txt = font.render(text, True, self.text_color)
 
         return txt
@@ -208,8 +233,66 @@ class InputBox(Widget):
         self.text = self.text[:-1]
 
 
-class View:
-    def __init__(self, surface):
-        self.surface = surface
+class View(Widget):
+    def __init__(self,
+                 surface,
+                 widgets,
+                 size: tuple
+                 ):
+        self.rect = (0, 0) + size
+        super().__init__(surface, self.rect)
 
-    def fill_screen(self): pass
+        self.widgets = widgets
+
+    def fillView(self, color):
+        self.surface.fill(color)
+
+
+class Image(Widget):
+    def __init__(self,
+                 surface,
+                 path,
+                 pos: tuple,
+                 view=None
+                 ):
+        super().__init__(surface, pos)
+        self.view = view
+
+        self._resizable = False
+        self.path = path
+
+        self.image = pygame.image.load(self.path)
+
+        self.action = None
+
+    def create(self):
+        self.surface.blit(self.image, self.rect)
+
+    def resizable(self):
+        self._resizable = False
+
+    def convertAlpha(self):
+        self.image.convert_alpha()
+
+    def scaleToFill(self, view="surface"):
+        if view == "surface" and self._resizable:
+            self.image = pygame.transform.scale(self.image, (self.surface.get_widhth(), self.surface.get_height()))
+        elif view == "view" and self._resizable:
+            pass
+
+    def onTap(self, action):
+        self.action = action
+
+    def update(self, events):
+        mouse_pos = pygame.mouse.get_pos()
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.rect.collidepoint(mouse_pos):
+                    try:
+                        self.action()
+                    except: pass
+
+    def frame(self, width=0, height=0):
+        if self._resizable:
+            pass
+

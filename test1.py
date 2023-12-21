@@ -14,18 +14,12 @@ import uix
 import scripts
 from scripts import Color
 
-# Autorize information, gmail
+# Authorize information, gmail
 __author1__ = "daoduylam2020@gmail.com"  # DAO DUY LAM
 __author2__ = ""  # PHAM MINH KHOI
 __author3__ = ""  # LE CONG TIEN
 
 # ___ MAIN ___
-
-
-def update():
-    for event in pygame.event.get():
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            print(3212)
 
 
 class RockPaperScissor:

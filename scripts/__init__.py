@@ -14,3 +14,7 @@ class alignment:
     topRight = "top-right"
     bottomRight = "bottom-right"
 
+
+class view:
+    surface = "surface"
+    view = "view"
