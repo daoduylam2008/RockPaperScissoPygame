@@ -206,3 +206,10 @@ class InputBox(Widget):
 
     def reset_text(self):
         self.text = self.text[:-1]
+
+
+class View:
+    def __init__(self, surface):
+        self.surface = surface
+
+    def fill_screen(self): pass
