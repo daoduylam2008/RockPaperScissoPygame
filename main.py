@@ -8,7 +8,7 @@ Developed by DAO DUY LAM, PHAM MINH KHOI, LE CONG TIEN
 # Python Package Index
 import pygame
 
-# System Module and Libaries
+# System Module and Libraries
 import sys
 import uix
 import scripts
@@ -18,6 +18,7 @@ from scripts import Color
 __author1__ = "daoduylam2020@gmail.com"  # DAO DUY LAM
 __author2__ = ""  # PHAM MINH KHOI
 __author3__ = ""  # LE CONG TIEN
+
 
 # ___ MAIN ___
 class MenuView:
@@ -74,8 +75,6 @@ class RockPaperScissor:
     def close(self):
         pygame.quit()
         sys.exit()
-
-    def action(self): print("Hello")
 
 
 if __name__ == "__main__":
