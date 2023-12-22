@@ -233,21 +233,6 @@ class InputBox(Widget):
         self.text = self.text[:-1]
 
 
-class View(Widget):
-    def __init__(self,
-                 surface,
-                 widgets,
-                 size: tuple
-                 ):
-        self.rect = (0, 0) + size
-        super().__init__(surface, self.rect)
-
-        self.widgets = widgets
-
-    def fillView(self, color):
-        self.surface.fill(color)
-
-
 class Image(Widget):
     def __init__(self,
                  surface,
