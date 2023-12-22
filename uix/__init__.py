@@ -1,12 +1,13 @@
-import pygame
+import pygame as _pygame
+from pygame.sprite import Sprite as _Sprite
 
-pygame.init()
+_pygame.init()
 
 
 class Widget:
     def __init__(self, surface, rect):
         self.surface = surface
-        self.rect = pygame.Rect(rect)
+        self.rect = _pygame.Rect(rect)
 
     def update(self, events):
         pass
@@ -51,14 +52,14 @@ class Text(Widget):
         self.text = text
         self.color = color
 
-        self._font = pygame.font.Font("timesnewroman", 15)
+        self._font = _pygame.font.Font("timesnewroman", 15)
         self._txt = self._font.render(self.text, True, self.color)
 
     def create(self):
         self.surface.blit(self._txt, self.rect)
 
     def font(self, name, size, color):
-        self._font = pygame.font.Font(name, size)
+        self._font = _pygame.font.Font(name, size)
         self._txt = self._font.render(self.text, True, color)
 
 
@@ -96,18 +97,18 @@ class Button(Widget):
         self.text_size = text_size
 
     def create(self):
-        mouse_pos = pygame.mouse.get_pos()
+        mouse_pos = _pygame.mouse.get_pos()
 
         x, y = self._alignment(self.alignment)
 
         if self.rect.collidepoint(mouse_pos):
-            if pygame.mouse.get_pressed()[0] or pygame.mouse.get_pressed()[2]:
-                pygame.draw.rect(self.surface, self.on_press_color, self.rect)
+            if _pygame.mouse.get_pressed()[0] or _pygame.mouse.get_pressed()[2]:
+                _pygame.draw.rect(self.surface, self.on_press_color, self.rect)
             else:
-                pygame.draw.rect(self.surface, self.on_touch_color, self.rect)
+                _pygame.draw.rect(self.surface, self.on_touch_color, self.rect)
 
         else:
-            pygame.draw.rect(self.surface, self.color, self.rect)
+            _pygame.draw.rect(self.surface, self.color, self.rect)
 
             try:
                 self.on_touch_action()
@@ -116,10 +117,10 @@ class Button(Widget):
         self.surface.blit(self.text, (x, y))
 
     def update(self, events):
-        mouse_pos = pygame.mouse.get_pos()
+        mouse_pos = _pygame.mouse.get_pos()
 
         for event in events:
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == _pygame.MOUSEBUTTONDOWN:
                 if event.button == self.button:
                     if self.rect.collidepoint(mouse_pos):
                         try:
@@ -160,7 +161,7 @@ class Button(Widget):
         return x, y
 
     def _textForButton(self, text):
-        font = pygame.font.SysFont('timesnewroman', self.text_size)
+        font = _pygame.font.SysFont('timesnewroman', self.text_size)
         txt = font.render(text, True, self.text_color)
 
         return txt
@@ -176,9 +177,9 @@ class InputBox(Widget):
                  ):
         super().__init__(surface, rect)
 
-        self._COLOR_INACTIVE = pygame.Color('lightskyblue3')
-        self._COLOR_ACTIVE = pygame.Color('dodgerblue2')
-        self._FONT = pygame.font.Font(None, 32)
+        self._COLOR_INACTIVE = _pygame.Color('lightskyblue3')
+        self._COLOR_ACTIVE = _pygame.Color('dodgerblue2')
+        self._FONT = _pygame.font.Font(None, 32)
 
         self.color = self._COLOR_INACTIVE
 
@@ -196,7 +197,7 @@ class InputBox(Widget):
 
     def update(self, events):
         for event in events:
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == _pygame.MOUSEBUTTONDOWN:
                 # If the user clicked on the input_box rect.
                 if self.rect.collidepoint(event.pos):
                     # Toggle the active variable.
@@ -206,11 +207,11 @@ class InputBox(Widget):
 
                 # Change the current color of the input box.
                 self.color = self._COLOR_ACTIVE if self.active else self._COLOR_INACTIVE
-            if event.type == pygame.KEYDOWN:
+            if event.type == _pygame.KEYDOWN:
                 if self.active:
-                    if event.key == pygame.K_RETURN:
+                    if event.key == _pygame.K_RETURN:
                         self.text = ''
-                    elif event.key == pygame.K_BACKSPACE:
+                    elif event.key == _pygame.K_BACKSPACE:
                         try:
                             self.action()
                         except: pass
@@ -227,7 +228,7 @@ class InputBox(Widget):
         self.surface.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
 
         # Blit the rect.
-        pygame.draw.rect(self.surface, self.color, self.rect, 2)
+        _pygame.draw.rect(self.surface, self.color, self.rect, 2)
 
     def reset_text(self):
         self.text = self.text[:-1]
@@ -238,7 +239,8 @@ class Image(Widget):
                  surface,
                  path,
                  pos: tuple,
-                 view=None
+                 view=None,
+                 animation=None,
                  ):
         super().__init__(surface, pos)
         self.view = view
@@ -246,7 +248,7 @@ class Image(Widget):
         self._resizable = False
         self.path = path
 
-        self.image = pygame.image.load(self.path)
+        self.image = _pygame.image.load(self.path)
 
         self.action = None
 
@@ -261,7 +263,7 @@ class Image(Widget):
 
     def scaleToFill(self, view="surface"):
         if view == "surface" and self._resizable:
-            self.image = pygame.transform.scale(self.image, (self.surface.get_widhth(), self.surface.get_height()))
+            self.image = _pygame.transform.scale(self.image, (self.surface.get_widhth(), self.surface.get_height()))
         elif view == "view" and self._resizable:
             pass
 
@@ -269,9 +271,9 @@ class Image(Widget):
         self.action = action
 
     def update(self, events):
-        mouse_pos = pygame.mouse.get_pos()
+        mouse_pos = _pygame.mouse.get_pos()
         for event in events:
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == _pygame.MOUSEBUTTONDOWN:
                 if self.rect.collidepoint(mouse_pos):
                     try:
                         self.action()
@@ -280,4 +282,33 @@ class Image(Widget):
     def frame(self, width=0, height=0):
         if self._resizable:
             pass
+
+
+class AnimationImage(_Sprite):
+    def __init__(self,
+                 surface,
+                 rect,
+                 animationList=None
+                 ):
+        _Sprite.__init__(self)
+        self.surface = surface
+        self.rect = rect
+
+        self.animationList = animationList
+        if animationList is None:
+            self.animationList = []
+
+        self._index = 0
+        self._image = self.animationList[self._index]
+
+        _group = _pygame.sprite.Group()
+
+    def update(self):
+        self._index += 1
+
+        if self._index >= len(self.animationList):
+            self._index = 0
+
+        self._image = self.animationList[self._index]
+
 

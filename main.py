@@ -10,18 +10,31 @@ import pygame
 
 # System Module and Libaries
 import sys
-
 import uix
 import scripts
 from scripts import Color
 
-# Autorize information, gmail
+# Authorize information, gmail
 __author1__ = "daoduylam2020@gmail.com"  # DAO DUY LAM
 __author2__ = ""  # PHAM MINH KHOI
 __author3__ = ""  # LE CONG TIEN
 
-
 # ___ MAIN ___
+class MenuView:
+    def __init__(self, surface):
+        pass
+
+
+class SinglePlayerView:
+    def __init__(self):
+        pass
+
+
+class MultiPlayerView:
+    def __init__(self):
+        pass
+
+
 class RockPaperScissor:
     def __init__(self):
         self.width = 900
@@ -33,16 +46,20 @@ class RockPaperScissor:
         # Use this code to add widget: self.groupWidgets.widgets.append(<widget>)
         self.groupWidgets = uix.GroupWidget()
 
+        # Initialize any view on screen here
+
         # Initialize any object on screen here
 
     def run(self):
         while True:
+            # Fill the screen with BLACK instead of an empty screen
+            self.screen.fill(Color.black)
+
             # Event
             events = pygame.event.get()
             for event in events:
                 if event.type == pygame.QUIT:
                     self.close()
-            self.screen.fill(Color.black)
 
             # Update all widget on screen (GroupWidgets optimize your code by add all widget into a list
             # Then update itself once
@@ -51,13 +68,14 @@ class RockPaperScissor:
             # Create all widget on screen
             self.groupWidgets.create_widget()
 
-            # Update screen
             pygame.display.flip()
             pygame.display.update()
 
     def close(self):
         pygame.quit()
         sys.exit()
+
+    def action(self): print("Hello")
 
 
 if __name__ == "__main__":
