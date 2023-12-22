@@ -20,6 +20,19 @@ __author2__ = ""  # PHAM MINH KHOI
 __author3__ = ""  # LE CONG TIEN
 
 # ___ MAIN ___
+class MenuView:
+    def __init__(self, surface):
+        pass
+
+
+class SinglePlayerView:
+    def __init__(self):
+        pass
+
+
+class MultiPlayerView:
+    def __init__(self):
+        pass
 
 
 class RockPaperScissor:
@@ -33,12 +46,9 @@ class RockPaperScissor:
         # Use this code to add widget: self.groupWidgets.widgets.append(<widget>)
         self.groupWidgets = uix.GroupWidget()
 
-        # Initialize any object on screen here
-        self.button = uix.Button(self.screen, (100, 200, 300, 100), on_press_action=self.action)
-        self.groupWidgets.widgets.append(self.button)
+        # Initialize any view on screen here
 
-        self.inputBox = uix.InputBox(self.screen, (50, 50, 100, 30))
-        self.groupWidgets.widgets.append(self.inputBox)
+        # Initialize any object on screen here
 
     def run(self):
         while True:
