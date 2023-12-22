@@ -1,4 +1,5 @@
 import pygame as _pygame
+import pygame.image
 from pygame.sprite import Sprite as _Sprite
 
 _pygame.init()
@@ -284,31 +285,42 @@ class Image(Widget):
             pass
 
 
-class AnimationImage(_Sprite):
-    def __init__(self,
-                 surface,
-                 rect,
-                 animationList=None
-                 ):
-        _Sprite.__init__(self)
-        self.surface = surface
-        self.rect = rect
+class _SpriteImage(_Sprite):
+    def __init__(self, imageList, rect):
+        self.clock = pygame.time.Clock()
 
-        self.animationList = animationList
-        if animationList is None:
-            self.animationList = []
+        super(_SpriteImage, self).__init__()
+        self.images = []
+        for i in imageList:
+            self.images.append(pygame.image.load(i))
 
-        self._index = 0
-        self._image = self.animationList[self._index]
+        self.index = 0
 
-        _group = _pygame.sprite.Group()
+        self.image = self.images[self.index]
+        self.rect = _pygame.Rect(rect)
 
     def update(self):
-        self._index += 1
+        self.clock.tick(10)
+        self.index += 1
 
-        if self._index >= len(self.animationList):
-            self._index = 0
+        if self.index >= len(self.images):
+            self.index = 0
 
-        self._image = self.animationList[self._index]
+        self.image = self.images[self.index]
 
+
+class ImageAnimation(Widget):
+    def __init__(self, surface, rect=None, imageList=None):
+        super().__init__(surface, rect)
+
+        if imageList is None:
+            imageList = []
+        self._imageSprite = _SpriteImage(imageList, self.rect)
+        self._groupSprite = pygame.sprite.Group(self._imageSprite)
+
+    def update(self, events):
+        self._groupSprite.update()
+
+    def create(self):
+        self._groupSprite.draw(self.surface)
 

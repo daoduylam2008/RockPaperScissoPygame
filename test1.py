@@ -19,7 +19,11 @@ __author1__ = "daoduylam2020@gmail.com"  # DAO DUY LAM
 __author2__ = ""  # PHAM MINH KHOI
 __author3__ = ""  # LE CONG TIEN
 
+
 # ___ MAIN ___
+FPS = 30
+
+
 class MenuView:
     def __init__(self, surface):
         pass
@@ -41,6 +45,8 @@ class RockPaperScissor:
         self.height = 700
         self.screen = pygame.display.set_mode((self.width, self.height))
 
+        self.clock = pygame.time.Clock()
+
         # Main widgets which contain all widget on screen but at first it's empty
         # You have to add your own widget after creating it
         # Use this code to add widget: self.groupWidgets.widgets.append(<widget>)
@@ -49,6 +55,12 @@ class RockPaperScissor:
         # Initialize any view on screen here
 
         # Initialize any object on screen here
+        self.animation = uix.ImageAnimation(self.screen, (50, 50, 100, 100),[
+            "data/paper_animation/paper_animation1.png",
+            "data/paper_animation/paper_animation2.png",
+            "data/paper_animation/paper_animation3.png",
+        ])
+        self.groupWidgets.widgets.append(self.animation)
 
     def run(self):
         while True:
@@ -67,6 +79,9 @@ class RockPaperScissor:
 
             # Create all widget on screen
             self.groupWidgets.create_widget()
+
+            # Update and set FPS
+            self.clock.tick(FPS)
 
             pygame.display.flip()
             pygame.display.update()

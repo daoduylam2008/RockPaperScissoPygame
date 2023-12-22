@@ -21,6 +21,9 @@ __author3__ = ""  # LE CONG TIEN
 
 
 # ___ MAIN ___
+FPS = 30
+
+
 class MenuView:
     def __init__(self, surface):
         pass
@@ -41,6 +44,8 @@ class RockPaperScissor:
         self.width = 900
         self.height = 700
         self.screen = pygame.display.set_mode((self.width, self.height))
+
+        self.clock = pygame.time.Clock()
 
         # Main widgets which contain all widget on screen but at first it's empty
         # You have to add your own widget after creating it
@@ -68,6 +73,9 @@ class RockPaperScissor:
 
             # Create all widget on screen
             self.groupWidgets.create_widget()
+
+            # Update and set FPS
+            self.clock.tick(FPS)
 
             pygame.display.flip()
             pygame.display.update()
