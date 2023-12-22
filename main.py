@@ -12,6 +12,7 @@ import pygame
 import sys
 import uix
 import scripts
+import networking
 from scripts import Color
 
 # Authorize information, gmail
