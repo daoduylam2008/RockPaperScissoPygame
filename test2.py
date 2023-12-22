@@ -1,6 +1,6 @@
 import networking
 
-host = input("chọn server hay client: ")
+host = int(input("chọn server hay client: "))
 
 
 def gameplay(server, client):
