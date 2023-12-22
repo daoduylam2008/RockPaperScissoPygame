@@ -7,8 +7,17 @@ firebase_admin.initialize_app(cred, {
 	'databaseURL': "https://rockpaperscissor-6753d-default-rtdb.asia-southeast1.firebasedatabase.app/"
 })
 
-u = db.reference("user/")
-u.update({"Lam": {}})
+u = db.reference("/")
+u.set(
+	{
+		"Users": {
+			"*": "*"
+		},
+		"room": {
+			"*": "*"
+		}
+	}
+)
 
 
 class User:
@@ -17,6 +26,8 @@ class User:
 		self.uid = uuid
 		self.choice = choice
 		self.highestScore = 0
+
+		self.updateToData()
 
 	def getData(self):
 		return {
@@ -30,7 +41,7 @@ class User:
 
 	def updateToData(self):
 		data = db.reference("/")
-		data = data.child()
+		data.child("Users/").update({self.username: self.getData()})
 
 
 class Server:
@@ -55,6 +66,10 @@ class Server:
 	def getChoice(self) -> str:
 		return self.user.choice
 
+	def clientChoice(self) -> str:
+		self.room.child(self.user.uid + "/" + self.user.username)
+		return
+
 
 class Client:
 	def __init__(self, user: User):
@@ -71,3 +86,6 @@ class Client:
 
 	def getChoice(self) -> str:
 		return self.user.choice
+
+	def serverChoice(self) -> str:
+		pass
