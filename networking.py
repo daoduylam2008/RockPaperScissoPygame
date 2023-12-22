@@ -7,6 +7,9 @@ firebase_admin.initialize_app(cred, {
 	'databaseURL': "https://rockpaperscissor-6753d-default-rtdb.asia-southeast1.firebasedatabase.app/"
 })
 
+u = db.reference("user/")
+u.update({"Lam": {}})
+
 
 class User:
 	def __init__(self, username, uuid, choice=""):
@@ -24,6 +27,10 @@ class User:
 				"highest_score": self.highestScore,
 			}
 		}
+
+	def updateToData(self):
+		data = db.reference("/")
+		data = data.child()
 
 
 class Server:

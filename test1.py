@@ -8,10 +8,11 @@ Developed by DAO DUY LAM, PHAM MINH KHOI, LE CONG TIEN
 # Python Package Index
 import pygame
 
-# System Module and Libaries
+# System Module and Libraries
 import sys
 import uix
 import scripts
+import networking
 from scripts import Color
 
 # Authorize information, gmail
@@ -55,12 +56,6 @@ class RockPaperScissor:
         # Initialize any view on screen here
 
         # Initialize any object on screen here
-        self.animation = uix.ImageAnimation(self.screen, (50, 50, 100, 100),[
-            "data/paper_animation/paper_animation1.png",
-            "data/paper_animation/paper_animation2.png",
-            "data/paper_animation/paper_animation3.png",
-        ])
-        self.groupWidgets.widgets.append(self.animation)
 
     def run(self):
         while True:
@@ -89,8 +84,6 @@ class RockPaperScissor:
     def close(self):
         pygame.quit()
         sys.exit()
-
-    def action(self): print("Hello")
 
 
 if __name__ == "__main__":

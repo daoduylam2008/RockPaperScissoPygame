@@ -1,12 +1,10 @@
-import firebase_admin
-from firebase_admin import credentials, db
-import json
+import networking
 
-cred = credentials.Certificate("data/serviceKey/serviceAccountKey.json")
-firebase_admin.initialize_app(cred, {
-	'databaseURL': "https://rockpaperscissor-6753d-default-rtdb.asia-southeast1.firebasedatabase.app/"
-})
-
-room = db.reference("room/")
+host = input("chọn server hay client: ")
 
 
+if host == 1:
+	name = input("Tên")
+
+elif host == 0:
+	pass
