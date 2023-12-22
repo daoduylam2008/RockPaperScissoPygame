@@ -43,3 +43,4 @@ room.update(
 while True:
 	choice = input("chọn: ")
 	room.child(user.username).update({"choice": choice})
+	print(room.get())

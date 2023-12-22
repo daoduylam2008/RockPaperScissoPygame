@@ -1,5 +1,5 @@
 import firebase_admin
-from firebase_admin import credentials, db
+from firebase_admin import credentials, db, firestore
 import json
 
 cred = credentials.Certificate("data/serviceKey/serviceAccountKey.json")
@@ -67,8 +67,15 @@ class Server:
 		return self.user.choice
 
 	def clientChoice(self) -> str:
-		self.room.child(self.user.uid + "/" + self.user.username)
-		return
+		userInRoom = dict(self.room.get())
+
+		client = {}
+
+		for user in userInRoom:
+			if user != self.user.username:
+				client = userInRoom[user]
+
+		return client["choice"]
 
 
 class Client:
@@ -88,4 +95,12 @@ class Client:
 		return self.user.choice
 
 	def serverChoice(self) -> str:
-		pass
+		userInRoom = dict(self.room.get())
+
+		server = {}
+
+		for user in userInRoom:
+			if user != self.user.username:
+				server = userInRoom[user]
+
+		return server["choice"]
