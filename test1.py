@@ -47,14 +47,14 @@ class RockPaperScissor:
 
         self.clock = pygame.time.Clock()
 
-        self.layer  = {
+        self.layer = {
             'Main Menu': True,
-            'Play Menu': False,
+            'Play Menu': True,
             'Settings Menu': False,
-            'Back': False
+            'Back': True
         }
 
-        self.count = 1
+        self.count = 0
 
 
         # Main widgets which contain all widget on screen but at first it's empty
@@ -102,8 +102,7 @@ class RockPaperScissor:
                     self.close()
 
 
-            
-
+        
             # Update all widget on screen (GroupWidgets optimize your code by add all widget into a list
             # Then update itself once
             
@@ -111,18 +110,24 @@ class RockPaperScissor:
 
             
                 
-            if self.layer['Play Menu'] :
-                
-                self.groupWidget_single.update(events)
+            if self.button_play.clicked:
                 self.groupWidget_single.create_widget()
+                self.groupWidget_single.update(events)
                 self.layer['Main Menu'] = False
-
+            if self.button_back.clicked:
+                
+                self.layer['Main Menu'] = True
+                
             if self.layer['Main Menu']:
                 self.groupWidget.update(events)
                 self.groupWidget.create_widget()
-            if self.layer['Back']:
-                self.layer['Play Menu'] = False
-                self.layer['Main Menu'] = True
+
+
+
+            
+            
+
+
 
            
 
@@ -137,8 +142,8 @@ class RockPaperScissor:
         
 
 
-            self.layer['Play Menu']= self.button_play.clicked
-            self.layer['Back'] = self.button_back.clicked
+            # self.layer['Play Menu']= self.button_play.clicked
+            # self.layer['Back'] = self.button_back.clicked
 
             # Update and set FPS
             self.clock.tick(FPS)

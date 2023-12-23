@@ -61,6 +61,7 @@ class Text(Widget):
         self._txt = self._font.render(self.text, True, color)
         return self._txt
 
+
 class Button(Widget):
     def __init__(self,
                  surface,
@@ -151,11 +152,11 @@ class Button(Widget):
 
         if self.rect.collidepoint(mouse_pos):
             if pygame.mouse.get_pressed()[0]:
-                self.clicked = True
+                self.clicked = pygame.mouse.get_pressed()[0]
             else:
-                if self.clicked:
-                    self.clicked = False
-        print(self.clicked)
+                self.clicked = False
+
+        
 
     def _alignment(self, alignment):
         if alignment == "center":
