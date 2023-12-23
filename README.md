@@ -1,1 +1,1 @@
-# RockPaperScissoPygame
+# Rock Paper Scissor Game
