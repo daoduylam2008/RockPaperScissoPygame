@@ -47,13 +47,11 @@ class RockPaperScissor:
 
         self.clock = pygame.time.Clock()
 
-        self.layer  = {
+        self.layer = {
             'Main Menu': True,
             'Play Menu': False,
             'Settings Menu': False
         }
-
-
 
         # Main widgets which contain all widget on screen but at first it's empty
         # You have to add your own widget after creating it
@@ -87,7 +85,6 @@ class RockPaperScissor:
                 if event.type == pygame.QUIT:
                     self.close()
 
-
             if self.layer['Play Menu']:
                 self.groupWidget.widgets.clear()
 
@@ -97,8 +94,6 @@ class RockPaperScissor:
 
             # Create all widget on screen
             self.groupWidget.create_widget()
-
-
 
             # Update and set FPS
             self.clock.tick(FPS)

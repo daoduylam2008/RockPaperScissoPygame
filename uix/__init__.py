@@ -61,6 +61,7 @@ class Text(Widget):
         self._txt = self._font.render(self.text, True, color)
         return self._txt
 
+
 class Button(Widget):
     def __init__(self,
                  surface,
