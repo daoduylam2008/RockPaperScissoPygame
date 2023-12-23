@@ -11,9 +11,8 @@ import pygame
 # System Module and Libraries
 import sys
 import uix
-import scripts
-import networking
-from scripts import Color
+
+#Color
 
 # Authorize information, gmail
 __author1__ = "daoduylam2020@gmail.com"  # DAO DUY LAM
@@ -25,58 +24,19 @@ __author3__ = ""  # LE CONG TIEN
 FPS = 30
 
 
-def update():
-    print("Hello")
-
-
 class MenuView:
     def __init__(self, surface):
-        self.surface = surface
-        height = 70
-        width = 300
-        x = self.surface.get_width()/2 - width/2
-
-        self.nameInputText = uix.InputBox(self.surface, (x, 300, width, height))
-        self.singlePlayerButton = uix.Button(self.surface, (x, 500, width, height), text="Single Player")
-        self.multiPlayerButton = uix.Button(self.surface, (x, 400, width, height), text="Multi Player")
-
-        self.group = uix.GroupWidget()
-        self.group.widgets.append(self.nameInputText)
-        self.group.widgets.append(self.singlePlayerButton)
-        self.group.widgets.append(self.multiPlayerButton)
-
-    def update(self, events):
-        self.group.update(events)
-
-    def create(self):
-        self.group.create_widget()
+        pass
 
 
 class SinglePlayerView:
-    def __init__(self, surface):
-        self.surface = surface
-        self.group = uix.GroupWidget()
-
-        self.rockButton = uix.Button(self.surface, (100, 100, 200, 30))
-        self.group.widgets.append(self.rockButton)
-
-    def update(self, events):
-        self.group.update(events)
-
-    def create(self):
-        self.group.create_widget()
+    def __init__(self):
+        pass
 
 
 class MultiPlayerView:
-    def __init__(self, surface):
-        self.surface = surface
-        self.group = uix.GroupWidget()
-
-    def update(self, events):
-        self.group.update(events)
-
-    def create(self):
-        self.group.create_widget()
+    def __init__(self):
+        pass
 
 
 class RockPaperScissor:
@@ -87,29 +47,54 @@ class RockPaperScissor:
 
         self.clock = pygame.time.Clock()
 
-        self.openMenu = True
-        self.openMultiView = False
-        self.openSingleView = False
+        self.layer = {
+            'Main Menu': True,
+            'Play Menu': False,
+            'Settings Menu': False,
+            'Back': True
+        }
+
+        self.count = 0
+
 
         # Main widgets which contain all widget on screen but at first it's empty
         # You have to add your own widget after creating it
         # Use this code to add widget: self.groupWidgets.widgets.append(<widget>)
-        self.groupWidgets = uix.GroupWidget()
 
+        #GroupWidget
+        self.groupWidget = uix.GroupWidget()
+        self.groupWidget_single = uix.GroupWidget()
         # Initialize any view on screen here
-        self.menuView = MenuView(self.screen)
-        self.menuView.singlePlayerButton.on_press_action = self.open_single_view
-        self.menuView.multiPlayerButton.on_press_action = self.open_multi_view
+        self.button_play = uix.Button(self.screen, (self.width//160,300, 150, 60),text = 'Play',color= (32,178,170),bottom_rect_color=(255,255,255))
+        self.button_play.on_press_action = self.play
+        self.button_setting = uix.Button(self.screen,(self.width//160,400,200,60),text = 'Settings',color= (32,178,170),bottom_rect_color=(255,255,255))
 
-        self.singleView = SinglePlayerView(self.screen)
+        #Single Button
+        self.button_rock = uix.Button(self.screen,(300,400,50,50),'Rock',(180,180,180),(120,120,120))
+        self.button_paper = uix.Button(self.screen,(400,400,50,50),'Paper',(180,180,180),(120,120,120))
+        self.button_scissors = uix.Button(self.screen,(500,400,50,50),'Scissors',(180,180,180),(120,120,120))
 
-        self.multiView = MultiPlayerView(self.screen)
-        # Initialize any object on screen here
+
+        #Back Button
+        self.button_back = uix.Button(self.screen,(0,0,70,70),'Back',(220,220,220),(95,95,95))
+        self.button_back.on_press_action = self.back
+
+        #Widgets for button rock paper scissors
+        self.groupWidget_single.widgets.append(self.button_rock)
+        self.groupWidget_single.widgets.append(self.button_paper)
+        self.groupWidget_single.widgets.append(self.button_scissors)
+        self.groupWidget_single.widgets.append(self.button_back)
+
+        #Widgets for button play settings
+        self.groupWidget.widgets.append(self.button_play)
+        self.groupWidget.widgets.append(self.button_setting)
+
 
     def run(self):
+
         while True:
             # Fill the screen with BLACK instead of an empty screen
-            self.screen.fill(Color.black)
+            self.screen.fill('black')
 
             # Event
             events = pygame.event.get()
@@ -117,24 +102,26 @@ class RockPaperScissor:
                 if event.type == pygame.QUIT:
                     self.close()
 
+
+
             # Update all widget on screen (GroupWidgets optimize your code by add all widget into a list
             # Then update itself once
-            self.groupWidgets.update(events)
-            if self.openMenu:
-                self.menuView.update(events)
-                self.menuView.create()
-            elif self.openMultiView:
-                self.multiView.update(events)
-                self.multiView.create()
-            elif self.openSingleView:
-                self.singleView.update(events)
-                self.singleView.create()
 
-            # Create all widget on screen
-            self.groupWidgets.create_widget()
+            # print(self.layer['Back'],self.button_back.access)
+
+            # self.layer['Play Menu']= self.button_play.clicked
+            # self.layer['Back'] = self.button_back.clicked
+            self.groupWidget.update(events)
+            self.groupWidget.create_widget()
+
+            if self.layer["Play Menu"]:
+                self.screen.fill('black')
+                self.groupWidget_single.update(events)
+                self.groupWidget_single.create_widget()
 
             # Update and set FPS
             self.clock.tick(FPS)
+            # self.screen.blit(self.layer1,(0,0))
 
             pygame.display.flip()
             pygame.display.update()
@@ -143,21 +130,12 @@ class RockPaperScissor:
         pygame.quit()
         sys.exit()
 
-    def open_single_view(self):
-        if self.menuView.nameInputText.text != "":
-            self.openMenu = False
-            self.openMultiView = True
-            self.openSingleView = False
+    def back(self):
+        self.layer["Play Menu"] = False
 
-    def open_multi_view(self):
-        self.openMenu = False
-        self.openMultiView = False
-        self.openSingleView = True
+    def play(self):
+        self.layer["Play Menu"] = True
 
-    def open_menu_view(self):
-        self.openMenu = True
-        self.openMultiView = False
-        self.openSingleView = False
 
 
 if __name__ == "__main__":
