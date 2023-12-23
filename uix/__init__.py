@@ -105,7 +105,6 @@ class Button(Widget):
         self.bottom_rect = pygame.Rect(rect)
         self.bottom_rect_color = bottom_rect_color
 
-        self.clicked = False
         self.access = False
 
     def create(self):
@@ -149,13 +148,12 @@ class Button(Widget):
     def update(self, events):
         mouse_pos = _pygame.mouse.get_pos()
 
-
-        if self.rect.collidepoint(mouse_pos):
-            if pygame.mouse.get_pressed()[0]:
-                
-                self.clicked = True
-            else:
-                self.clicked = False
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == self.button:
+                    if self.rect.collidepoint(mouse_pos):
+                        if pygame.mouse.get_pressed()[0]:
+                            self.on_press_action()
 
         
 
