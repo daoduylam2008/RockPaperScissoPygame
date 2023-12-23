@@ -148,19 +148,16 @@ class Button(Widget):
     def update(self, events):
         mouse_pos = _pygame.mouse.get_pos()
 
-<<<<<<< HEAD
-
         if self.rect.collidepoint(mouse_pos):
             if pygame.mouse.get_pressed()[0]:
                 self.on_press_action()
-=======
+
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == self.button:
                     if self.rect.collidepoint(mouse_pos):
                         if pygame.mouse.get_pressed()[0]:
                             self.on_press_action()
->>>>>>> 24eb664d0acc4f1b0ee3eb40835738b35388eb32
 
         
 
