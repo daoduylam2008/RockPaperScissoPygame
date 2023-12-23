@@ -1,46 +1,81 @@
-import firebase_admin
-from firebase_admin import credentials, db
-import json
+import networking
+
+host = int(input("chọn server hay client: "))
+
+data = networking.Database()
 
 
-class Client:
-	def __init__(self, username, uuid, choice=""):
-		self.username = username
-		self.uid = uuid
-		self.choice = choice
-
-	def getData(self):
-		return {
-			self.username: {
-				"username": self.username,
-				"id": self.uid,
-				"choice": self.choice
-			}
-		}
-
-
-cred = credentials.Certificate("data/serviceKey/serviceAccountKey.json")
-firebase_admin.initialize_app(cred, {
-	'databaseURL': "https://rockpaperscissor-6753d-default-rtdb.asia-southeast1.firebasedatabase.app/"
-})
+def gameplay(server, client, host=""):
+	if server == client:
+		print("draw")
+	elif (server == "keo" and client == "bao") or (server == "bua" and client == "keo") or (
+			server == "bao" and client == "bua"):
+		if host == "server":
+			print("win")
+		else:
+			print("lose")
+	else:
+		if host == "client":
+			print("win")
+		else:
+			print("lose")
 
 
-uid = "123456"
-name = input("Name: ")
+if host == 1:
+	uuid = "000000"
 
-user = Client(name, uid)
+	name = input("Tên: ")
+	while name in data.getUsersName():
+		print("Tên đã có người dùng")
+		name = input("Tên: ")
+	user = networking.User(name, uuid)
 
-room = db.reference("room/")
+	server = networking.Server(user)
+	server.createRoom()
 
-room_name = input("room: ")
+	while True:
+		server.updateChoice("")
 
-room = room.child(room_name+"/")
+		choice = input("chọn: ")
+		server.updateChoice(choice)
+		while True:
+			client = server.clientChoice()
+			if client != "":
+				gameplay(server.getChoice(), client, "server")
+				break
+			else:
+				continue
 
-room.update(
-		user.getData()
-)
 
-while True:
-	choice = input("chọn: ")
-	room.child(user.username).update({"choice": choice})
-	print(room.get())
+elif host == 0:
+	uuid = "000001"
+
+	name = input("Tên: ")
+	while name in data.getUsersName():
+		print("Tên đã có người dùng")
+		name = input("Tên: ")
+
+	user = networking.User(name, uuid)
+
+	client = networking.Client(user)
+
+	room = input("phong: ")
+	while room not in data.getRooms():
+		print("Khong tim thay phong")
+		room = input("phong: ")
+	while not client.joinRoom(room):
+		room = input("phong: ")
+
+	while True:
+		client.updateChoice("")
+
+		choice = input("chọn: ")
+		client.updateChoice(choice)
+
+		while True:
+			server = client.serverChoice()
+			if server != "":
+				gameplay(server, client.getChoice(), "client")
+				break
+			else:
+				continue

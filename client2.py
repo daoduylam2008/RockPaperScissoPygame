@@ -2,13 +2,14 @@ import networking
 
 host = int(input("chọn server hay client: "))
 
+data = networking.Database()
+
 
 def gameplay(server, client, host=""):
-	print("server chọn" , server)
-	print("client chọn", client)
 	if server == client:
 		print("draw")
-	elif (server == "keo" and client == "bao") or (server == "bua" and client == "keo") or (server == "bao" and client == "bua"):
+	elif (server == "keo" and client == "bao") or (server == "bua" and client == "keo") or (
+			server == "bao" and client == "bua"):
 		if host == "server":
 			print("win")
 		else:
@@ -22,7 +23,11 @@ def gameplay(server, client, host=""):
 
 if host == 1:
 	uuid = "000000"
+
 	name = input("Tên: ")
+	while name in data.getUsersName():
+		print("Tên đã có người dùng")
+		name = input("Tên: ")
 	user = networking.User(name, uuid)
 
 	server = networking.Server(user)
@@ -44,12 +49,22 @@ if host == 1:
 
 elif host == 0:
 	uuid = "000001"
-	name = input("ten: ")
-	room = input("phong: ")
+
+	name = input("Tên: ")
+	while name in data.getUsersName():
+		print("Tên đã có người dùng")
+		name = input("Tên: ")
+
 	user = networking.User(name, uuid)
 
 	client = networking.Client(user)
-	client.joinRoom(room)
+
+	room = input("phong: ")
+	while room not in data.getRooms():
+		print("Khong tim thay phong")
+		room = input("phong: ")
+	while not client.joinRoom(room):
+		room = input("phong: ")
 
 	while True:
 		client.updateChoice("")

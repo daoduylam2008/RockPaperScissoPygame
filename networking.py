@@ -29,7 +29,11 @@ class User:
 
 	def updateToData(self):
 		data = db.reference("/")
-		data.child("Users/").update({self.username: self.getData()})
+		data.child("Users/").update(self.getData())
+
+	def resetUserData(self):
+		data = db.reference("/")
+		data.child("Users/"+self.username+"/").set({})
 
 
 class Server:
@@ -55,7 +59,7 @@ class Server:
 		return self.user.choice
 
 	def clientChoice(self) -> str:
-		userInRoom = dict(self.room.child(self.provideRoomID()).get())
+		userInRoom = self.room.child(self.provideRoomID()).get()
 
 		client = {}
 
@@ -67,15 +71,28 @@ class Server:
 		except:
 			return ""
 
+	def resetRoomData(self):
+		self.room.child(self.provideRoomID()).set({})
+
 
 class Client:
 	def __init__(self, user: User):
 		self.user = user
 		self.room = db.reference("room/")
 
-	def joinRoom(self, room_id: str):
+	def joinRoom(self, room_id: str) -> bool:
 		self.room = self.room.child(room_id + "/")
-		self.room.update(self.user.getData())
+		userInRoom = 0
+		for i in self.room.get():
+			userInRoom += 1
+
+		if userInRoom <= 1:
+			self.room.update(self.user.getData())
+			print("tham gia vô vòng", room_id)
+			return True
+		else:
+			print("Phòng đầy người")
+			False
 
 	def updateChoice(self, choice):
 		self.user.choice = choice
@@ -85,7 +102,7 @@ class Client:
 		return self.user.choice
 
 	def serverChoice(self) -> str:
-		userInRoom = dict(self.room.get())
+		userInRoom = self.room.get()
 
 		server = {}
 
@@ -96,3 +113,21 @@ class Client:
 			return server["choice"]
 		except:
 			return ""
+
+
+class Database:
+	def __init__(self):
+		self.ref = db.reference("/")
+
+	def getUsersName(self) -> list:
+		listOfUsers = []
+		for user in self.ref.child("Users/").get():
+			listOfUsers.append(user)
+		return listOfUsers
+
+	def getRooms(self) -> list:
+		rooms = []
+		for room in self.ref.child("room/").get():
+			rooms.append(room)
+		return rooms
+
