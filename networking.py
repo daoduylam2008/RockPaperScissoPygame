@@ -140,3 +140,26 @@ class Database:
 			rooms.append(room)
 		return rooms
 
+	def getIDS(self) -> list:
+		IDS = []
+		users = self.getUsersName()
+		users.remove("*")
+		for user in users:
+			IDS.append(self.ref.child("Users/" + user + "/").get()["id"])
+
+		return IDS
+
+	def createID(self) -> str:
+		IDS = self.getIDS()
+		max_id = [i for i in range(1, 999999)]
+		availableID = max_id
+		try:
+			for i in IDS:
+				for j in max_id:
+					if int(i) - j == 0:
+						availableID.remove(j)
+		except:
+			availableID = [1]
+
+		return str((6 - len(str(availableID[0])))*"0" + str(availableID[0]))
+

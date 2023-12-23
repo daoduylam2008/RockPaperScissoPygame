@@ -110,12 +110,12 @@ class RockPaperScissor:
 
             
                 
-            if self.button_play.clicked:
+            if self.button_play.clicked and not self.button_back.clicked:
                 self.groupWidget_single.create_widget()
                 self.groupWidget_single.update(events)
                 self.layer['Main Menu'] = False
-            if self.button_back.clicked:
-                
+            if self.button_back.clicked and not self.button_play.clicked:
+                print('bbbb')
                 self.layer['Main Menu'] = True
                 
             if self.layer['Main Menu']:
