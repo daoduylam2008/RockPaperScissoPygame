@@ -83,16 +83,22 @@ class Client:
 	def joinRoom(self, room_id: str) -> bool:
 		self.room = self.room.child(room_id + "/")
 		userInRoom = 0
-		for i in self.room.get():
-			userInRoom += 1
+		try:
+			for i in self.room.get():
+				userInRoom += 1
+		except:
+			userInRoom = -1
 
-		if userInRoom <= 1:
+		if userInRoom == 1:
 			self.room.update(self.user.getData())
 			print("tham gia vô vòng", room_id)
 			return True
+		elif userInRoom == -1:
+			print("Khong tim thay")
+			return False
 		else:
 			print("Phòng đầy người")
-			False
+			return False
 
 	def updateChoice(self, choice):
 		self.user.choice = choice
@@ -113,6 +119,9 @@ class Client:
 			return server["choice"]
 		except:
 			return ""
+
+	def resetData(self):
+		self.room.child(self.user.username).set({})
 
 
 class Database:

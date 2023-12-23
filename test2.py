@@ -66,12 +66,18 @@ elif host == 0:
 
 	room = input("phong: ")
 	while room not in data.getRooms():
-		print("Khong tim thay phong")
+		if room == "QUIT()":
+			break
 		room = input("phong: ")
 	while not client.joinRoom(room):
+		if room == "QUIT()":
+			break
 		room = input("phong: ")
 
 	while True:
+		if room == "QUIT()":
+			break
+
 		client.updateChoice("")
 
 		choice = input("chọn: ")
@@ -90,3 +96,4 @@ elif host == 0:
 				continue
 
 	user.resetUserData()
+	client.resetData()
