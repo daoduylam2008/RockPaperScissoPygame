@@ -78,7 +78,7 @@ elif host == 0:
 
 		if choice == "QUIT()":
 			break
-			
+
 		client.updateChoice(choice)
 
 		while True:
