@@ -85,6 +85,7 @@ class Button(Widget):
         self.on_press_color = on_press_color
         self.on_touch_color = on_touch_color
         self.text_color = text_color
+        self.text_size = text_size
 
         self.text = self._textForButton(text)
 
@@ -94,8 +95,6 @@ class Button(Widget):
         self.button = button
 
         self.alignment = alignment
-
-        self.text_size = text_size
 
     def create(self):
         mouse_pos = _pygame.mouse.get_pos()
