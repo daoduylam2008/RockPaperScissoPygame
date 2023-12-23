@@ -1,7 +1,7 @@
 import networking
 
 host = int(input("chọn server hay client: "))
-
+	
 data = networking.Database()
 
 

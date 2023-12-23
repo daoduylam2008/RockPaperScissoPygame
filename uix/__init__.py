@@ -155,7 +155,7 @@ class Button(Widget):
             else:
                 if self.clicked:
                     self.clicked = False
-                    self.access = True
+        print(self.clicked)
 
     def _alignment(self, alignment):
         if alignment == "center":

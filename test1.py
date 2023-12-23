@@ -50,36 +50,50 @@ class RockPaperScissor:
         self.layer  = {
             'Main Menu': True,
             'Play Menu': False,
-            'Settings Menu': False
+            'Settings Menu': False,
+            'Back': False
         }
 
+        self.count = 1
 
 
         # Main widgets which contain all widget on screen but at first it's empty
         # You have to add your own widget after creating it
         # Use this code to add widget: self.groupWidgets.widgets.append(<widget>)
+        
+        #GroupWidget 
         self.groupWidget = uix.GroupWidget()
+        self.groupWidget_single = uix.GroupWidget()
         # Initialize any view on screen here
         self.button_play = uix.Button(self.screen, (self.width//160,300, 150, 60),text = 'Play',color= (32,178,170),bottom_rect_color=(255,255,255))
         self.button_setting = uix.Button(self.screen,(self.width//160,400,200,60),text = 'Settings',color= (32,178,170),bottom_rect_color=(255,255,255))
 
-        #Play
-        self.button_bua = uix.Button(self.screen,(200,100,50,50),'Búa',(180,180,180),(120,120,120))
-        self.button_bao = uix.Button(self.screen,(400,100,50,50),'Bao',(180,180,180),(120,120,120))
-        self.button_keo = uix.Button(self.screen,(600,100,50,50),'Kéo',(180,180,180),(120,120,120))
+        #Single Button
+        self.button_rock = uix.Button(self.screen,(300,400,50,50),'Rock',(180,180,180),(120,120,120))
+        self.button_paper = uix.Button(self.screen,(400,400,50,50),'Paper',(180,180,180),(120,120,120))
+        self.button_scissors = uix.Button(self.screen,(500,400,50,50),'Scissors',(180,180,180),(120,120,120))
+        
+        
+        #Back Button
+        self.button_back = uix.Button(self.screen,(0,0,70,70),'Back',(220,220,220),(95,95,95))   
 
-        # Initialize any object on screen here
-        if self.layer['Main Menu']:
-            self.groupWidget.widgets.append(self.button_play)
-            self.groupWidget.widgets.append(self.button_setting)
 
+        #Widgets for button rock paper scissors
+        self.groupWidget_single.widgets.append(self.button_rock)
+        self.groupWidget_single.widgets.append(self.button_paper)
+        self.groupWidget_single.widgets.append(self.button_scissors)
+        self.groupWidget_single.widgets.append(self.button_back)
+
+        #Widgets for button play settings
+        self.groupWidget.widgets.append(self.button_play)
+        self.groupWidget.widgets.append(self.button_setting)
+
+        
     def run(self):
 
         while True:
             # Fill the screen with BLACK instead of an empty screen
             self.screen.fill('black')
-            self.layer['Play Menu'] = self.button_play.access
-
 
             # Event
             events = pygame.event.get()
@@ -88,17 +102,43 @@ class RockPaperScissor:
                     self.close()
 
 
-            if self.layer['Play Menu']:
-                self.groupWidget.widgets.clear()
+            
 
             # Update all widget on screen (GroupWidgets optimize your code by add all widget into a list
             # Then update itself once
-            self.groupWidget.update(events)
+            
+            # print(self.layer['Back'],self.button_back.access)
 
-            # Create all widget on screen
-            self.groupWidget.create_widget()
+            
+                
+            if self.layer['Play Menu'] :
+                
+                self.groupWidget_single.update(events)
+                self.groupWidget_single.create_widget()
+                self.layer['Main Menu'] = False
+
+            if self.layer['Main Menu']:
+                self.groupWidget.update(events)
+                self.groupWidget.create_widget()
+            if self.layer['Back']:
+                self.layer['Play Menu'] = False
+                self.layer['Main Menu'] = True
+
+           
 
 
+
+            if self.layer['Settings Menu']:
+                pass
+
+            # print(self.layer['Play Menu'],self.layer['Back'])
+            
+                
+        
+
+
+            self.layer['Play Menu']= self.button_play.clicked
+            self.layer['Back'] = self.button_back.clicked
 
             # Update and set FPS
             self.clock.tick(FPS)
