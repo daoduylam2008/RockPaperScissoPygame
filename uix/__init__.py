@@ -209,7 +209,7 @@ class InputBox(Widget):
 
         self._COLOR_INACTIVE = _pygame.Color('lightskyblue3')
         self._COLOR_ACTIVE = _pygame.Color('dodgerblue2')
-        self._FONT = _pygame.font.Font(None, 32)
+        self._FONT = _pygame.font.Font(None, self.rect.height-20)
 
         self.color = self._COLOR_INACTIVE
 
@@ -222,7 +222,7 @@ class InputBox(Widget):
 
     def _update(self):
         # Resize the box if the text is too long.
-        width = max(200, self.txt_surface.get_width() + 10)
+        width = max(300, self.txt_surface.get_width() + 10)
         self.rect.w = width
 
     def update(self, events):
@@ -241,10 +241,11 @@ class InputBox(Widget):
                 if self.active:
                     if event.key == _pygame.K_RETURN:
                         self.text = ''
-                    elif event.key == _pygame.K_BACKSPACE:
                         try:
                             self.action()
                         except: pass
+                    elif event.key == _pygame.K_BACKSPACE:
+                        self.text = self.text[:-1]
                     else:
                         self.text += event.unicode
                     # Re-render the text.
