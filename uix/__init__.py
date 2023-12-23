@@ -152,10 +152,7 @@ class Button(Widget):
 
         if self.rect.collidepoint(mouse_pos):
             if pygame.mouse.get_pressed()[0]:
-                
-                self.clicked = True
-            else:
-                self.clicked = False
+                self.on_press_action()
 
         
 
