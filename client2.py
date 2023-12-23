@@ -1,42 +1,66 @@
-import firebase_admin
-from firebase_admin import credentials, db
-import json
+import networking
+
+host = int(input("chọn server hay client: "))
 
 
-class Client:
-	def __init__(self, username, uuid, choice=""):
-		self.username = username
-		self.uid = uuid
-		self.choice = choice
-
-	def getData(self):
-		return {
-			self.username: {
-				"username": self.username,
-				"id": self.uid,
-				"choice": self.choice
-			}
-		}
-
-
-cred = credentials.Certificate("data/serviceKey/serviceAccountKey.json")
-firebase_admin.initialize_app(cred, {
-	'databaseURL': "https://rockpaperscissor-6753d-default-rtdb.asia-southeast1.firebasedatabase.app/"
-})
+def gameplay(server, client, host=""):
+	print("server chọn" , server)
+	print("client chọn", client)
+	if server == client:
+		print("draw")
+	elif (server == "keo" and client == "bao") or (server == "bua" and client == "keo") or (server == "bao" and client == "bua"):
+		if host == "server":
+			print("win")
+		else:
+			print("lose")
+	else:
+		if host == "client":
+			print("win")
+		else:
+			print("lose")
 
 
-uid = "000000"
-name = input("Name: ")
+if host == 1:
+	uuid = "000000"
+	name = input("Tên: ")
+	user = networking.User(name, uuid)
 
-user = Client(name, uid)
+	server = networking.Server(user)
+	server.createRoom()
 
-room = db.reference("room/")
-room.update(
-	{
-		user.uid: user.getData()
-	}
-)
+	while True:
+		server.updateChoice("")
 
-while True:
-	choice = input("chọn: ")
-	room.child(uid+"/"+name).update({"choice": choice})
+		choice = input("chọn: ")
+		server.updateChoice(choice)
+		while True:
+			client = server.clientChoice()
+			if client != "":
+				gameplay(server.getChoice(), client, "server")
+				break
+			else:
+				continue
+
+
+elif host == 0:
+	uuid = "000001"
+	name = input("ten: ")
+	room = input("phong: ")
+	user = networking.User(name, uuid)
+
+	client = networking.Client(user)
+	client.joinRoom(room)
+
+	while True:
+		client.updateChoice("")
+
+		choice = input("chọn: ")
+		client.updateChoice(choice)
+
+		while True:
+			server = client.serverChoice()
+			if server != "":
+				gameplay(server, client.getChoice(), "client")
+				break
+			else:
+				continue

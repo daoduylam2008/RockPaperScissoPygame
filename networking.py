@@ -71,14 +71,13 @@ class Server:
 
 		client = {}
 
-		print(userInRoom)
-
 		for user in userInRoom:
-			print(user)
 			if user != self.user.username:
 				client = userInRoom[user]
-		print(client)
-		return client["choice"]
+		try:
+			return client["choice"]
+		except:
+			return ""
 
 
 class Client:
@@ -105,5 +104,7 @@ class Client:
 		for user in userInRoom:
 			if user != self.user.username:
 				server = userInRoom[user]
-
-		return server["choice"]
+		try:
+			return server["choice"]
+		except:
+			return ""

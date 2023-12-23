@@ -3,14 +3,21 @@ import networking
 host = int(input("chọn server hay client: "))
 
 
-def gameplay(server, client):
+def gameplay(server, client, host=""):
+	print("server chọn" , server)
+	print("client chọn", client)
 	if server == client:
 		print("draw")
-
 	elif (server == "keo" and client == "bao") or (server == "bua" and client == "keo") or (server == "bao" and client == "bua"):
-		print("win")
+		if host == "server":
+			print("win")
+		else:
+			print("lose")
 	else:
-		print("lose")
+		if host == "client":
+			print("win")
+		else:
+			print("lose")
 
 
 if host == 1:
@@ -26,10 +33,10 @@ if host == 1:
 
 		choice = input("chọn: ")
 		server.updateChoice(choice)
-		client = server.clientChoice()
 		while True:
+			client = server.clientChoice()
 			if client != "":
-				gameplay(server.getChoice(), client)
+				gameplay(server.getChoice(), client, "server")
 				break
 			else:
 				continue
@@ -50,10 +57,10 @@ elif host == 0:
 		choice = input("chọn: ")
 		client.updateChoice(choice)
 
-		server = client.serverChoice()
 		while True:
-			if client != "":
-				gameplay(server, client.getChoice())
+			server = client.serverChoice()
+			if server != "":
+				gameplay(server, client.getChoice(), "client")
 				break
 			else:
 				continue
