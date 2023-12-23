@@ -4,6 +4,14 @@ host = int(input("chọn server hay client: "))
 
 data = networking.Database()
 
+print(data.getIDS())
+
+allUsers = data.getUsersName()
+
+uuid = data.createID()
+print("ID của bạn là", uuid)
+print("phòng: ", uuid)
+
 
 def gameplay(server, client, host=""):
 	if server == client:
@@ -22,8 +30,6 @@ def gameplay(server, client, host=""):
 
 
 if host == 1:
-	uuid = "000000"
-
 	name = input("Tên: ")
 	while name in data.getUsersName():
 		print("Tên đã có người dùng")
@@ -53,8 +59,6 @@ if host == 1:
 
 
 elif host == 0:
-	uuid = "000001"
-
 	name = input("Tên: ")
 	while name in data.getUsersName():
 		print("Tên đã có người dùng")
