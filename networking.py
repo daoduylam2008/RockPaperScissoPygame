@@ -67,14 +67,17 @@ class Server:
 		return self.user.choice
 
 	def clientChoice(self) -> str:
-		userInRoom = dict(self.room.get())
+		userInRoom = dict(self.room.child(self.provideRoomID()).get())
 
 		client = {}
 
+		print(userInRoom)
+
 		for user in userInRoom:
+			print(user)
 			if user != self.user.username:
 				client = userInRoom[user]
-
+		print(client)
 		return client["choice"]
 
 
