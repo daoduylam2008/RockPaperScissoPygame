@@ -7,18 +7,6 @@ firebase_admin.initialize_app(cred, {
 	'databaseURL': "https://rockpaperscissor-6753d-default-rtdb.asia-southeast1.firebasedatabase.app/"
 })
 
-u = db.reference("/")
-u.set(
-	{
-		"Users": {
-			"*": "*"
-		},
-		"room": {
-			"*": "*"
-		}
-	}
-)
-
 
 class User:
 	def __init__(self, username, uuid, choice=""):
