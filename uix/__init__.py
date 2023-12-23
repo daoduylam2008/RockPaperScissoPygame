@@ -19,8 +19,7 @@ class Widget:
 
 class GroupWidget:
     def __init__(self,
-                 widgets=None
-                 ):
+                 widgets=None):
         if widgets is None:
             widgets = []
         self.widgets = widgets
@@ -53,8 +52,6 @@ class Text(Widget):
         self.text = text
         self.color = color
 
-        self._font = _pygame.font.Font("timesnewroman", 15)
-        self._txt = self._font.render(self.text, True, self.color)
 
     def create(self):
         self.surface.blit(self._txt, self.rect)
@@ -62,7 +59,7 @@ class Text(Widget):
     def font(self, name, size, color):
         self._font = _pygame.font.Font(name, size)
         self._txt = self._font.render(self.text, True, color)
-
+        return self._txt
 
 class Button(Widget):
     def __init__(self,
@@ -70,24 +67,27 @@ class Button(Widget):
                  rect: tuple,
                  text="Button",
                  color=(180, 180, 180),
-                 on_press_color=(50, 50, 50),
                  on_touch_color=(150, 150, 150),
+                 bottom_rect_color=(0,0,0),
                  text_color=(0, 0, 0),
                  on_press_action=...,
                  on_touch_action=...,
                  button=1,
                  alignment="center",
-                 text_size=30
+                 text_size=30,
+                 elevation = 6,
+                 border_radius = 10
                  ):
         super().__init__(surface, rect)
 
+        self.original_color = color
         self.color = color
-        self.on_press_color = on_press_color
         self.on_touch_color = on_touch_color
         self.text_color = text_color
+
         self.text_size = text_size
 
-        self.text = self._textForButton(text)
+        self.text = self.textForButton(text)
 
         self.on_press_action = on_press_action
         self.on_touch_action = on_touch_action
@@ -96,19 +96,48 @@ class Button(Widget):
 
         self.alignment = alignment
 
+        #Make the elevation for button
+        self.elevation = elevation
+        self.border_radius = border_radius
+
+        #The bottom rectangle under the top rectangle
+        self.bottom_rect = pygame.Rect(rect)
+        self.bottom_rect_color = bottom_rect_color
+
+        self.clicked = False
+        self.access = False
+
     def create(self):
         mouse_pos = _pygame.mouse.get_pos()
+        start_time,time = 110,0
+        timing = pygame.time.get_ticks()
 
         x, y = self._alignment(self.alignment)
 
+        self.bottom_rect.center = self.rect.center
+        self.bottom_rect.y = self.rect.y + self.elevation + 2
+
         if self.rect.collidepoint(mouse_pos):
-            if _pygame.mouse.get_pressed()[0] or _pygame.mouse.get_pressed()[2]:
-                _pygame.draw.rect(self.surface, self.on_press_color, self.rect)
+            if _pygame.mouse.get_pressed()[0]:
+                #
+                self.rect.y += self.elevation
+
+                y += 3
+                _pygame.draw.rect(self.surface, self.bottom_rect_color, self.bottom_rect,border_radius=self.border_radius)
+                _pygame.draw.rect(self.surface, self.color,self.rect,border_radius=self.border_radius)
+
+                if timing - time > start_time:
+                    time = timing
+                    self.rect.y -= self.elevation
+
+
             else:
-                _pygame.draw.rect(self.surface, self.on_touch_color, self.rect)
+                _pygame.draw.rect(self.surface, self.bottom_rect_color, self.bottom_rect, border_radius=self.border_radius)
+                _pygame.draw.rect(self.surface, self.color, self.rect,border_radius=self.border_radius)
 
         else:
-            _pygame.draw.rect(self.surface, self.color, self.rect)
+            _pygame.draw.rect(self.surface, self.bottom_rect_color, self.bottom_rect, border_radius=self.border_radius)
+            _pygame.draw.rect(self.surface, self.color, self.rect,border_radius=self.border_radius)
 
             try:
                 self.on_touch_action()
@@ -119,13 +148,14 @@ class Button(Widget):
     def update(self, events):
         mouse_pos = _pygame.mouse.get_pos()
 
-        for event in events:
-            if event.type == _pygame.MOUSEBUTTONDOWN:
-                if event.button == self.button:
-                    if self.rect.collidepoint(mouse_pos):
-                        try:
-                            self.on_press_action()
-                        except: pass
+
+        if self.rect.collidepoint(mouse_pos):
+            if pygame.mouse.get_pressed()[0]:
+                self.clicked = True
+            else:
+                if self.clicked:
+                    self.clicked = False
+                    self.access = True
 
     def _alignment(self, alignment):
         if alignment == "center":
@@ -160,7 +190,7 @@ class Button(Widget):
             y = 0
         return x, y
 
-    def _textForButton(self, text):
+    def textForButton(self, text):
         font = _pygame.font.SysFont('timesnewroman', self.text_size)
         txt = font.render(text, True, self.text_color)
 

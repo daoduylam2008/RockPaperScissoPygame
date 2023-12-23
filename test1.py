@@ -11,9 +11,8 @@ import pygame
 # System Module and Libraries
 import sys
 import uix
-import scripts
-import networking
-from scripts import Color
+
+#Color
 
 # Authorize information, gmail
 __author1__ = "daoduylam2020@gmail.com"  # DAO DUY LAM
@@ -48,19 +47,39 @@ class RockPaperScissor:
 
         self.clock = pygame.time.Clock()
 
+        self.layer  = {
+            'Main Menu': True,
+            'Play Menu': False,
+            'Settings Menu': False
+        }
+
+
+
         # Main widgets which contain all widget on screen but at first it's empty
         # You have to add your own widget after creating it
         # Use this code to add widget: self.groupWidgets.widgets.append(<widget>)
-        self.groupWidgets = uix.GroupWidget()
-
+        self.groupWidget = uix.GroupWidget()
         # Initialize any view on screen here
+        self.button_play = uix.Button(self.screen, (self.width//160,300, 150, 60),text = 'Play',color= (32,178,170),bottom_rect_color=(255,255,255))
+        self.button_setting = uix.Button(self.screen,(self.width//160,400,200,60),text = 'Settings',color= (32,178,170),bottom_rect_color=(255,255,255))
+
+        #Play
+        self.button_bua = uix.Button(self.screen,(200,100,50,50),'Búa',(180,180,180),(120,120,120))
+        self.button_bao = uix.Button(self.screen,(400,100,50,50),'Bao',(180,180,180),(120,120,120))
+        self.button_keo = uix.Button(self.screen,(600,100,50,50),'Kéo',(180,180,180),(120,120,120))
 
         # Initialize any object on screen here
+        if self.layer['Main Menu']:
+            self.groupWidget.widgets.append(self.button_play)
+            self.groupWidget.widgets.append(self.button_setting)
 
     def run(self):
+
         while True:
             # Fill the screen with BLACK instead of an empty screen
-            self.screen.fill(Color.black)
+            self.screen.fill('black')
+            self.layer['Play Menu'] = self.button_play.access
+
 
             # Event
             events = pygame.event.get()
@@ -68,15 +87,22 @@ class RockPaperScissor:
                 if event.type == pygame.QUIT:
                     self.close()
 
+
+            if self.layer['Play Menu']:
+                self.groupWidget.widgets.clear()
+
             # Update all widget on screen (GroupWidgets optimize your code by add all widget into a list
             # Then update itself once
-            self.groupWidgets.update(events)
+            self.groupWidget.update(events)
 
             # Create all widget on screen
-            self.groupWidgets.create_widget()
+            self.groupWidget.create_widget()
+
+
 
             # Update and set FPS
             self.clock.tick(FPS)
+            # self.screen.blit(self.layer1,(0,0))
 
             pygame.display.flip()
             pygame.display.update()
