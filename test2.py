@@ -1,8 +1,8 @@
 import csv
 
 
-def read_data():
-    with open('employee_birthday.txt', mode='r') as csv_file:
+def read_data(file):
+    with open(file, mode='r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
         line_count = 0
         for row in csv_reader:
@@ -16,7 +16,7 @@ def read_data():
         print(csv_reader.restkey)
 
 
-class CSV:
+class CSV_txt:
     def __init__(self, file):
         self.file = file
         with open(self.file, 'r') as self.csv_file:
@@ -26,14 +26,14 @@ class CSV:
             for row in self.csv_reader:
                 self.line_count += 1
 
-    def dataRows(self) -> list:
+    def readDataRows(self) -> list:
         with open(self.file, "r") as csv_file:
             csv_reader = csv.reader(csv_file)
             data = [row for row in csv_reader]
         return data
 
-    def dataColumns(self) -> list:
-        data = self.dataRows()
+    def readDataColumns(self) -> list:
+        data = self.readDataRows()
         result = []
         for i in range(0, len(data[0])-1):
             r = []
@@ -42,7 +42,4 @@ class CSV:
             result.append(r)
 
         return result
-
-
-print(CSV("employee_birthday.txt").dataColumns())
 
