@@ -1,2 +1,2 @@
 24/12/2023:
-- file test1.py: animation image của bot tạo trong class single view
+- file test1.py: animation image của bot tạo trong class single view, chạy fps thành 30 để tạo animation
