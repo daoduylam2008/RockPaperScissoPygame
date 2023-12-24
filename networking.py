@@ -2,6 +2,7 @@ import firebase_admin
 from firebase_admin import credentials, db, firestore
 import json
 
+# Create environment for firebase
 cred = credentials.Certificate("data/serviceKey/serviceAccountKey.json")
 firebase_admin.initialize_app(cred, {
 	'databaseURL': "https://rockpaperscissor-6753d-default-rtdb.asia-southeast1.firebasedatabase.app/"
@@ -28,10 +29,12 @@ class User:
 		}
 
 	def updateToData(self):
+		# Write data directly to database
 		data = db.reference("/")
 		data.child("Users/").update(self.getData())
 
 	def resetUserData(self):
+		# After using data we should delete user data to prevent from overloading
 		data = db.reference("/")
 		data.child("Users/"+self.username+"/").set({})
 

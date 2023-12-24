@@ -323,7 +323,8 @@ class _SpriteImage(_Sprite):
         self.clock = pygame.time.Clock()
 
         super(_SpriteImage, self).__init__()
-        
+
+        self.path = imageFolder
         self.imageFolder = os.listdir(imageFolder)
         self.images = []
 
@@ -339,8 +340,18 @@ class _SpriteImage(_Sprite):
         self.rect = _pygame.Rect(rect)
 
 
+<<<<<<< HEAD
     def update(self,imageFolder):
+=======
+    def update(self):
+        self.images = []
+
+        for i in self.imageFolder:
+            self.images.append(pygame.image.load(self.path+i))
+
+>>>>>>> 2936e988ac9f98de29fca08b524c25964d0683bb
         self.clock.tick(10)
+
         self.index += 1
 
         self.images.clear()
@@ -351,7 +362,7 @@ class _SpriteImage(_Sprite):
         if self.index >= len(self.images):
             self.index = len(self.images) -1
         self.image = self.images[int(self.index)]
-        
+        print(self.index)
 
 
 class ImageAnimation(Widget):
