@@ -118,7 +118,7 @@ class RockPaperScissor(MenuView):
         self.singlePlayerView.button_scissors.on_press_action = self.scissors
 
 
-        self.bot = uix.ImageAnimation(self.screen,rect = (50,50,100,100),imageFolder = 'data/scissors_animation/')
+        self.bot = uix.ImageAnimation(self.screen,rect = (50,50,100,100),imageFolder = 'data/scissors_animation/',scale = (256,256))
 
 
 
@@ -154,12 +154,10 @@ class RockPaperScissor(MenuView):
                 #     self.bot = uix.ImageAnimation(self.screen,rect = (50,50,100,100),imageFolder = 'data/paper_animation/')
 
                     
-                if self.gameplay['Rock']:
+                if self.gameplay['Rock'] or self.gameplay['Scissors'] or self.gameplay['Paper']:
                     self.bot.create()
                     self.bot.update(events)
-                if self.gameplay['Paper']:
-                    self.bot.create()
-                    self.bot.update(events)
+
 
             elif self.view['Main Menu']:
                 self.menuView.create_widgets()
