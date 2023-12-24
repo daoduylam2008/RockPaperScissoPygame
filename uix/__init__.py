@@ -1,6 +1,7 @@
 import pygame as _pygame
 import pygame.image
 from pygame.sprite import Sprite as _Sprite
+import os
 
 _pygame.init()
 
@@ -283,22 +284,20 @@ class Image(Widget):
         self._resizable = False
         self.path = path
 
-        self.image = _pygame.image.load(self.path)
+        self.image = _pygame.image.load(self.path).convert_alpha()
 
         self.action = None
 
     def create(self):
         self.surface.blit(self.image, self.rect)
 
-    def resizable(self):
-        self._resizable = False
+    #def resizable(self):
+        #self._resizable = False
 
-    def convertAlpha(self):
-        self.image.convert_alpha()
-
+    
     def scaleToFill(self, view="surface"):
         if view == "surface" and self._resizable:
-            self.image = _pygame.transform.scale(self.image, (self.surface.get_widhth(), self.surface.get_height()))
+            self.image = _pygame.transform.scale(self.image, (self.surface.get_width(), self.surface.get_height()))
         elif view == "view" and self._resizable:
             pass
 
