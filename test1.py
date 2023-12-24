@@ -11,7 +11,7 @@ import pygame
 # System Module and Libraries
 import sys
 import uix
-
+import os
 #Color
 
 # Authorize information, gmail
@@ -21,7 +21,7 @@ __author3__ = ""  # LE CONG TIEN
 
 
 # ___ MAIN ___
-FPS = 30
+FPS = 60
 
 
 class MenuView:
@@ -84,14 +84,19 @@ class RockPaperScissor(MenuView):
 
         self.clock = pygame.time.Clock()
 
-        self.layer = {
+        self.view = {
             'Main Menu': True,
             'SinglePlay Menu': False,
             'Settings Menu': False,
             'Back': True
         }
+        self.gameplay = {
+            'Rock': False,
+            'Paper': False,
+            'Scissors': False
+        }
 
-        self.count = 0
+        
 
 
         # Main widgets which contain all widget on screen but at first it's empty
@@ -108,11 +113,20 @@ class RockPaperScissor(MenuView):
 
         self.singlePlayerView = SinglePlayerView(self.screen,self.width,self.height)
         self.singlePlayerView.button_back.on_press_action = self.back
+        self.singlePlayerView.button_rock.on_press_action = self.rock
+        self.singlePlayerView.button_paper.on_press_action = self.paper
+        self.singlePlayerView.button_scissors.on_press_action = self.scissors
+
+
+        self.bot = uix.ImageAnimation(self.screen,rect = (50,50,100,100),imageFolder = 'data/scissors_animation/')
+
+
 
         
     def run(self):
 
         while True:
+            self.bot.imageFolder = 'data/rock_animation/'
             # Fill the screen with BLACK instead of an empty screen
             self.screen.fill('black')
 
@@ -127,40 +141,60 @@ class RockPaperScissor(MenuView):
             # Update all widget on screen (GroupWidgets optimize your code by add all widget into a list
             # Then update itself once
             
-            # print(self.layer['Back'],self.button_back.access)
 
-            
-                
-            
-            if self.layer['SinglePlay Menu']:
+                        
+            if self.view['SinglePlay Menu']:
                 self.singlePlayerView.create_widgets()
                 self.singlePlayerView.update(events)
-            elif self.layer['Main Menu']:
+
+                # if self.gameplay['Rock']:
+                #     self.bot = uix.ImageAnimation(self.screen,rect = (50,50,100,100),imageFolder = 'data/rock_animation/')
+
+                    
+                # if self.gameplay['Paper']:
+                #     self.bot = uix.ImageAnimation(self.screen,rect = (50,50,100,100),imageFolder = 'data/paper_animation/')
+
+                    
+                if self.gameplay['Rock']:
+                    self.bot.create()
+                    self.bot.update(events)
+
+            elif self.view['Main Menu']:
                 self.menuView.create_widgets()
                 self.menuView.update(events)
             
 
-
-            
-    
-
     
             # Update and set FPS
             self.clock.tick(FPS)
-            # self.screen.blit(self.layer1,(0,0))
+            # self.screen.blit(self.view1,(0,0))
 
             pygame.display.flip()
             pygame.display.update()
     def single_play(self):
-        self.layer['SinglePlay Menu'] =  True
+        self.view['SinglePlay Menu'] =  True
     def back(self):
-        self.layer['SinglePlay Menu'] = False
+        self.view['SinglePlay Menu'] = False
     def multiplayer_play(self):
-        pass
+        pass        
+    def rock(self):
+        self.gameplay['Rock'] = True
+        self.gameplay['Paper'] = False
+        self.gameplay['Scissors'] = False
+    def paper(self):
+        self.gameplay['Rock'] = False
+        self.gameplay['Paper'] = True
+        self.gameplay['Scissors'] = False
+    def scissors(self):
+        self.gameplay['Rock'] = False
+        self.gameplay['Paper'] = False
+        self.gameplay['Scissors'] = True
 
     def close(self):
         pygame.quit()
         sys.exit()
+
+
 
 
 if __name__ == "__main__":
