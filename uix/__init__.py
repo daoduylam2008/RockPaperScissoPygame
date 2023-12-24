@@ -5,6 +5,7 @@ import os
 
 _pygame.init()
 
+FPS = 60
 
 class Widget:
     def __init__(self, surface, rect):
@@ -319,19 +320,20 @@ class Image(Widget):
 
 
 class _SpriteImage(_Sprite):
-    def __init__(self, imageFolder, rect):
+    def __init__(self, imageFolder, rect,scale):
         self.clock = pygame.time.Clock()
 
         super(_SpriteImage, self).__init__()
 
-        self.path = imageFolder
         self.imageFolder = os.listdir(imageFolder)
         self.images = []
 
-        print(self.imageFolder)
+        self.scale = scale
 
         for i in self.imageFolder:
-            self.images.append(pygame.image.load(imageFolder+i))   
+            self.img = pygame.image.load(imageFolder+i)
+            self.img = pygame.transform.scale(self.img,self.scale)
+            self.images.append(self.img)   
 
         self.index = 0
 
@@ -340,39 +342,35 @@ class _SpriteImage(_Sprite):
         self.rect = _pygame.Rect(rect)
 
 
-<<<<<<< HEAD
     def update(self,imageFolder):
-=======
-    def update(self):
-        self.images = []
+        
 
-        for i in self.imageFolder:
-            self.images.append(pygame.image.load(self.path+i))
-
->>>>>>> 2936e988ac9f98de29fca08b524c25964d0683bb
-        self.clock.tick(10)
-
-        self.index += 1
+        self.clock.tick(5)
 
         self.images.clear()
         self.imageFolder = os.listdir(imageFolder)
         for i in self.imageFolder:
-            self.images.append(pygame.image.load(imageFolder+i))
+            self.img = pygame.image.load(imageFolder+i)
+            self.img = pygame.transform.scale(self.img,self.scale)
+            self.images.append(self.img)
+
+        self.index += 0.2
 
         if self.index >= len(self.images):
             self.index = len(self.images) -1
         self.image = self.images[int(self.index)]
-        print(self.index)
+        
 
 
 class ImageAnimation(Widget):
-    def __init__(self, surface, rect=None, imageFolder=None):
+    def __init__(self, surface, rect=None, imageFolder=None,scale = None):
         super().__init__(surface, rect)
 
         if imageFolder is None:
             imageFolder = ''
         self.imageFolder = imageFolder
-        self._imageSprite = _SpriteImage(self.imageFolder, self.rect)
+        self.scale = scale
+        self._imageSprite = _SpriteImage(self.imageFolder, self.rect,scale = self.scale)
         self._groupSprite = pygame.sprite.Group(self._imageSprite)
 
     def update(self, events):
