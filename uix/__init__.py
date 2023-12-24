@@ -339,12 +339,17 @@ class _SpriteImage(_Sprite):
         self.rect = _pygame.Rect(rect)
 
 
-    def update(self):
+    def update(self,imageFolder):
         self.clock.tick(10)
         self.index += 1
 
+        self.images.clear()
+        self.imageFolder = os.listdir(imageFolder)
+        for i in self.imageFolder:
+            self.images.append(pygame.image.load(imageFolder+i))
+
         if self.index >= len(self.images):
-            self.index = 2
+            self.index = len(self.images) -1
         self.image = self.images[int(self.index)]
         
 
@@ -360,7 +365,7 @@ class ImageAnimation(Widget):
         self._groupSprite = pygame.sprite.Group(self._imageSprite)
 
     def update(self, events):
-        self._groupSprite.update()
+        self._groupSprite.update(self.imageFolder)
 
     def create(self):
         self._groupSprite.draw(self.surface)

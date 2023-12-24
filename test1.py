@@ -126,7 +126,6 @@ class RockPaperScissor(MenuView):
     def run(self):
 
         while True:
-            self.bot.imageFolder = 'data/rock_animation/'
             # Fill the screen with BLACK instead of an empty screen
             self.screen.fill('black')
 
@@ -158,6 +157,9 @@ class RockPaperScissor(MenuView):
                 if self.gameplay['Rock']:
                     self.bot.create()
                     self.bot.update(events)
+                if self.gameplay['Paper']:
+                    self.bot.create()
+                    self.bot.update(events)
 
             elif self.view['Main Menu']:
                 self.menuView.create_widgets()
@@ -181,14 +183,19 @@ class RockPaperScissor(MenuView):
         self.gameplay['Rock'] = True
         self.gameplay['Paper'] = False
         self.gameplay['Scissors'] = False
+        self.bot.imageFolder = 'data/rock_animation/'
     def paper(self):
         self.gameplay['Rock'] = False
         self.gameplay['Paper'] = True
         self.gameplay['Scissors'] = False
+        self.bot.imageFolder = 'data/paper_animation/'
+
     def scissors(self):
         self.gameplay['Rock'] = False
         self.gameplay['Paper'] = False
         self.gameplay['Scissors'] = True
+        self.bot.imageFolder = 'data/scissors_animation/'
+
 
     def close(self):
         pygame.quit()
