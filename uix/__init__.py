@@ -48,19 +48,22 @@ class Text(Widget):
                  surface,
                  rect,
                  text="text",
+                 size = 32,
                  color=(0,0,0)
                  ):
         super().__init__(surface, rect)
         self.text = text
         self.color = color
+        self.size = size
 
-
-    def create(self):
+    def create(self,text):
+        self.text = text
+        self._txt = self.font()
         self.surface.blit(self._txt, self.rect)
 
-    def font(self, name, size, color):
-        self._font = _pygame.font.Font(name, size)
-        self._txt = self._font.render(self.text, True, color)
+    def font(self):
+        self._font = _pygame.font.Font(None, self.size)
+        self._txt = self._font.render(self.text, True, self.color)
         return self._txt
 
 
@@ -160,6 +163,7 @@ class Button(Widget):
                     if self.rect.collidepoint(mouse_pos):
                         if pygame.mouse.get_pressed()[0]:
                             self.on_press_action()
+                                
 
         
 
@@ -320,7 +324,7 @@ class Image(Widget):
 
 
 class _SpriteImage(_Sprite):
-    def __init__(self, imageFolder, rect,scale):
+    def __init__(self, imageFolder, rect,scale,flip):
         self.clock = pygame.time.Clock()
 
         super(_SpriteImage, self).__init__()
@@ -329,10 +333,12 @@ class _SpriteImage(_Sprite):
         self.images = []
 
         self.scale = scale
+        self.flip = flip
 
         for i in self.imageFolder:
             self.img = pygame.image.load(imageFolder+i)
             self.img = pygame.transform.scale(self.img,self.scale)
+            self.img= pygame.transform.flip(self.img,self.flip,False)
             self.images.append(self.img)   
 
         self.index = 0
@@ -345,13 +351,14 @@ class _SpriteImage(_Sprite):
     def update(self,imageFolder):
         
 
-        self.clock.tick(5)
+        self.clock.tick(30)
 
         self.images.clear()
         self.imageFolder = os.listdir(imageFolder)
         for i in self.imageFolder:
             self.img = pygame.image.load(imageFolder+i)
             self.img = pygame.transform.scale(self.img,self.scale)
+            self.img = pygame.transform.flip(self.img,self.flip,False)
             self.images.append(self.img)
 
         self.index += 0.2
@@ -359,18 +366,21 @@ class _SpriteImage(_Sprite):
         if self.index >= len(self.images):
             self.index = len(self.images) -1
         self.image = self.images[int(self.index)]
+    def returnIndex(self):
+        self.index = 0
         
 
 
 class ImageAnimation(Widget):
-    def __init__(self, surface, rect=None, imageFolder=None,scale = None):
+    def __init__(self, surface, rect=None, imageFolder=None,scale = None,flip = None):
         super().__init__(surface, rect)
 
         if imageFolder is None:
             imageFolder = ''
         self.imageFolder = imageFolder
         self.scale = scale
-        self._imageSprite = _SpriteImage(self.imageFolder, self.rect,scale = self.scale)
+        self.flip = flip
+        self._imageSprite = _SpriteImage(self.imageFolder, self.rect,scale = self.scale,flip = self.flip)
         self._groupSprite = pygame.sprite.Group(self._imageSprite)
 
     def update(self, events):
