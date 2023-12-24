@@ -353,6 +353,7 @@ class _SpriteImage(_Sprite):
         if self.index >= len(self.images):
             self.index = 2
         self.image = self.images[int(self.index)]
+        print(self.index)
 
 
 class ImageAnimation(Widget):

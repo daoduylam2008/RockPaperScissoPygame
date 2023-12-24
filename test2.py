@@ -128,7 +128,6 @@ class RockPaperScissor(MenuView):
         while True:
             # Fill the screen with BLACK instead of an empty screen
             self.screen.fill('black')
-            print(self.bot.imageFolder)
 
             # Event
             events = pygame.event.get()
@@ -198,8 +197,4 @@ class RockPaperScissor(MenuView):
 
 if __name__ == "__main__":
     game = RockPaperScissor()
-    try:
-        game.run()
-    except Exception as bug:
-        print(bug)
-        game.close()
+    game.run()
