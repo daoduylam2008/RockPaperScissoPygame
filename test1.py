@@ -156,6 +156,7 @@ class RockPaperScissor(MenuView):
                 if any(self.gameplay.values()):
                     self.imageBot.update(events)
                     self.imagePlayer.update(events)
+                    print(self.imagePlayer.imageFolder)
 
                 self.who_will_win.create(self.who_win[-1])
             elif self.view['Main Menu']:
