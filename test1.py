@@ -31,35 +31,59 @@ class MenuView:
         self.width = width
         self.height = height
 
-        self.button_singleplay = uix.Button(surface, (self.width//160,300, 150, 60),text = 'SinglePlayer',color= (32,178,170),bottom_rect_color=(255,255,255))
-        self.button_setting = uix.Button(surface,(self.width//160,400,200,60),text = 'Settings',color= (32,178,170),bottom_rect_color=(255,255,255))
+        self.button_singleplay = uix.Button(surface, (self.width//160,300, 150, 60),text = 'SinglePlayer',color= (255,235,136),bottom_rect_color=(255,243,180),text_color = (255,197,126))
+        self.button_setting = uix.Button(surface,(self.width//160,400,200,60),text = 'Settings',color= (88,93,149),bottom_rect_color=(255,170,170))
 
         self.groupWidget = uix.GroupWidget()
         self.groupWidget.widgets.append(self.button_singleplay)
         self.groupWidget.widgets.append(self.button_setting)
+
+        
     def create_widgets(self):
         self.groupWidget.create_widget()
 
     def update(self,events):
         self.groupWidget.update(events)
-
+    def Background(self,surface):
+        self.background = uix.Image(surface,'data/background.png',(0,0,0,0))
+        self.background.image = pygame.transform.scale(self.background.image,(surface.get_width(),surface.get_height()))
+        self.background.rect = self.background.image.get_rect(center = self.background.surface.get_rect().center)
+        self.background.create()
+            
 
 class SinglePlayerView:
-    def __init__(self,surface,width,height):
+    def __init__(self,surface,width,height,on_press_action_list = []):
         self.width = width
         self.height = height
+
+        self.on_press_action_list = on_press_action_list
+
 
         self.button_rock = uix.Button(surface,(350,600,50,50),'Rock',(180,180,180),(120,120,120))
         self.button_paper = uix.Button(surface,(450,600,50,50),'Paper',(180,180,180),(120,120,120))
         self.button_scissors = uix.Button(surface,(550,600,50,50),'Scissors',(180,180,180),(120,120,120))
         self.button_back = uix.Button(surface,(0,0,70,70),'Back',(220,220,220),(95,95,95))
 
+        self.list_button_singlePlayer = [
+            self.button_rock,
+            self.button_paper,
+            self.button_scissors,
+            self.button_back
+        ]
 
         self.groupWidget_single = uix.GroupWidget()
-        self.groupWidget_single.widgets.append(self.button_rock)
-        self.groupWidget_single.widgets.append(self.button_paper)
-        self.groupWidget_single.widgets.append(self.button_scissors)
-        self.groupWidget_single.widgets.append(self.button_back)
+        for i in self.list_button_singlePlayer:
+            self.groupWidget_single.widgets.append(i)
+
+        self.on_press_action()
+    def on_press_action(self):
+        for i in self.list_button_singlePlayer:
+            match i:
+                case self.button_rock: self.button_rock.on_press_action = self.on_press_action_list[0]     
+                case self.button_paper: self.button_paper.on_press_action = self.on_press_action_list[1]     
+                case self.button_scissors: self.button_scissors.on_press_action = self.on_press_action_list[2]     
+                case self.button_back: self.button_back.on_press_action = self.on_press_action_list[3]     
+
 
     def create_widgets(self):   
         self.groupWidget_single.create_widget()
@@ -78,7 +102,7 @@ class Settings:
         pass
     def update(self,events):
         pass
-class RockPaperScissor(MenuView):
+class RockPaperScissor:
     def __init__(self):
         self.width = 900
         self.height = 700
@@ -92,14 +116,12 @@ class RockPaperScissor(MenuView):
             'Settings Menu': False,
             'Back': True
         }
-        self.gameplay = {
-            'Rock': False,
-            'Paper': False,
-            'Scissors': False
-        }
         self.playerChoice = ''
+
+        
         self.imageBot_choice_list = []
-        self.who_win = ['Fight']
+        self.who_win = 'Fight'
+        self.clicked = False
 
 
         # Main widgets which contain all widget on screen but at first it's empty
@@ -114,34 +136,28 @@ class RockPaperScissor(MenuView):
         self.menuView = MenuView(self.screen,self.width,self.height)
         self.menuView.button_singleplay.on_press_action = self.single_play   
 
-        self.singlePlayerView = SinglePlayerView(self.screen,self.width,self.height)
-        self.singlePlayerView.button_back.on_press_action = self.back
-        self.singlePlayerView.button_rock.on_press_action = self.rock
-        self.singlePlayerView.button_paper.on_press_action = self.paper
-        self.singlePlayerView.button_scissors.on_press_action = self.scissors
+        self.singlePlayerView = SinglePlayerView(self.screen,self.width,self.height,[self.rock,self.paper,self.scissors,self.back])
+       
 
 
-        self.imagePlayer = uix.ImageAnimation(self.screen,rect = (50,300,100,100),imageFolder = 'data/scissors_animation/',scale = (230,230),flip = False)
-        self.imageBot = uix.ImageAnimation(self.screen,rect = (650,300,100,100),imageFolder = 'data/scissors_animation/',scale = (230,230),flip = True)
+        self.imagePlayer = uix.ImageAnimation(self.screen,rect = (50,300,100,100),imageFolder = 'data/scissors_animation/',scale = (230,230),flip = False,fps = 30)
+        self.imageBot = uix.ImageAnimation(self.screen,rect = (650,300,100,100),imageFolder = 'data/scissors_animation/',scale = (230,230),flip = True,fps = 60)
 
+        #Text who will win
         self.who_will_win = uix.Text(self.screen,(100,100,50,50),size = 64,color = (255,255,255))
+        
         
     def run(self):
 
         while True:
             # Fill the screen with BLACK instead of an empty screen
-            self.screen.fill('black')
-
+            self.menuView.Background(self.screen)
             # Event
             events = pygame.event.get()
             for event in events:
                 if event.type == pygame.QUIT:
                     self.close()
 
-
-        
-        
-            
 
                         
             if self.view['SinglePlay Menu']:
@@ -153,11 +169,12 @@ class RockPaperScissor(MenuView):
 
                 
                     
-                if any(self.gameplay.values()):
-                    self.imageBot.update(events)
+                if self.clicked:
                     self.imagePlayer.update(events)
+                    self.imageBot.update(events)
 
-                self.who_will_win.create(self.who_win[-1])
+
+                self.who_will_win.create(self.who_win)
             elif self.view['Main Menu']:
                 self.menuView.create_widgets()
                 self.menuView.update(events)
@@ -178,39 +195,27 @@ class RockPaperScissor(MenuView):
     def multiplayer_play(self):
         pass        
     def rock(self):
-        self.gameplay['Rock'] = True
-        self.gameplay['Paper'] = False
-        self.gameplay['Scissors'] = False
-        self.imagePlayer.imageFolder = 'data/rock_animation/'
         self.playerChoice = 'Rock'
-        self.rpg_clicked()
-        self.who_win = self.who_want_win_rock()
-
+        self.which_button_rpg_clicked()
+        
     def paper(self):
-        self.gameplay['Rock'] = False
-        self.gameplay['Paper'] = True
-        self.gameplay['Scissors'] = False
-        self.imagePlayer.imageFolder = 'data/paper_animation/'
         self.playerChoice = 'Paper'
-        self.rpg_clicked()
+        self.which_button_rpg_clicked()
+        
 
-        self.who_win=self.who_want_win_paper()
     def scissors(self):
-        self.gameplay['Rock'] = False
-        self.gameplay['Paper'] = False
-        self.gameplay['Scissors'] = True
-        self.imagePlayer.imageFolder = 'data/scissors_animation/'
-
         self.playerChoice = 'Scissors'
+        self.which_button_rpg_clicked()
 
-        self.rpg_clicked()
 
-        self.who_win=self.who_want_win_scissors()
+    def which_button_rpg_clicked(self):
+        self.clicked = True    
 
-    def rpg_clicked(self):
         self.imageBot._imageSprite.returnIndex()
         self.imagePlayer._imageSprite.returnIndex()
+
         self.imageBot_choice = random.randint(1,3)
+
 
         self.imageBot_choice_list.append(self.imageBot_choice)
         self.imageBot_choice_list = self.imageBot_choice_list[-1:]
@@ -223,41 +228,31 @@ class RockPaperScissor(MenuView):
                 self.imageBot.imageFolder = 'data/scissors_animation/'
             case 3:
                 self.imageBot.imageFolder = 'data/paper_animation/'
-
-
-    def who_want_win_rock(self):
-        if self.imageBot_choice_list[-1] == 1:
-            self.who_win.append('Draw')
-        if self.imageBot_choice_list[-1] == 2:
-            self.who_win.append('Win')
-        if self.imageBot_choice_list[-1] ==3:
-            self.who_win.append('Lose')
-
-        self.who_win = self.who_win[-1:]
-
-        return self.who_win
-    
-    def who_want_win_paper(self):
-        if self.imageBot_choice_list[-1] == 1:
-            self.who_win.append('Win')
-        if self.imageBot_choice_list[-1] == 2:
-            self.who_win.append('Lose')
-        if self.imageBot_choice_list[-1] ==3:
-            self.who_win.append('Draw')
-
-        self.who_win = self.who_win[-1:]
-        return self.who_win
-    
-    def who_want_win_scissors(self):
-        if self.imageBot_choice_list[-1] == 1:
-            self.who_win.append('Lose')
-        if self.imageBot_choice_list[-1] == 2:
-            self.who_win.append('Draw')
-        if self.imageBot_choice_list[-1] ==3:
-            self.who_win.append('Win')
-
-        self.who_win = self.who_win[-1:]
-        return self.who_win
+        match self.playerChoice:
+            case 'Paper': 
+                self.imagePlayer.imageFolder = 'data/paper_animation/'
+                if self.imageBot_choice_list[-1] == 1:
+                    self.who_win = 'Win'
+                if self.imageBot_choice_list[-1] == 2:
+                    self.who_win = 'Lose'
+                if self.imageBot_choice_list[-1] == 3:
+                    self.who_win = 'Draw'
+            case 'Rock': 
+                self.imagePlayer.imageFolder = 'data/rock_animation/'
+                if self.imageBot_choice_list[-1] == 1:
+                    self.who_win = 'Draw'
+                if self.imageBot_choice_list[-1] == 2:
+                    self.who_win = 'Win'
+                if self.imageBot_choice_list[-1] == 3:
+                    self.who_win = 'Lose'
+            case 'Scissors': 
+                self.imagePlayer.imageFolder = 'data/scissors_animation/'
+                if self.imageBot_choice_list[-1] == 1:
+                    self.who_win = 'Lose'
+                if self.imageBot_choice_list[-1] == 2:
+                    self.who_win = 'Draw'
+                if self.imageBot_choice_list[-1] == 3:
+                    self.who_win = 'Win'
 
 
 

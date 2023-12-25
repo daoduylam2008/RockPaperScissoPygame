@@ -75,7 +75,7 @@ class Button(Widget):
                  color=(180, 180, 180),
                  on_touch_color=(150, 150, 150),
                  bottom_rect_color=(0,0,0),
-                 text_color=(0, 0, 0),
+                 text_color=(255, 255, 255),
                  on_press_action=...,
                  on_touch_action=...,
                  button=1,
@@ -281,7 +281,7 @@ class Image(Widget):
                  path,
                  pos: tuple,
                  view=None,
-                 animation=None,
+                 animation=None
                  ):
         super().__init__(surface, pos)
         self.view = view
@@ -289,15 +289,13 @@ class Image(Widget):
         self._resizable = False
         self.path = path
 
+
         self.image = _pygame.image.load(self.path).convert_alpha()
 
         self.action = None
 
     def create(self):
-        self.surface.blit(self.image, self.rect)
-
-    #def resizable(self):
-        #self._resizable = False
+        self.surface.blit(self.image,self.rect)
 
     
     def scaleToFill(self, view="surface"):
@@ -324,13 +322,15 @@ class Image(Widget):
 
 
 class _SpriteImage(_Sprite):
-    def __init__(self, imageFolder, rect,scale,flip):
+    def __init__(self, imageFolder, rect,scale,flip,fps):
         self.clock = pygame.time.Clock()
 
         super(_SpriteImage, self).__init__()
 
         self.imageFolder = os.listdir(imageFolder)
         self.images = []
+
+        self.fps = fps
 
         self.scale = scale
         self.flip = flip
@@ -351,7 +351,7 @@ class _SpriteImage(_Sprite):
     def update(self,imageFolder):
         
 
-        self.clock.tick(30)
+        self.clock.tick(self.fps)
 
         self.images.clear()
         self.imageFolder = os.listdir(imageFolder)
@@ -361,18 +361,21 @@ class _SpriteImage(_Sprite):
             self.img = pygame.transform.flip(self.img,self.flip,False)
             self.images.append(self.img)
 
+
         self.index += 0.2
 
         if self.index >= len(self.images):
-            self.index = len(self.images) -1
+            self.index = len(self.images)-1
         self.image = self.images[int(self.index)]
+
+
     def returnIndex(self):
         self.index = 0
         
 
 
 class ImageAnimation(Widget):
-    def __init__(self, surface, rect=None, imageFolder=None,scale = None,flip = None):
+    def __init__(self, surface, rect=None, imageFolder=None,scale = None,flip = None,fps = None):
         super().__init__(surface, rect)
 
         if imageFolder is None:
@@ -380,7 +383,8 @@ class ImageAnimation(Widget):
         self.imageFolder = imageFolder
         self.scale = scale
         self.flip = flip
-        self._imageSprite = _SpriteImage(self.imageFolder, self.rect,scale = self.scale,flip = self.flip)
+        self.fps = fps
+        self._imageSprite = _SpriteImage(self.imageFolder, self.rect,scale = self.scale,flip = self.flip,fps = self.fps)
         self._groupSprite = pygame.sprite.Group(self._imageSprite)
 
     def update(self, events):
