@@ -11,7 +11,10 @@ import pygame
 # System Module and Libraries
 import sys
 import uix
+<<<<<<< Updated upstream
 from random import randint
+=======
+>>>>>>> Stashed changes
 
 # Color
 
@@ -85,11 +88,14 @@ class Settings:
         pass
 
 
+<<<<<<< Updated upstream
 def close():
     pygame.quit()
     sys.exit()
 
 
+=======
+>>>>>>> Stashed changes
 class RockPaperScissor:
     def __init__(self):
         self.width = 900

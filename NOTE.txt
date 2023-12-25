@@ -1,2 +1,4 @@
 24/12/2023:
 - file test1.py: animation image của bot tạo trong class single view, chạy fps thành 30 để tạo animation
+25/12/2023:
+- file test1.py: chỉnh lại các view, class RockPaperScissor chỉ chạy các view, các view phải được lập trình riêng biệt
