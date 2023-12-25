@@ -88,14 +88,11 @@ class Settings:
         pass
 
 
-<<<<<<< Updated upstream
 def close():
     pygame.quit()
     sys.exit()
 
 
-=======
->>>>>>> Stashed changes
 class RockPaperScissor:
     def __init__(self):
         self.width = 900
