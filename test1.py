@@ -13,7 +13,8 @@ import sys
 import uix
 import os
 import random
-#Color
+
+# Color
 
 
 # Authorize information, gmail
@@ -21,28 +22,29 @@ __author1__ = "daoduylam2020@gmail.com"  # DAO DUY LAM
 __author2__ = ""  # PHAM MINH KHOI
 __author3__ = ""  # LE CONG TIEN
 
-
 # ___ MAIN ___
 FPS = 60
 
 
 class MenuView:
-    def __init__(self, surface,width,height):
+    def __init__(self, surface, width, height):
         self.width = width
         self.height = height
 
-        self.button_singleplay = uix.Button(surface, (self.width//160,300, 150, 60),text = 'SinglePlayer',color= (255,235,136),bottom_rect_color=(255,243,180),text_color = (255,197,126))
-        self.button_setting = uix.Button(surface,(self.width//160,400,200,60),text = 'Settings',color= (88,93,149),bottom_rect_color=(255,170,170))
+        self.button_singleplay = uix.Button(surface, (self.width // 160, 300, 150, 60), text='SinglePlayer',
+                                            color=(32, 178, 170), bottom_rect_color=(255, 255, 255))
+        self.button_setting = uix.Button(surface, (self.width // 160, 400, 200, 60), text='Settings',
+                                         color=(32, 178, 170), bottom_rect_color=(255, 255, 255))
+
 
         self.groupWidget = uix.GroupWidget()
         self.groupWidget.widgets.append(self.button_singleplay)
         self.groupWidget.widgets.append(self.button_setting)
 
-        
     def create_widgets(self):
         self.groupWidget.create_widget()
 
-    def update(self,events):
+    def update(self, events):
         self.groupWidget.update(events)
     def Background(self,surface):
         self.background = uix.Image(surface,'data/background.png',(0,0,0,0))
@@ -52,6 +54,7 @@ class MenuView:
             
 
 class SinglePlayerView:
+
     def __init__(self,surface,width,height,on_press_action_list = []):
         self.width = width
         self.height = height
@@ -71,6 +74,7 @@ class SinglePlayerView:
             self.button_back
         ]
 
+
         self.groupWidget_single = uix.GroupWidget()
         for i in self.list_button_singlePlayer:
             self.groupWidget_single.widgets.append(i)
@@ -85,23 +89,29 @@ class SinglePlayerView:
                 case self.button_back: self.button_back.on_press_action = self.on_press_action_list[3]     
 
 
-    def create_widgets(self):   
+    def create_widgets(self):
         self.groupWidget_single.create_widget()
-        
-    def update(self,events):
+
+    def update(self, events):
         self.groupWidget_single.update(events)
+
 
 class MultiPlayerView:
     def __init__(self):
         pass
 
+
 class Settings:
-    def __init__(self,width,height):
+    def __init__(self, width, height):
         pass
+
     def create_widgets(self):
         pass
-    def update(self,events):
+
+    def update(self, events):
         pass
+
+
 class RockPaperScissor:
     def __init__(self):
         self.width = 900
@@ -123,12 +133,11 @@ class RockPaperScissor:
         self.who_win = 'Fight'
         self.clicked = False
 
-
         # Main widgets which contain all widget on screen but at first it's empty
         # You have to add your own widget after creating it
         # Use this code to add widget: self.groupWidgets.widgets.append(<widget>)
-        
-        #GroupWidget 
+
+        # GroupWidget
         self.groupWidget_single = uix.GroupWidget()
         # Initialize any view on screen here
 
@@ -140,13 +149,20 @@ class RockPaperScissor:
        
 
 
-        self.imagePlayer = uix.ImageAnimation(self.screen,rect = (50,300,100,100),imageFolder = 'data/scissors_animation/',scale = (230,230),flip = False,fps = 30)
-        self.imageBot = uix.ImageAnimation(self.screen,rect = (650,300,100,100),imageFolder = 'data/scissors_animation/',scale = (230,230),flip = True,fps = 60)
+        self.imagePlayer = uix.ImageAnimation(self.screen, rect=(50, 300, 100, 100),
+                                              imageFolder='data/scissors_animation/', scale=(230, 230), flip=False,fps = 30)
+        self.imageBot = uix.ImageAnimation(self.screen, rect=(650, 300, 100, 100),
+                                           imageFolder='data/scissors_animation/', scale=(230, 230), flip=True,fps = 60)
+
+
 
         #Text who will win
         self.who_will_win = uix.Text(self.screen,(100,100,50,50),size = 64,color = (255,255,255))
         
         
+
+        
+
     def run(self):
 
         while True:
@@ -158,20 +174,19 @@ class RockPaperScissor:
                 if event.type == pygame.QUIT:
                     self.close()
 
-
-                        
             if self.view['SinglePlay Menu']:
                 self.singlePlayerView.create_widgets()
                 self.singlePlayerView.update(events)
 
                 self.imagePlayer.create()
                 self.imageBot.create()
-
                 
                     
                 if self.clicked:
                     self.imagePlayer.update(events)
                     self.imageBot.update(events)
+
+                
 
 
                 self.who_will_win.create(self.who_win)
@@ -179,21 +194,22 @@ class RockPaperScissor:
                 self.menuView.create_widgets()
                 self.menuView.update(events)
 
-            
-
-    
             # Update and set FPS
             self.clock.tick(FPS)
             # self.screen.blit(self.view1,(0,0))
 
             pygame.display.flip()
             pygame.display.update()
+
     def single_play(self):
-        self.view['SinglePlay Menu'] =  True
+        self.view['SinglePlay Menu'] = True
+
     def back(self):
         self.view['SinglePlay Menu'] = False
+
     def multiplayer_play(self):
-        pass        
+        pass
+
     def rock(self):
         self.playerChoice = 'Rock'
         self.which_button_rpg_clicked()
@@ -211,15 +227,16 @@ class RockPaperScissor:
     def which_button_rpg_clicked(self):
         self.clicked = True    
 
+
         self.imageBot._imageSprite.returnIndex()
         self.imagePlayer._imageSprite.returnIndex()
 
+
         self.imageBot_choice = random.randint(1,3)
-
-
         self.imageBot_choice_list.append(self.imageBot_choice)
         self.imageBot_choice_list = self.imageBot_choice_list[-1:]
-        self.imagePlayer._imageSprite.returnIndex()
+
+        
 
         match self.imageBot_choice_list[-1]:
             case 1:
@@ -228,6 +245,7 @@ class RockPaperScissor:
                 self.imageBot.imageFolder = 'data/scissors_animation/'
             case 3:
                 self.imageBot.imageFolder = 'data/paper_animation/'
+
         match self.playerChoice:
             case 'Paper': 
                 self.imagePlayer.imageFolder = 'data/paper_animation/'
@@ -255,19 +273,16 @@ class RockPaperScissor:
                     self.who_win = 'Win'
 
 
-
+    
 
     def close(self):
         pygame.quit()
         sys.exit()
 
 
-
-
 if __name__ == "__main__":
     game = RockPaperScissor()
-    try:
-        game.run()
-    except Exception as bug:
-        print(bug)
-        game.close()
+    game.run()
+    # except Exception as bug:
+    #     print(bug)
+    #     game.close()
