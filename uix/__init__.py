@@ -356,7 +356,8 @@ class _SpriteImage(_Sprite):
             self.images.append(self.img)
 
         self.index += 0.2
-        if self.index >= len(self.images):
+
+        if self.index > len(self.images):
             self.index = len(self.images)-1
         self.image = self.images[int(self.index)]
 
