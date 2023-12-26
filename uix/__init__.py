@@ -345,8 +345,6 @@ class _SpriteImage(_Sprite):
 
 
     def update(self,imageFolder):
-        
-
         self.clock.tick(self.fps)
 
         self.images.clear()
@@ -357,18 +355,14 @@ class _SpriteImage(_Sprite):
             self.img = pygame.transform.flip(self.img,self.flip,False)
             self.images.append(self.img)
 
-
         self.index += 0.2
-
         if self.index >= len(self.images):
             self.index = len(self.images)-1
         self.image = self.images[int(self.index)]
 
-
     def returnIndex(self):
         self.index = 0
         
-
 
 class ImageAnimation(Widget):
     def __init__(self, surface, rect=None, imageFolder=None,scale = None,flip = None,fps = None):
@@ -385,6 +379,9 @@ class ImageAnimation(Widget):
 
     def update(self, events):
         self._groupSprite.update(self.imageFolder)
+
+    def returnIndex(self):
+        self._imageSprite.returnIndex()
 
     def create(self):
         self._groupSprite.draw(self.surface)

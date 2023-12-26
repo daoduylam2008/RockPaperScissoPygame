@@ -236,8 +236,6 @@ class RockPaperScissor:
         self.imageBot_choice_list.append(self.imageBot_choice)
         self.imageBot_choice_list = self.imageBot_choice_list[-1:]
 
-        
-
         match self.imageBot_choice_list[-1]:
             case 1:
                 self.imageBot.imageFolder = 'data/rock_animation/'
