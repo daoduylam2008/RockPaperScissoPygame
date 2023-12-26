@@ -60,13 +60,13 @@ class Text(Widget):
 
     def create(self,text):
         self.text = text
-        self._txt = self.font()
+        self._txt = self.render_text()
         self.surface.blit(self._txt, self.rect)
 
-    def font(self):
+    def render_text(self):
         self._font = _pygame.font.Font(None, self.size)
-        self._txt = self._font.render(self.text, True, self.color)
-        return self._txt
+        _txt = self._font.render(self.text, True, self.color)
+        return _txt
 
 
 class Button(Widget):
