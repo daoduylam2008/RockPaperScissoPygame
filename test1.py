@@ -32,7 +32,7 @@ class MenuView:
         self.height = height
 
         self.button_singleplay = uix.Button(surface, (self.width // 160, 300, 150, 60), text='SinglePlayer',
-                                            color=(32, 178, 170), bottom_rect_color=(255, 255, 255))
+                                            color=(204, 204, 196), bottom_rect_color=(255, 255, 255),text_color='#FFFF00')
         self.button_setting = uix.Button(surface, (self.width // 160, 400, 200, 60), text='Settings',
                                          color=(32, 178, 170), bottom_rect_color=(255, 255, 255))
 
@@ -62,10 +62,10 @@ class SinglePlayerView:
         self.on_press_action_list = on_press_action_list
 
 
-        self.button_rock = uix.Button(surface,(350,600,50,50),'Rock',(180,180,180),(120,120,120))
-        self.button_paper = uix.Button(surface,(450,600,50,50),'Paper',(180,180,180),(120,120,120))
-        self.button_scissors = uix.Button(surface,(550,600,50,50),'Scissors',(180,180,180),(120,120,120))
-        self.button_back = uix.Button(surface,(0,0,70,70),'Back',(220,220,220),(95,95,95))
+        self.button_rock = uix.Button(surface,(300,600,90,50),'Rock','#ff6680',bottom_rect_color='#ed7700',text_color='black',text_size=23)
+        self.button_scissors = uix.Button(surface,(400,600,90,50),'Scissors','#ff6680',bottom_rect_color='#ed7700',text_color='black',text_size=23)
+        self.button_paper = uix.Button(surface,(500,600,90,50),'Paper','#ff6680',bottom_rect_color='#ed7700',text_color='black',text_size=23)
+        self.button_back = uix.Button(surface,(0,0,70,30),'Back','#ff6680',bottom_rect_color='#ed7700',text_color='black',text_size=20)
 
         self.list_button_singlePlayer = [
             self.button_rock,
@@ -157,11 +157,8 @@ class RockPaperScissor:
 
 
         #Text who will win
-        self.who_will_win = uix.Text(self.screen,(100,100,50,50),size = 64,color = (255,255,255))
-        
-        
+        self.who_will_win = uix.Text(self.screen,(self.screen.get_rect().center[0]-53,self.screen.get_rect().center[1]-20,50,50),size = 64,color = 'black')
 
-        
 
     def run(self):
 
