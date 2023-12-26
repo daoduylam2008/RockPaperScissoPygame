@@ -52,6 +52,8 @@ class Text(Widget):
                  color=(0,0,0)
                  ):
         super().__init__(surface, rect)
+        self._font = None
+        self._txt = None
         self.text = text
         self.color = color
         self.size = size
@@ -349,6 +351,7 @@ class _SpriteImage(_Sprite):
 
         self.images.clear()
         self.imageFolder = os.listdir(imageFolder)
+        self.imageFolder.sort(reverse=False)
         for i in self.imageFolder:
             self.img = pygame.image.load(imageFolder+i)
             self.img = pygame.transform.scale(self.img,self.scale)

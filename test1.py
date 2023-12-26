@@ -185,7 +185,6 @@ class RockPaperScissor:
 
                 
 
-
                 self.who_will_win.create(self.who_win)
             elif self.view['Main Menu']:
                 self.menuView.create_widgets()
