@@ -7,6 +7,7 @@ _pygame.init()
 
 FPS = 60
 
+
 class Widget:
     def __init__(self, surface, rect):
         self.surface = surface
@@ -48,8 +49,8 @@ class Text(Widget):
                  surface,
                  rect,
                  text="text",
-                 size = 32,
-                 color=(0,0,0)
+                 size=32,
+                 color=(0, 0, 0)
                  ):
         super().__init__(surface, rect)
         self._font = None
@@ -58,7 +59,7 @@ class Text(Widget):
         self.color = color
         self.size = size
 
-    def create(self,text):
+    def create(self, text):
         self.text = text
         self._txt = self.render_text()
         self.surface.blit(self._txt, self.rect)
@@ -76,15 +77,15 @@ class Button(Widget):
                  text="Button",
                  color=(180, 180, 180),
                  on_touch_color=(150, 150, 150),
-                 bottom_rect_color=(0,0,0),
+                 bottom_rect_color=(0, 0, 0),
                  text_color=(255, 255, 255),
                  on_press_action=...,
                  on_touch_action=...,
                  button=1,
                  alignment="center",
                  text_size=30,
-                 elevation = 6,
-                 border_radius = 10
+                 elevation=6,
+                 border_radius=10
                  ):
         super().__init__(surface, rect)
 
@@ -104,11 +105,11 @@ class Button(Widget):
 
         self.alignment = alignment
 
-        #Make the elevation for button
+        # Make the elevation for button
         self.elevation = elevation
         self.border_radius = border_radius
 
-        #The bottom rectangle under the top rectangle
+        # The bottom rectangle under the top rectangle
         self.bottom_rect = pygame.Rect(rect)
         self.bottom_rect_color = bottom_rect_color
 
@@ -116,7 +117,7 @@ class Button(Widget):
 
     def create(self):
         mouse_pos = _pygame.mouse.get_pos()
-        start_time,time = 110,0
+        start_time, time = 110, 0
         timing = pygame.time.get_ticks()
 
         x, y = self._alignment(self.alignment)
@@ -130,8 +131,9 @@ class Button(Widget):
                 self.rect.y += self.elevation
 
                 y += 3
-                _pygame.draw.rect(self.surface, self.bottom_rect_color, self.bottom_rect,border_radius=self.border_radius)
-                _pygame.draw.rect(self.surface, self.color,self.rect,border_radius=self.border_radius)
+                _pygame.draw.rect(self.surface, self.bottom_rect_color, self.bottom_rect,
+                                  border_radius=self.border_radius)
+                _pygame.draw.rect(self.surface, self.color, self.rect, border_radius=self.border_radius)
 
                 if timing - time > start_time:
                     time = timing
@@ -139,16 +141,18 @@ class Button(Widget):
 
 
             else:
-                _pygame.draw.rect(self.surface, self.bottom_rect_color, self.bottom_rect, border_radius=self.border_radius)
-                _pygame.draw.rect(self.surface, self.color, self.rect,border_radius=self.border_radius)
+                _pygame.draw.rect(self.surface, self.bottom_rect_color, self.bottom_rect,
+                                  border_radius=self.border_radius)
+                _pygame.draw.rect(self.surface, self.color, self.rect, border_radius=self.border_radius)
 
         else:
             _pygame.draw.rect(self.surface, self.bottom_rect_color, self.bottom_rect, border_radius=self.border_radius)
-            _pygame.draw.rect(self.surface, self.color, self.rect,border_radius=self.border_radius)
+            _pygame.draw.rect(self.surface, self.color, self.rect, border_radius=self.border_radius)
 
             try:
                 self.on_touch_action()
-            except: pass
+            except:
+                pass
 
         self.surface.blit(self.text, (x, y))
 
@@ -161,9 +165,6 @@ class Button(Widget):
                     if self.rect.collidepoint(mouse_pos):
                         if pygame.mouse.get_pressed()[0]:
                             self.on_press_action()
-
-
-        
 
     def _alignment(self, alignment):
         if alignment == "center":
@@ -217,7 +218,7 @@ class InputBox(Widget):
 
         self._COLOR_INACTIVE = _pygame.Color('lightskyblue3')
         self._COLOR_ACTIVE = _pygame.Color('dodgerblue2')
-        self._FONT = _pygame.font.Font(None, self.rect.height-20)
+        self._FONT = _pygame.font.Font(None, self.rect.height - 20)
 
         self.color = self._COLOR_INACTIVE
 
@@ -251,7 +252,8 @@ class InputBox(Widget):
                         self.text = ''
                         try:
                             self.action()
-                        except: pass
+                        except:
+                            pass
                     elif event.key == _pygame.K_BACKSPACE:
                         self.text = self.text[:-1]
                     else:
@@ -287,15 +289,13 @@ class Image(Widget):
         self._resizable = False
         self.path = path
 
-
         self.image = _pygame.image.load(self.path).convert_alpha()
 
         self.action = None
 
     def create(self):
-        self.surface.blit(self.image,self.rect)
+        self.surface.blit(self.image, self.rect)
 
-    
     def scaleToFill(self, view="surface"):
         if view == "surface" and self._resizable:
             self.image = _pygame.transform.scale(self.image, (self.surface.get_width(), self.surface.get_height()))
@@ -312,7 +312,8 @@ class Image(Widget):
                 if self.rect.collidepoint(mouse_pos):
                     try:
                         self.action()
-                    except: pass
+                    except:
+                        pass
 
     def frame(self, width=0, height=0):
         if self._resizable:
@@ -320,7 +321,7 @@ class Image(Widget):
 
 
 class _SpriteImage(_Sprite):
-    def __init__(self, imageFolder, rect,scale,flip,fps):
+    def __init__(self, imageFolder, rect, scale, flip, fps):
         self.clock = pygame.time.Clock()
 
         super(_SpriteImage, self).__init__()
@@ -334,42 +335,41 @@ class _SpriteImage(_Sprite):
         self.flip = flip
 
         for i in self.imageFolder:
-            self.img = pygame.image.load(imageFolder+i)
-            self.img = pygame.transform.scale(self.img,self.scale)
-            self.img= pygame.transform.flip(self.img,self.flip,False)
-            self.images.append(self.img)   
+            self.img = pygame.image.load(imageFolder + i)
+            self.img = pygame.transform.scale(self.img, self.scale)
+            self.img = pygame.transform.flip(self.img, self.flip, False)
+            self.images.append(self.img)
 
         self.index = 0
 
         self.image = self.images[self.index]
-        
+
         self.rect = _pygame.Rect(rect)
 
-
-    def update(self,imageFolder):
+    def update(self, imageFolder):
         self.clock.tick(self.fps)
 
         self.images.clear()
         self.imageFolder = os.listdir(imageFolder)
         self.imageFolder.sort(reverse=False)
         for i in self.imageFolder:
-            self.img = pygame.image.load(imageFolder+i)
-            self.img = pygame.transform.scale(self.img,self.scale)
-            self.img = pygame.transform.flip(self.img,self.flip,False)
+            self.img = pygame.image.load(imageFolder + i)
+            self.img = pygame.transform.scale(self.img, self.scale)
+            self.img = pygame.transform.flip(self.img, self.flip, False)
             self.images.append(self.img)
 
         self.index += 0.2
 
         if self.index > len(self.images):
-            self.index = len(self.images)-1
+            self.index = len(self.images) - 1
         self.image = self.images[int(self.index)]
 
     def returnIndex(self):
         self.index = 0
-        
+
 
 class ImageAnimation(Widget):
-    def __init__(self, surface, rect=None, imageFolder=None,scale = None,flip = None,fps = None):
+    def __init__(self, surface, rect=None, imageFolder=None, scale=None, flip=None, fps=None):
         super().__init__(surface, rect)
 
         if imageFolder is None:
@@ -378,7 +378,7 @@ class ImageAnimation(Widget):
         self.scale = scale
         self.flip = flip
         self.fps = fps
-        self._imageSprite = _SpriteImage(self.imageFolder, self.rect,scale = self.scale,flip = self.flip,fps = self.fps)
+        self._imageSprite = _SpriteImage(self.imageFolder, self.rect, scale=self.scale, flip=self.flip, fps=self.fps)
         self._groupSprite = pygame.sprite.Group(self._imageSprite)
 
     def update(self, events):
@@ -389,4 +389,3 @@ class ImageAnimation(Widget):
 
     def create(self):
         self._groupSprite.draw(self.surface)
-
