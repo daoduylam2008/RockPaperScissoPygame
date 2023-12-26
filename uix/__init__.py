@@ -59,10 +59,14 @@ class Text(Widget):
         self.color = color
         self.size = size
 
-    def create(self, text):
+    
+    def create(self,text):
         self.text = text
         self._txt = self.render_text()
         self.surface.blit(self._txt, self.rect)
+
+    def update(self,events):
+        pass
 
     def render_text(self):
         self._font = _pygame.font.Font(None, self.size)
@@ -257,7 +261,8 @@ class InputBox(Widget):
                     elif event.key == _pygame.K_BACKSPACE:
                         self.text = self.text[:-1]
                     else:
-                        self.text += event.unicode
+                        if len(self.text) < 20: 
+                            self.text += event.unicode
                     # Re-render the text.
                     self.txt_surface = self._FONT.render(self.text, True, self.color)
 
@@ -266,7 +271,7 @@ class InputBox(Widget):
         self._update()
 
         # Blit the text.
-        self.surface.blit(self.txt_surface, (self.rect.x + 5, self.rect.y + 5))
+        self.surface.blit(self.txt_surface, (self.rect.x + 12, self.rect.y + 5))
 
         # Blit the rect.
         _pygame.draw.rect(self.surface, self.color, self.rect, 2)
@@ -294,6 +299,7 @@ class Image(Widget):
         self.action = None
 
     def create(self):
+        self.image = _pygame.image.load(self.path).convert_alpha()
         self.surface.blit(self.image, self.rect)
 
     def scaleToFill(self, view="surface"):
