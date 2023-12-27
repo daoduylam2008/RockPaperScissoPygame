@@ -321,6 +321,9 @@ class RockPaperScissor:
         self.view['SinglePlay Menu'] = False
         self.view['Settings Menu'] = False
         self.view['Main Menu'] = True
+
+    ##########
+    # Warning: This code has to be inside the setting view class, not here
     def setting(self):
         self.view['Settings Menu'] = True
         self.view['Main Menu'] = False
@@ -363,6 +366,7 @@ class RockPaperScissor:
     def backSettings(self):
         self.SetingsView['Resize Window'] = False
         self.view['Settings Menu'] = True
+    ##########
 
 
     def multiplayer_play(self):
