@@ -260,7 +260,7 @@ class InputBox(Widget):
                     elif event.key == _pygame.K_BACKSPACE:
                         self.text = self.text[:-1]
                     else:
-                        if len(self.text) <= 20:
+                        if len(self.text) <= 6:
                             self.text += event.unicode
                     # Re-render the text.
                     self.txt_surface = self._FONT.render(self.text, True, self.color)
@@ -270,7 +270,7 @@ class InputBox(Widget):
         self._update()
 
         # Blit the text.
-        self.surface.blit(self.txt_surface, (self.rect.x + 12, self.rect.y + 5))
+        self.surface.blit(self.txt_surface, (self.rect.x + 90, self.rect.y + 5))
 
         # Blit the rect.
         _pygame.draw.rect(self.surface, self.color, self.rect, 2)
