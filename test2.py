@@ -162,9 +162,10 @@ class RockPaperScissor:
         self.clock = pygame.time.Clock()
 
         self.view = {
-            'Main Menu': True,
-            'SinglePlay Menu': False,
-            'Settings Menu': False,
+            'Menu View': True,
+            'SinglePlay View': False,
+            'MultiPlay View'
+            'Settings View': False,
             'Back': True
         }
         self.playerChoice = ''
@@ -217,7 +218,7 @@ class RockPaperScissor:
                 if event.type == pygame.QUIT:
                     close()
 
-            if self.view['SinglePlay Menu']:
+            if self.view['SinglePlay View']:
                 self.singlePlayerView.create_widgets()
                 self.singlePlayerView.update(events)
 
@@ -231,13 +232,12 @@ class RockPaperScissor:
                 self.who_will_win.create(self.who_win)
                 self.playerName.create(self.menuView.inputBox.text)
                 self.bot.create('Bot')
-            elif self.view['Main Menu']:
+            elif self.view['Menu View']:
                 self.menuView.create_widgets()
                 self.menuView.update(events)
 
             # Update and set FPS
             self.clock.tick(FPS)
-            # self.screen.blit(self.view1,(0,0))
 
             pygame.display.flip()
             pygame.display.update()
@@ -245,10 +245,31 @@ class RockPaperScissor:
     ################
     # This code is for single view so it has to be initialized in singe view instead of this class
     def single_play(self):
-        self.view['SinglePlay Menu'] = True
+        self.view['SinglePlay View'] = True
+        self.view['Menu View'] = False
+        self.view["MultiPlay View"] = False
+        self.view["Setting View"] = False
 
+    #######
+    # Warning: This code should not be here
     def back(self):
-        self.view['SinglePlay Menu'] = False
+        self.view['SinglePlay View'] = False
+        self.view['Menu View'] = True
+        self.view["MultiPlay View"] = False
+        self.view["Setting View"] = False
+    #########
+
+    def multi_play(self):
+        self.view['SinglePlay View'] = False
+        self.view['Menu View'] = False
+        self.view["MultiPlay View"] = True
+        self.view["Setting View"] = False
+
+    def setting(self):
+        self.view['SinglePlay View'] = False
+        self.view['Menu View'] = False
+        self.view["MultiPlay View"] = False
+        self.view["Setting View"] = True
 
     def rock(self):
         self.who_win,self.imageBot_choice,self.playerChoice=self.which_button_rpg_clicked('Rock')
