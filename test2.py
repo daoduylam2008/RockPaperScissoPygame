@@ -12,6 +12,7 @@ import pygame
 import sys
 import uix
 import random
+from PIL import Image
 
 # Color
 
@@ -22,7 +23,7 @@ __author2__ = ""  # PHAM MINH KHOI
 __author3__ = ""  # LE CONG TIEN
 
 # ___ MAIN ___
-FPS = 60
+FPS = 80
 
 
 class MenuView:
@@ -31,15 +32,22 @@ class MenuView:
         self.width = width
         self.height = height
 
-        self.button_singleplay = uix.Button(surface, (self.width // 160, 300, 150, 60), text='SinglePlayer',
+        self.inputBox = uix.InputBox(surface,(surface.get_rect().center[0]-160, surface.get_rect().center[1]-150, 100, 60))
+        self.button_singleplay = uix.Button(surface, (surface.get_rect().center[0]-80, surface.get_rect().center[1]-50, 150, 60), text='SinglePlayer',
                                             color=(204, 204, 196), bottom_rect_color=(255, 255, 255),
                                             text_color='#FFFF00')
-        self.button_setting = uix.Button(surface, (self.width // 160, 400, 200, 60), text='Settings',
+        self.button_setting = uix.Button(surface, (surface.get_rect().center[0]-80, surface.get_rect().center[1]+150, 150, 60), text='Settings',
                                          color=(32, 178, 170), bottom_rect_color=(255, 255, 255))
+
+        self.button_multiplay = uix.Button(surface, (surface.get_rect().center[0]-80, surface.get_rect().center[1]+50, 150, 60), text='MultiPlayer',
+                                            color=(204, 204, 196), bottom_rect_color=(255, 255, 255),
+                                            text_color='#FFFF00')
 
         self.groupWidget = uix.GroupWidget()
         self.groupWidget.widgets.append(self.button_singleplay)
+        self.groupWidget.widgets.append(self.button_multiplay)
         self.groupWidget.widgets.append(self.button_setting)
+        self.groupWidget.widgets.append(self.inputBox)
 
     def create_widgets(self):
         self.groupWidget.create_widget()
@@ -47,12 +55,16 @@ class MenuView:
     def update(self, events):
         self.groupWidget.update(events)
 
-    def Background(self, surface):
-        self.background = uix.Image(surface, 'data/background.png', (0, 0, 0, 0))
-        self.background.image = pygame.transform.scale(self.background.image,
-                                                       (surface.get_width(), surface.get_height()))
-        self.background.rect = self.background.image.get_rect(center=self.background.surface.get_rect().center)
-        self.background.create()
+    def image_background(self, surface):
+
+        self.img = Image.open('data/background.png')
+        self.img = self.img.resize((surface.get_width(), surface.get_height()),
+                                        Image.LANCZOS)
+        self.img.save('data/background_1.png', quality=75)
+        self.imageBackground = uix.Image(surface, 'data/background.png', (0, 0, 0, 0))
+
+        self.imageBackground.rect = self.imageBackground.image.get_rect(center=self.imageBackground.surface.get_rect().center)
+        self.imageBackground.create()
 
 
 class SinglePlayerView:
@@ -71,6 +83,7 @@ class SinglePlayerView:
                                        text_color='black', text_size=23)
         self.button_back = uix.Button(surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
                                       text_color='black', text_size=20)
+
 
         self.list_button_singlePlayer = [
             self.button_rock,
@@ -161,16 +174,19 @@ class RockPaperScissor:
         self.imageBot = uix.ImageAnimation(self.screen, rect=(650, 300, 100, 100),
                                            imageFolder='data/scissors_animation/', scale=(230, 230), flip=True, fps=60)
 
-        # Text who will win
         self.who_will_win = uix.Text(self.screen, (
-            self.screen.get_rect().center[0] - 53, self.screen.get_rect().center[1] - 20, 50, 50), size=64,
-                                     color='black')
+            self.screen.get_rect().center[0] - 53, self.screen.get_rect().center[1] - 20, 50, 50),
+                                    size=64,
+                                     color='black',text= self.who_win)
+        self.playerName = uix.Text(self.screen,(70,280,50,50),size = 32,color = 'black',text =self.menuView.inputBox.text)
+        self.bot = uix.Text(self.screen,(770,280,50,50),size = 32,color = 'black',text ='Bot')
 
     def run(self):
 
         while True:
             # Fill the screen with BLACK instead of an empty screen
-            self.menuView.Background(self.screen)
+            self.menuView.image_background(self.screen)
+
             # Event
             events = pygame.event.get()
             for event in events:
@@ -189,6 +205,8 @@ class RockPaperScissor:
                     self.imageBot.update(events)
 
                 self.who_will_win.create(self.who_win)
+                self.playerName.create(self.menuView.inputBox.text)
+                self.bot.create('Bot')
             elif self.view['Main Menu']:
                 self.menuView.create_widgets()
                 self.menuView.update(events)
@@ -210,19 +228,17 @@ class RockPaperScissor:
         pass
 
     def rock(self):
-        self.playerChoice = 'Rock'
-        self.which_button_rpg_clicked()
+        self.who_win,self.imageBot_choice,self.playerChoice=self.which_button_rpg_clicked('Rock')
 
     def paper(self):
-        self.playerChoice = 'Paper'
-        self.which_button_rpg_clicked()
+        self.who_win,self.imageBot_choice,self.playerChoice=self.which_button_rpg_clicked('Paper')
 
     def scissors(self):
-        self.playerChoice = 'Scissors'
-        self.which_button_rpg_clicked()
+        self.who_win,self.imageBot_choice,self.playerChoice=self.which_button_rpg_clicked('Scissors')
 
-    def which_button_rpg_clicked(self):
+    def which_button_rpg_clicked(self,playerChoice):
         self.clicked = True
+        self.playerChoice = playerChoice
 
         self.imageBot.returnIndex()
         self.imagePlayer.returnIndex()
@@ -264,6 +280,8 @@ class RockPaperScissor:
                     self.who_win = 'Draw'
                 if self.imageBot_choice_list[-1] == 3:
                     self.who_win = 'Win'
+        return self.who_win,self.imageBot_choice,self.playerChoice
+
 
     def close(self):
         pygame.quit()

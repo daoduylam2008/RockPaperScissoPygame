@@ -260,7 +260,7 @@ class InputBox(Widget):
                     elif event.key == _pygame.K_BACKSPACE:
                         self.text = self.text[:-1]
                     else:
-                        if len(self.text) < 20: 
+                        if len(self.text) <= 20:
                             self.text += event.unicode
                     # Re-render the text.
                     self.txt_surface = self._FONT.render(self.text, True, self.color)
