@@ -59,7 +59,6 @@ class Text(Widget):
         self.color = color
         self.size = size
 
-    
     def create(self,text):
         self.text = text
         self._txt = self.render_text()
@@ -327,7 +326,7 @@ class Image(Widget):
 
 
 class _SpriteImage(_Sprite):
-    def __init__(self, imageFolder, rect, scale, flip, fps):
+    def __init__(self, imageFolder, rect, scale, flip, fps,angle):
         self.clock = pygame.time.Clock()
 
         super(_SpriteImage, self).__init__()
@@ -339,11 +338,13 @@ class _SpriteImage(_Sprite):
 
         self.scale = scale
         self.flip = flip
+        self.angle = angle
 
         for i in self.imageFolder:
             self.img = pygame.image.load(imageFolder + i)
             self.img = pygame.transform.scale(self.img, self.scale)
             self.img = pygame.transform.flip(self.img, self.flip, False)
+            self.img = pygame.transform.rotate(self.img,self.angle)
             self.images.append(self.img)
 
         self.index = 0
@@ -362,6 +363,7 @@ class _SpriteImage(_Sprite):
             self.img = pygame.image.load(imageFolder + i)
             self.img = pygame.transform.scale(self.img, self.scale)
             self.img = pygame.transform.flip(self.img, self.flip, False)
+            self.img = pygame.transform.rotate(self.img,self.angle)
             self.images.append(self.img)
 
         self.index += 0.2
@@ -375,7 +377,7 @@ class _SpriteImage(_Sprite):
 
 
 class ImageAnimation(Widget):
-    def __init__(self, surface, rect=None, imageFolder=None, scale=None, flip=None, fps=None):
+    def __init__(self, surface, rect=None, imageFolder=None, scale=None, flip=None, fps=None,angle = None):
         super().__init__(surface, rect)
 
         if imageFolder is None:
@@ -384,7 +386,8 @@ class ImageAnimation(Widget):
         self.scale = scale
         self.flip = flip
         self.fps = fps
-        self._imageSprite = _SpriteImage(self.imageFolder, self.rect, scale=self.scale, flip=self.flip, fps=self.fps)
+        self.angle = angle
+        self._imageSprite = _SpriteImage(self.imageFolder, self.rect, scale=self.scale, flip=self.flip, fps=self.fps,angle = self.angle)
         self._groupSprite = pygame.sprite.Group(self._imageSprite)
 
     def update(self, events):
