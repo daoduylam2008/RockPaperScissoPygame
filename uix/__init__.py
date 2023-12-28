@@ -341,11 +341,11 @@ class _SpriteImage(_Sprite):
         self.angle = angle
 
         for i in self.imageFolder:
-            self.img = pygame.image.load(imageFolder + i)
-            self.img = pygame.transform.scale(self.img, self.scale)
-            self.img = pygame.transform.flip(self.img, self.flip, False)
-            self.img = pygame.transform.rotate(self.img,self.angle)
-            self.images.append(self.img)
+            img = pygame.image.load(imageFolder + i)
+            img = pygame.transform.scale(img, self.scale)
+            img = pygame.transform.flip(img, self.flip, False)
+            img = pygame.transform.rotate(img,self.angle)
+            self.images.append(img)
 
         self.index = 0
 
@@ -360,10 +360,10 @@ class _SpriteImage(_Sprite):
         self.imageFolder = os.listdir(imageFolder)
         self.imageFolder.sort(reverse=False)
         for i in self.imageFolder:
-            self.img = pygame.image.load(imageFolder + i)
-            self.img = pygame.transform.scale(self.img, self.scale)
-            self.img = pygame.transform.flip(self.img, self.flip, False)
-            self.img = pygame.transform.rotate(self.img,self.angle)
+            img = pygame.image.load(imageFolder + i)
+            img = pygame.transform.scale(img, self.scale)
+            img = pygame.transform.flip(img, self.flip, False)
+            img = pygame.transform.rotate(img,self.angle)
             self.images.append(self.img)
 
         self.index += 0.2
@@ -377,7 +377,7 @@ class _SpriteImage(_Sprite):
 
 
 class ImageAnimation(Widget):
-    def __init__(self, surface, rect=None, imageFolder=None, scale=None, flip=None, fps=None,angle = None):
+    def __init__(self, surface, rect=None, imageFolder=None, scale=None, flip=None, fps=None,angle=0):
         super().__init__(surface, rect)
 
         if imageFolder is None:

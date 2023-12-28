@@ -87,16 +87,17 @@ class MenuView:
 
 class SinglePlayerView:
     def __init__(self, surface, on_press_action_list):
+        self.surface = surface
 
         self.on_press_action_list = on_press_action_list
 
-        self.button_rock = uix.Button(surface, (300, 600, 90, 50), 'Rock', '#ff6680', bottom_rect_color='#ed7700',
+        self.button_rock = uix.Button(self.surface, (300, 600, 90, 50), 'Rock', '#ff6680', bottom_rect_color='#ed7700',
                                       text_color='black', text_size=23)
-        self.button_scissors = uix.Button(surface, (400, 600, 90, 50), 'Scissors', '#ff6680',
+        self.button_scissors = uix.Button(self.surface, (400, 600, 90, 50), 'Scissors', '#ff6680',
                                           bottom_rect_color='#ed7700', text_color='black', text_size=23)
-        self.button_paper = uix.Button(surface, (500, 600, 90, 50), 'Paper', '#ff6680', bottom_rect_color='#ed7700',
+        self.button_paper = uix.Button(self.surface, (500, 600, 90, 50), 'Paper', '#ff6680', bottom_rect_color='#ed7700',
                                        text_color='black', text_size=23)
-        self.button_back = uix.Button(surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
+        self.button_back = uix.Button(self.surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
                                       text_color='black', text_size=20)
 
         self.list_button_singlePlayer = [
@@ -134,6 +135,41 @@ class SinglePlayerView:
 class MultiPlayerView:
     def __init__(self, surface):
         self.surface = surface
+        self.view = uix.GroupWidget()
+
+        self.button_rock = uix.Button(self.surface, (300, 600, 90, 50), 'Rock', '#ff6680', bottom_rect_color='#ed7700',
+                                      text_color='black', text_size=23)
+        self.button_scissors = uix.Button(self.surface, (400, 600, 90, 50), 'Scissors', '#ff6680',
+                                          bottom_rect_color='#ed7700', text_color='black', text_size=23)
+        self.button_paper = uix.Button(self.surface, (500, 600, 90, 50), 'Paper', '#ff6680', bottom_rect_color='#ed7700',
+                                       text_color='black', text_size=23)
+        self.button_back = uix.Button(self.surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
+                                      text_color='black', text_size=20)
+
+        # Action for button
+        self.button_rock.on_press_action = self.on_rock_press
+        self.button_paper.on_press_action = self.on_paper_press
+        self.button_scissors.on_press_action = self.on_scissors_press
+        self.button_back.on_press_action = self.on_back_press
+
+        self.view.widgets.append(self.button_rock)
+        self.view.widgets.append(self.button_back)
+        self.view.widgets.append(self.button_paper)
+        self.view.widgets.append(self.button_scissors)
+
+    def create_widgets(self):
+        self.view.create_widget()
+
+    def update(self, events):
+        self.view.update(events)
+
+    def on_rock_press(self): pass
+
+    def on_scissors_press(self): pass
+
+    def on_paper_press(self): pass
+
+    def on_back_press(self): pass
 
 
 class Settings:
@@ -189,6 +225,7 @@ class RockPaperScissor:
                                                  [self.rock, self.paper, self.scissors, self.back])
         # Multiplayer View initialization
         self.multiPlayerView = MultiPlayerView(self.screen)
+        self.multiPlayerView.button_back.on_press_action = self.back
 
         ###################
         # WARN: This code has to be inside the single view instead of this class
@@ -235,6 +272,9 @@ class RockPaperScissor:
             elif self.view['Menu View']:
                 self.menuView.create_widgets()
                 self.menuView.update(events)
+            elif self.view["MultiPlay View"]:
+                self.multiPlayerView.create_widgets()
+                self.multiPlayerView.update(events)
 
             # Update and set FPS
             self.clock.tick(FPS)
@@ -243,7 +283,7 @@ class RockPaperScissor:
             pygame.display.update()
 
     ################
-    # This code is for single view so it has to be initialized in singe view instead of this class
+    # This code is for single view, so it has to be initialized in singe view instead of this class
     def single_play(self):
         self.view['SinglePlay View'] = True
         self.view['Menu View'] = False
