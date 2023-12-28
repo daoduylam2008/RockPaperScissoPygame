@@ -26,47 +26,71 @@ __author3__ = ""  # LE CONG TIEN
 FPS = 60
 
 
-rps_trans = {
-    1: "Rock",
-    2: "Scissors",
-    3: "Paper"
-}
-
-
 def game_play(player, opponent) -> str:
     if player == opponent:
         return "Draw"
-    elif (player == "Rock" and opponent == "Scissors") or (player == "Paper" and opponent == "Rock") or (
-            player == "Scissors" and opponent == "Paper"):
-        return "Win"
-    elif (player == "Rock" and opponent == "Paper") or (player == "Paper" and opponent == "Scissors") or (
-            player == "Scissors" and opponent == "Rock"):
-        return "Lose"
+    elif (player == 1 and opponent == 2) or (player == 3 and opponent == 1) or (
+            player == 2 and opponent == 3):
+                return "Win"
+    elif (player == 1 and opponent == 3) or (player == 3 and opponent == 2) or (
+            player == 2 and opponent == 1):
+                return "Lose"
     else:
         raise ValueError("Unrecognized value")
 
+def readSizeScreen():
+    with open('data/size.txt','r') as file:
+        size = [i.rstrip() for i in file.readlines()]
+    return size
+def writeSizeScreen(size):
+    with open('data/size.txt','w') as file:
+        if size == 'small':
+            file.write('680\n')
+            file.write('540')
+        elif size == 'medium':
+            file.write('900\n')
+            file.write('700')
+        elif size == 'large':
+            file.write('1008\n')
+            file.write('888')
+        elif size == 'fullscreen':
+            file.write('fullscreen\n')
+            file.write('fullscreen')
+    pygame.quit()
+    sys.exit()
 
 class MenuView:
-    def __init__(self, surface):
-        self.surface = surface
+    def __init__(self, surface, width, height):
         self.background = None
+        self.width = width
+        self.height = height
 
-        self.inputBox = uix.InputBox(self.surface, (self.surface.get_rect().center[0]-160, self.surface.get_rect().center[1]-150, 100, 60))
-        self.button_singleplay = uix.Button(self.surface, (self.surface.get_rect().center[0]-80, self.surface.get_rect().center[1]-50, 150, 60), text='SinglePlayer',
-                                            color=(204, 204, 196), bottom_rect_color=(255, 255, 255),
-                                            text_color='#FFFF00')
-        self.button_setting = uix.Button(self.surface, (self.surface.get_rect().center[0]-80, self.surface.get_rect().center[1]+150, 150, 60), text='Settings',
+        self.inputBox = uix.InputBox(surface,
+                                     (surface.get_rect().center[0] - 160, surface.get_rect().center[1] - 150, 100, 60))
+        self.button_singleplay = uix.Button(surface, (surface.get_rect().center[0] - 80, surface.get_rect().center[1] - 50, 150, 60), text='SinglePlayer',color=(204, 204, 196), bottom_rect_color=(255, 255, 255),text_color='#FFFF00')
+        self.button_setting = uix.Button(surface, (
+            surface.get_rect().center[0] - 80, surface.get_rect().center[1] + 150, 150, 60), text='Settings',
                                          color=(32, 178, 170), bottom_rect_color=(255, 255, 255))
 
-        self.button_multiplay = uix.Button(self.surface, (self.surface.get_rect().center[0]-80, self.surface.get_rect().center[1]+50, 150, 60), text='MultiPlayer',
-                                            color=(204, 204, 196), bottom_rect_color=(255, 255, 255),
-                                            text_color='#FFFF00')
+        self.button_multiplay = uix.Button(surface, (
+            surface.get_rect().center[0] - 80, surface.get_rect().center[1] + 50, 150, 60), text='MultiPlayer',
+                                           color=(204, 204, 196), bottom_rect_color=(255, 255, 255),
+                                           text_color='#FFFF00')
+
+        self.button_quit = uix.Button(surface, (surface.get_rect().center[0] - 80, surface.get_rect().center[1] + 250, 150, 60), text='Quit',color=(204, 204, 196), bottom_rect_color=(255, 255, 255),text_color='#FFFF00')
+        self.button_quit.on_press_action = self.quit
+
 
         self.groupWidget = uix.GroupWidget()
         self.groupWidget.widgets.append(self.button_singleplay)
         self.groupWidget.widgets.append(self.button_multiplay)
         self.groupWidget.widgets.append(self.button_setting)
+        self.groupWidget.widgets.append(self.button_quit)
         self.groupWidget.widgets.append(self.inputBox)
+
+    def quit(self):
+        pygame.quit()
+        sys.exit()
 
     def create_widgets(self):
         self.groupWidget.create_widget()
@@ -74,62 +98,124 @@ class MenuView:
     def update(self, events):
         self.groupWidget.update(events)
 
-    def image_background(self):
-        img = Image.open('data/background.png')
-        img = img.resize((self.surface.get_width(), self.surface.get_height()),
-                                        Image.LANCZOS)
-        img.save('data/background_1.png', quality=75)
-        imageBackground = uix.Image(self.surface, 'data/background.png', (0, 0, 0, 0))
-
-        imageBackground.rect = imageBackground.image.get_rect(center=imageBackground.surface.get_rect().center)
-        imageBackground.create()
-
+    def image_background(self, surface):
+        #img = Image.open('data/background.png')
+        #img = img.resize((surface.get_width(),surface.get_height()),
+                         #Image.LANCZOS)
+        #img.save('data/background.png', quality=95)
+        #imageBackground = uix.Image(surface, 'data/paper_animation/paper_animation1.png', (0, 0, 0, 0))
+        #imageBackground.rect = imageBackground.image.get_rect(
+            #center=imageBackground.surface.get_rect().center)
+        #imageBackground.create()
+        pass
 
 class SinglePlayerView:
-    def __init__(self, surface, on_press_action_list):
-        self.surface = surface
+    def __init__(self, surface, width, height,back,who_win,input_text):
+        self.width = width
+        self.height = height
+        self.who_win = who_win
+        self.input_text = input_text
+        self.clicked = False
+        self.imageBot_choice_list = []
+        self.numberPlayerChoice = 1
 
-        self.on_press_action_list = on_press_action_list
+        self.button_rock = uix.Button(surface, (surface.get_rect().bottomright[0]-300, surface.get_rect().bottomright[1]-80, 90, 50), 'Rock', '#ff6680', bottom_rect_color='#ed7700',text_color='black', text_size=23)
+        self.button_rock.on_press_action = self.rock
 
-        self.button_rock = uix.Button(self.surface, (300, 600, 90, 50), 'Rock', '#ff6680', bottom_rect_color='#ed7700',
-                                      text_color='black', text_size=23)
-        self.button_scissors = uix.Button(self.surface, (400, 600, 90, 50), 'Scissors', '#ff6680',
+        self.button_scissors = uix.Button(surface, (surface.get_rect().bottomright[0]-200, surface.get_rect().bottomright[1]-80, 90, 50), 'Scissors', '#ff6680',
                                           bottom_rect_color='#ed7700', text_color='black', text_size=23)
-        self.button_paper = uix.Button(self.surface, (500, 600, 90, 50), 'Paper', '#ff6680', bottom_rect_color='#ed7700',
-                                       text_color='black', text_size=23)
-        self.button_back = uix.Button(self.surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
-                                      text_color='black', text_size=20)
+        self.button_scissors.on_press_action = self.scissors
 
-        self.list_button_singlePlayer = [
-            self.button_rock,
-            self.button_paper,
-            self.button_scissors,
-            self.button_back
-        ]
+        self.button_paper = uix.Button(surface, (surface.get_rect().bottomright[0]-100, surface.get_rect().bottomright[1]-80, 90, 50), 'Paper', '#ff6680', bottom_rect_color='#ed7700',
+                                       text_color='black', text_size=23)
+        self.button_paper.on_press_action = self.paper
+
+        self.button_back = uix.Button(surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
+                                      text_color='black', text_size=20)
+        self.button_back.on_press_action = back
+
+
+
 
         self.groupWidget_single = uix.GroupWidget()
-        for i in self.list_button_singlePlayer:
-            self.groupWidget_single.widgets.append(i)
+        self.groupWidget_single.widgets.append(self.button_rock)
+        self.groupWidget_single.widgets.append(self.button_scissors)
+        self.groupWidget_single.widgets.append(self.button_paper)
+        self.groupWidget_single.widgets.append(self.button_back)
 
-        self.on_press_action()
+        #The Image Rock Paper Scissors in Single Player View for player
+        self.imagePlayer = uix.ImageAnimation(surface, rect=(20, surface.get_rect().bottomright[1]-235, 100, 100),
+                                               imageFolder='data/scissors_animation/', scale=(230, 230), flip=False,
+                                             fps=30,angle=0)
 
-    def on_press_action(self):
-        for i in self.list_button_singlePlayer:
-            match i:
-                case self.button_rock:
-                    self.button_rock.on_press_action = self.on_press_action_list[0]
-                case self.button_paper:
-                    self.button_paper.on_press_action = self.on_press_action_list[1]
-                case self.button_scissors:
-                    self.button_scissors.on_press_action = self.on_press_action_list[2]
-                case self.button_back:
-                    self.button_back.on_press_action = self.on_press_action_list[3]
+        #The Image Rock Paper Scissors in Single Player View for bot
+        self.imageBot = uix.ImageAnimation(surface, rect=(surface.get_rect().topright[0]-260,10, 100, 100),
+                                           imageFolder='data/scissors_animation/', scale=(230, 230),
+                                           flip=True, fps=60,angle=90)
+
+        #Blit the text win or lose or draw
+        self.who_will_win = uix.Text(surface, (
+            surface.get_rect().center[0] - 53, surface.get_rect().center[1] - 20, 50, 50),
+                                     size=64,
+                                     color='white', text=self.who_win)
+        #The Player Name
+        self.playerName = uix.Text(surface, (50, surface.get_rect().bottomright[1]-100, 50, 50), size=32, color='black',
+                                   text=self.input_text)
+        #The Bot nAME
+        self.bot = uix.Text(surface, (surface.get_rect().topright[0]-130, 80, 50, 50), size=32, color='black', text='Bot')
+
+
 
     def create_widgets(self):
         self.groupWidget_single.create_widget()
 
     def update(self, events):
         self.groupWidget_single.update(events)
+
+    def rock(self):
+        self.who_win, self.numberPlayerChoice = self.which_button_rpg_clicked('Rock')
+        self.imagePlayer.imageFolder = 'data/rock_animation/'
+
+    def paper(self):
+        self.who_win, self.numberPlayerChoice = self.which_button_rpg_clicked('Paper')
+        self.imagePlayer.imageFolder = 'data/paper_animation/'
+
+    def scissors(self):
+        self.who_win, self.numberPlayerChoice = self.which_button_rpg_clicked('Scissors')
+        self.imagePlayer.imageFolder = 'data/scissors_animation/'
+
+    def which_button_rpg_clicked(self,playerChoice):
+        self.clicked = True
+
+        self.imageBot.returnIndex()
+        self.imagePlayer.returnIndex()
+
+
+        imageBot_choice = random.randint(1, 3)
+        self.imageBot_choice_list.append(imageBot_choice)
+        self.imageBot_choice_list = self.imageBot_choice_list[-1:]
+
+        match self.imageBot_choice_list[-1]:
+            case 1:
+                self.imageBot.imageFolder = 'data/rock_animation/'
+            case 2:
+                self.imageBot.imageFolder = 'data/scissors_animation/'
+            case 3:
+                self.imageBot.imageFolder = 'data/paper_animation/'
+        match playerChoice:
+            case 'Paper':
+                self.numberPlayerChoice = 3
+
+            case 'Rock':
+                self.numberPlayerChoice = 1
+
+            case 'Scissors':
+                self.numberPlayerChoice = 2
+
+        self.who_win = game_play(self.numberPlayerChoice,1)
+        return self.who_win,self.numberPlayerChoice
+
+
 
 
 class ServerView(uix.Widget):
@@ -276,39 +362,118 @@ class MultiPlayerView(uix.Widget):
 
 
 class Settings:
-    def __init__(self, width, height):
-        pass
+    def __init__(self, surface,width, height,func_back,view,SettingsView):
+        self.width = width
+        self.height = height
+        self.surface = surface
+        self.view = view
+        self.SettingsView = SettingsView
+
+
+        self.resizeWindow = uix.Button(surface, (
+            surface.get_rect().center[0] - 80, surface.get_rect().center[1] - 50, 150, 60), text='Resize Window',
+                                            color=(204, 204, 196), bottom_rect_color=(255, 255, 255),
+                                            text_color='#FFFF00')
+        self.resizeWindow.on_press_action = self.resize
+
+
+        self.difficulty = uix.Button(surface, (surface.get_rect().center[0] - 80, surface.get_rect().center[1] + 50, 150, 60),
+                                     text='SinglePlayer',color=(204, 204, 196), bottom_rect_color=(255, 255, 255),text_color='#FFFF00')
+        self.chooseDifficulty = self.choose_difficulty
+
+
+
+        self.button_back = uix.Button(surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
+                                      text_color='black', text_size=20)
+        self.button_back.on_press_action = func_back
+
+        self.groupWidget_settings = uix.GroupWidget()
+        self.groupWidget_settings.widgets.append(self.resizeWindow)
+        self.groupWidget_settings.widgets.append(self.button_back)
+
+        self.groupWidget_resize = uix.GroupWidget()
 
     def create_widgets(self):
-        pass
+        self.groupWidget_settings.create_widget()
 
     def update(self, events):
+        self.groupWidget_settings.update(events)
+
+
+    def resize(self):
+        self.SettingsView['Resize Window'] = True
+        resizeSmallButton = uix.Button(self.surface, (self.surface.get_rect().center[0] - 80, self.surface.get_rect().center[1] - 150, 150, 60), text='Small',color=(204, 204, 196), bottom_rect_color=(255, 255, 255),text_color='#FFFF00')
+        resizeSmallButton.on_press_action = self.resize_small
+
+        resizeMediumButton = uix.Button(self.surface, (self.surface.get_rect().center[0] - 80, self.surface.get_rect().center[1] - 50, 150, 60), text='Medium',color=(204, 204, 196), bottom_rect_color=(255, 255, 255),text_color='#FFFF00')
+        resizeMediumButton.on_press_action = self.resize_medium
+
+        resizeLargeButton = uix.Button(self.surface, (self.surface.get_rect().center[0] - 80, self.surface.get_rect().center[1] + 50, 150, 60), text='Large',color=(204, 204, 196), bottom_rect_color=(255, 255, 255),text_color='#FFFF00')
+        resizeLargeButton.on_press_action = self.resize_large
+
+        resizeFullScreenButton = uix.Button(self.surface, (self.surface.get_rect().center[0] - 80, self.surface.get_rect().center[1] + 150, 150, 60), text='Full Screen',color=(204, 204, 196), bottom_rect_color=(255, 255, 255),text_color='#FFFF00')
+        resizeFullScreenButton.on_press_action = self.resize_fullscreen
+
+        resizeBackButton = uix.Button(self.surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',text_color='black', text_size=20)
+        resizeBackButton.on_press_action = self.resize_back
+
+        self.label_anouncement = uix.Text(self.surface,(self.surface.get_rect().center[0]-240,self.surface.get_rect().center[1]-250,150,60),
+                                     text = 'After resize your screen game, you need to restart game',color = 'white')
+
+        self.groupWidget_resize.widgets.append(resizeSmallButton)
+        self.groupWidget_resize.widgets.append(resizeMediumButton)
+        self.groupWidget_resize.widgets.append(resizeLargeButton)
+        self.groupWidget_resize.widgets.append(resizeFullScreenButton)
+        self.groupWidget_resize.widgets.append(resizeBackButton)
+
+    def resizeCreateUpdate(self,events):
+        self.groupWidget_resize.create_widget()
+        self.groupWidget_resize.update(events)
+        self.label_anouncement.create(text = 'After resize your screen game, you need to restart')
+
+    def resize_back(self):
+        self.SettingsView['Resize Window'] =  False
+    def resize_small(self):
+        writeSizeScreen('small')
+
+    def resize_medium(self):
+        writeSizeScreen('medium')
+    def resize_large(self):
+        writeSizeScreen('large')
+    def resize_fullscreen(self):
+        writeSizeScreen('fullscreen')
+
+    def choose_difficulty(self):
         pass
-
-
-def close():
-    pygame.quit()
-    sys.exit()
-
 
 class RockPaperScissor:
     def __init__(self):
         self.imageBot_choice = None
-        self.width = 900
-        self.height = 700
-        self.screen = pygame.display.set_mode((self.width, self.height))
+        self.width = readSizeScreen()[0]
+        self.height = readSizeScreen()[1]
+
+        if self.width == 'fullscreen':
+            self.screen = pygame.display.set_mode((0,0),pygame.FULLSCREEN)
+        else:
+            self.screen = pygame.display.set_mode((int(self.width),int(self.height)))
+
 
         self.clock = pygame.time.Clock()
 
         self.view = {
-            'Menu View': True,
-            'SinglePlay View': False,
-            'MultiPlay View'
-            'Settings View': False,
+            'Main Menu': True,
+            'SinglePlay Menu': False,
+            'Settings Menu': False,
             'Back': True
         }
-        self.playerChoice = ''
+        self.SetingsView = {
+            'Resize Window': False,
+            'Difficulty': False
+        }
 
+
+        self.playerChoice = ''
+        self.numberPlayerChoice = 0
         self.imageBot_choice_list = []
         self.who_win = 'Fight'
         self.clicked = False
@@ -317,143 +482,111 @@ class RockPaperScissor:
         # You have to add your own widget after creating it
         # Use this code to add widget: self.groupWidgets.widgets.append(<widget>)
 
-        # GroupWidget
-        self.groupWidget_single = uix.GroupWidget()
-        # Initialize any view on screen here
-        # Menu View initialization
-        self.menuView = MenuView(self.screen)
+
+        #The Menu Screen
+        self.menuView = MenuView(self.screen, self.width, self.height) #Create the menu
         self.menuView.button_singleplay.on_press_action = self.single_play
-        # Single View initialization
-        self.singlePlayerView = SinglePlayerView(self.screen,
-                                                 [self.rock, self.paper, self.scissors, self.back])
-        # Multiplayer View initialization
-        self.multiPlayerView = MultiPlayerView(self.screen)
+        self.menuView.button_setting.on_press_action = self.setting
 
-        ###################
-        # WARN: This code has to be inside the single view instead of this class
+        #The Single Player View
+        self.singlePlayerView = SinglePlayerView(self.screen, self.width, self.height,
+                                                self.back,self.who_win,self.menuView.inputBox.text)
 
-        self.imagePlayer = uix.ImageAnimation(self.screen, rect=(50, 300, 100, 100),
-                                              imageFolder='data/scissors_animation/', scale=(230, 230), flip=False,
-                                              fps=30)
-        self.imageBot = uix.ImageAnimation(self.screen, rect=(650, 300, 100, 100),
-                                           imageFolder='data/scissors_animation/', scale=(230, 230), flip=True, fps=60)
+        #The Settings View
+        self.settingsView = Settings(self.screen,self.width,self.height,self.back,self.view,self.SetingsView)
 
-        self.who_will_win = uix.Text(self.screen, (
-            self.screen.get_rect().center[0] - 53, self.screen.get_rect().center[1] - 20, 50, 50),
-                                    size=64,
-                                     color='black',text= self.who_win)
-        self.playerName = uix.Text(self.screen,(70,280,50,50),size = 32,color = 'black',text =self.menuView.inputBox.text)
-        self.bot = uix.Text(self.screen,(770,280,50,50),size = 32,color = 'black',text ='Bot')
-        ###################
+
 
     def run(self):
+
         while True:
             # Fill the screen with BLACK instead of an empty screen
-            self.menuView.image_background()
+            # self.menuView.image_background(self.screen)
+            self.screen.fill('Black')
 
             # Event
             events = pygame.event.get()
             for event in events:
                 if event.type == pygame.QUIT:
-                    close()
+                    self.close()
 
-            if self.view['SinglePlay View']:
+            if self.view['SinglePlay Menu']:
                 self.singlePlayerView.create_widgets()
                 self.singlePlayerView.update(events)
 
-                self.imagePlayer.create()
-                self.imageBot.create()
 
-                if self.clicked:
-                    self.imagePlayer.update(events)
-                    self.imageBot.update(events)
 
-                self.who_will_win.create(self.who_win)
-                self.playerName.create(self.menuView.inputBox.text)
-                self.bot.create('Bot')
-            elif self.view['Menu View']:
+                self.singlePlayerView.imagePlayer.create()
+                self.singlePlayerView.imageBot.create()
+
+
+                if self.singlePlayerView.clicked:
+                    self.singlePlayerView.imagePlayer.update(events)
+                    self.singlePlayerView.imageBot.update(events)
+
+
+
+                    self.singlePlayerView.who_will_win.create(self.singlePlayerView.who_win)
+                self.singlePlayerView.playerName.create(self.menuView.inputBox.text)
+                self.singlePlayerView.bot.create('Bot')
+            elif self.view['Settings Menu']:
+
+
+
+                if self.settingsView.SettingsView['Resize Window']:
+                    self.settingsView.resizeCreateUpdate(events)
+                else:
+                    self.settingsView.create_widgets()
+                    self.settingsView.update(events)
+
+            elif self.view['Main Menu']:
                 self.menuView.create_widgets()
                 self.menuView.update(events)
-            elif self.view["MultiPlay View"]:
-                self.multiPlayerView.create()
-                self.multiPlayerView.update(events)
+
+
 
             # Update and set FPS
             self.clock.tick(FPS)
+            # self.screen.blit(self.view1,(0,0))
 
             pygame.display.flip()
             pygame.display.update()
 
-    ################
-    # This code is for single view, so it has to be initialized in singe view instead of this class
     def single_play(self):
-        self.view['SinglePlay View'] = True
-        self.view['Menu View'] = False
-        self.view["MultiPlay View"] = False
-        self.view["Setting View"] = False
+        self.view['SinglePlay Menu'] = True
 
-    #######
-    # Warning: This code should not be here
     def back(self):
-        self.view['SinglePlay View'] = False
-        self.view['Menu View'] = True
-        self.view["MultiPlay View"] = False
-        self.view["Setting View"] = False
-    #########
+        self.view['SinglePlay Menu'] = False
+        self.view['Settings Menu'] = False
+        self.view['Main Menu'] = True
 
-    def multi_play(self):
-        self.view['SinglePlay View'] = False
-        self.view['Menu View'] = False
-        self.view["MultiPlay View"] = True
-        self.view["Setting View"] = False
-
+    ##########
+    # Warning: This code has to be inside the setting view class, not here
     def setting(self):
-        self.view['SinglePlay View'] = False
-        self.view['Menu View'] = False
-        self.view["MultiPlay View"] = False
-        self.view["Setting View"] = True
+        self.view['Settings Menu'] = True
+        self.view['Main Menu'] = False
 
-    def rock(self):
-        self.who_win,self.imageBot_choice,self.playerChoice=self.which_button_rpg_clicked('Rock')
 
-    def paper(self):
-        self.who_win,self.imageBot_choice,self.playerChoice=self.which_button_rpg_clicked('Paper')
+    def backSettings(self):
+        self.SetingsView['Resize Window'] = False
+        self.view['Settings Menu'] = True
+    ##########
 
-    def scissors(self):
-        self.who_win,self.imageBot_choice,self.playerChoice=self.which_button_rpg_clicked('Scissors')
 
-    def which_button_rpg_clicked(self, playerChoice):
-        self.clicked = True
+    def multiplayer_play(self):
+        pass
 
-        self.imageBot.returnIndex()
-        self.imagePlayer.returnIndex()
 
-        # This code has not been done yet, after update the machine learning and difficulty it will change
-        imageBot_choice = random.randint(1, 3)
-        self.imageBot_choice_list.append(imageBot_choice)
-        self.imageBot_choice_list = self.imageBot_choice_list[-1:]
 
-        match self.imageBot_choice_list[-1]:
-            case 1:
-                self.imageBot.imageFolder = 'data/rock_animation/'
-            case 2:
-                self.imageBot.imageFolder = 'data/scissors_animation/'
-            case 3:
-                self.imageBot.imageFolder = 'data/paper_animation/'
 
-        match playerChoice:
-            case 'Paper':
-                self.imagePlayer.imageFolder = 'data/paper_animation/'
-            case 'Rock':
-                self.imagePlayer.imageFolder = 'data/rock_animation/'
-            case 'Scissors':
-                self.imagePlayer.imageFolder = 'data/scissors_animation/'
-        who_win = game_play(playerChoice, self.imageBot_choice_list[-1])
-
-        return who_win, imageBot_choice,self.playerChoice
-    #################
+    def close(self):
+        pygame.quit()
+        sys.exit()
 
 
 if __name__ == "__main__":
     game = RockPaperScissor()
     game.run()
+    # except Exception as bug:
+    #     print(bug)
+    #     game.close()
