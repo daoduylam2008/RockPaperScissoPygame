@@ -40,7 +40,7 @@ def game_play(player, opponent) -> str:
             player == "Scissors" and opponent == "Paper"):
         return "Win"
     elif (player == "Rock" and opponent == "Paper") or (player == "Paper" and opponent == "Scissors") or (
-                    player == "Scissors" and opponent == "Rock"):
+            player == "Scissors" and opponent == "Rock"):
         return "Lose"
     else:
         raise ValueError("Unrecognized value")

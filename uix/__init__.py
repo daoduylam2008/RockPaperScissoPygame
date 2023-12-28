@@ -364,7 +364,7 @@ class _SpriteImage(_Sprite):
             img = pygame.transform.scale(img, self.scale)
             img = pygame.transform.flip(img, self.flip, False)
             img = pygame.transform.rotate(img,self.angle)
-            self.images.append(self.img)
+            self.images.append(img)
 
         self.index += 0.2
 
