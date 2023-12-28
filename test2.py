@@ -132,16 +132,19 @@ class SinglePlayerView:
         self.groupWidget_single.update(events)
 
 
-class MultiPlayerView:
+class ServerView(uix.Widget):
     def __init__(self, surface):
-        self.surface = surface
+        rect = (0, 0, surface.get_width(), surface.get_height())
+        super().__init__(surface, rect)
+
         self.view = uix.GroupWidget()
 
         self.button_rock = uix.Button(self.surface, (300, 600, 90, 50), 'Rock', '#ff6680', bottom_rect_color='#ed7700',
                                       text_color='black', text_size=23)
         self.button_scissors = uix.Button(self.surface, (400, 600, 90, 50), 'Scissors', '#ff6680',
                                           bottom_rect_color='#ed7700', text_color='black', text_size=23)
-        self.button_paper = uix.Button(self.surface, (500, 600, 90, 50), 'Paper', '#ff6680', bottom_rect_color='#ed7700',
+        self.button_paper = uix.Button(self.surface, (500, 600, 90, 50), 'Paper', '#ff6680',
+                                       bottom_rect_color='#ed7700',
                                        text_color='black', text_size=23)
         self.button_back = uix.Button(self.surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
                                       text_color='black', text_size=20)
@@ -157,11 +160,42 @@ class MultiPlayerView:
         self.view.widgets.append(self.button_paper)
         self.view.widgets.append(self.button_scissors)
 
-    def create_widgets(self):
-        self.view.create_widget()
+    def on_rock_press(self): pass
 
-    def update(self, events):
-        self.view.update(events)
+    def on_scissors_press(self): pass
+
+    def on_paper_press(self): pass
+
+    def on_back_press(self): pass
+
+
+class ClientView(uix.Widget):
+    def __init__(self, surface):
+        rect = (0, 0, surface.get_width(), surface.get_height())
+        super().__init__(surface, rect)
+
+        self.view = uix.GroupWidget()
+
+        self.button_rock = uix.Button(self.surface, (300, 600, 90, 50), 'Rock', '#ff6680', bottom_rect_color='#ed7700',
+                                      text_color='black', text_size=23)
+        self.button_scissors = uix.Button(self.surface, (400, 600, 90, 50), 'Scissors', '#ff6680',
+                                          bottom_rect_color='#ed7700', text_color='black', text_size=23)
+        self.button_paper = uix.Button(self.surface, (500, 600, 90, 50), 'Paper', '#ff6680',
+                                       bottom_rect_color='#ed7700',
+                                       text_color='black', text_size=23)
+        self.button_back = uix.Button(self.surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
+                                      text_color='black', text_size=20)
+
+        # Action for button
+        self.button_rock.on_press_action = self.on_rock_press
+        self.button_paper.on_press_action = self.on_paper_press
+        self.button_scissors.on_press_action = self.on_scissors_press
+        self.button_back.on_press_action = self.on_back_press
+
+        self.view.widgets.append(self.button_rock)
+        self.view.widgets.append(self.button_back)
+        self.view.widgets.append(self.button_paper)
+        self.view.widgets.append(self.button_scissors)
 
     def on_rock_press(self): pass
 
@@ -170,6 +204,75 @@ class MultiPlayerView:
     def on_paper_press(self): pass
 
     def on_back_press(self): pass
+
+
+class SelectClientServerView(uix.Widget):
+    def __init__(self, surface):
+        rect = (0, 0, surface.get_width(), surface.get_height())
+        super().__init__(surface, rect)
+
+        self.view = uix.GroupWidget()
+
+        # Layer for view
+        self.layer = {
+            "selection": True,
+            "server": False,
+            "client": False
+        }
+
+        # Create the button for view
+        self.roomInputBox = uix.InputBox(self.surface, (self.surface.get_rect().center[0]-150, self.surface.get_rect().center[1]-150, 100, 60))
+        self.joinRoomButton = uix.Button(self.surface, (self.surface.get_rect().center[0]-80, self.surface.get_rect().center[1]-50, 160, 60), text='Join Room',
+                                            color=(204, 204, 196), bottom_rect_color=(255, 255, 255),
+                                            text_color='#FFFF00')
+        self.joinRoomButton.on_press_action = self.joinRoom
+
+        self.createRoomButton = uix.Button(self.surface, (self.surface.get_rect().center[0]-80, self.surface.get_rect().center[1]+50, 160, 60), text='Create Room',
+                                         color=(32, 178, 170), bottom_rect_color=(255, 255, 255))
+        self.createRoomButton.on_press_action = self.createRoomButton
+
+        self.view.widgets = [
+            self.roomInputBox,
+            self.joinRoomButton,
+            uix.Separator(self.surface, (self.surface.get_rect().center[0]-80, self.surface.get_rect().center[1]+25, 150, 2), (0, 0, 0)),
+            self.createRoomButton
+        ]
+
+    def update(self, events):
+        self.view.update(events)
+
+    def create(self):
+        self.view.create_widget()
+
+    def joinRoom(self):
+        self.layer['selection'] = False
+        self.layer['server'] = False
+        self.layer['client'] = True
+
+    def createRoom(self):
+        self.layer['selection'] = False
+        self.layer['server'] = True
+        self.layer['client'] = False
+
+
+class MultiPlayerView(uix.Widget):
+    def __init__(self, surface):
+        rect = (0, 0, surface.get_width(), surface.get_height())
+        super().__init__(surface, rect)
+
+        self.view = uix.GroupWidget()
+
+        self.selectionView = SelectClientServerView(surface)
+
+        self.view.widgets = [
+            self.selectionView
+        ]
+
+    def create(self):
+        self.view.create_widget()
+
+    def update(self, events):
+        self.view.update(events)
 
 
 class Settings:
@@ -225,7 +328,6 @@ class RockPaperScissor:
                                                  [self.rock, self.paper, self.scissors, self.back])
         # Multiplayer View initialization
         self.multiPlayerView = MultiPlayerView(self.screen)
-        self.multiPlayerView.button_back.on_press_action = self.back
 
         ###################
         # WARN: This code has to be inside the single view instead of this class
@@ -273,7 +375,7 @@ class RockPaperScissor:
                 self.menuView.create_widgets()
                 self.menuView.update(events)
             elif self.view["MultiPlay View"]:
-                self.multiPlayerView.create_widgets()
+                self.multiPlayerView.create()
                 self.multiPlayerView.update(events)
 
             # Update and set FPS

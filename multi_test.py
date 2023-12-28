@@ -11,6 +11,8 @@ screen = pygame.display.set_mode((width, height))
 multi_view = rps.MultiPlayerView(screen)
 
 while True:
+    screen.fill('white')
+
     events = pygame.event.get()
 
     for event in events:
@@ -18,7 +20,7 @@ while True:
             pygame.quit()
             sys.exit()
 
-    multi_view.create_widgets()
+    multi_view.create()
     multi_view.update(events)
 
     pygame.display.update()

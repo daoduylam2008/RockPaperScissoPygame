@@ -398,3 +398,15 @@ class ImageAnimation(Widget):
 
     def create(self):
         self._groupSprite.draw(self.surface)
+
+
+class Separator(Widget):
+    def __init__(self, surface, rect, color):
+        super().__init__(surface, rect)
+
+        self.color = color
+
+    def update(self, events): pass
+
+    def create(self):
+        pygame.draw.rect(self.surface, self.color, self.rect)
