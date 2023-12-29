@@ -366,7 +366,7 @@ class _SpriteImage(_Sprite):
             img = pygame.transform.rotate(img,self.angle)
             self.images.append(img)
 
-        self.index += 0.2
+        self.index += 0.4
 
         if self.index > len(self.images):
             self.index = len(self.images) - 1

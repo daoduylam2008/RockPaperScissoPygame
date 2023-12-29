@@ -44,7 +44,6 @@ def music(name_music):
     lose_sound = pygame.mixer.Sound('data/soundeffect/lose.mp3')
     button_sound = pygame.mixer.Sound('data/soundeffect/button_sound.wav')
     music_background = pygame.mixer.Sound('data/soundeffect/music_background.mp3')
-
     match name_music:
         case 'win_sound':
             win_sound.play()
@@ -67,7 +66,7 @@ def writeSizeScreen(size):
     with open('data/size.txt', 'w') as file:
         if size == 'small':
             file.write('680\n')
-            file.write('540')
+            file.write('620')
         elif size == 'medium':
             file.write('900\n')
             file.write('700')
@@ -176,12 +175,12 @@ class SinglePlayerView:
         # The Image Rock Paper Scissors in Single Player View for player
         self.imagePlayer = uix.ImageAnimation(surface, rect=(20, surface.get_rect().bottomright[1] - 235, 100, 100),
                                               imageFolder='data/scissors_animation/', scale=(230, 230), flip=False,
-                                              fps=30, angle=0)
+                                              fps=60, angle=0)
 
         # The Image Rock Paper Scissors in Single Player View for bot
         self.imageBot = uix.ImageAnimation(surface, rect=(surface.get_rect().topright[0] - 260, 10, 100, 100),
                                            imageFolder='data/scissors_animation/', scale=(230, 230),
-                                           flip=True, fps=60, angle=90)
+                                           flip=True, fps=90, angle=90)
 
         # Blit the text win or lose or draw
         self.who_will_win = uix.Text(surface, (
