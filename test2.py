@@ -138,7 +138,19 @@ class MenuView:
         self.groupWidget.update(events)
 
     def image_background(self, surface):
+<<<<<<< Updated upstream
         surface.blit(self.background_image, (0, 0))
+=======
+        img = Image.open('data/background.png')
+        img = img.resize((surface.get_width(),surface.get_height()),
+        Image.LANCZOS)
+        img.save('data/background.png', quality=95)
+        imageBackground = uix.Image(surface, 'data/paper_animation/paper_animation1.png', (0, 0, 0, 0))
+        imageBackground.rect = imageBackground.image.get_rect(
+        center=imageBackground.surface.get_rect().center)
+        imageBackground.create()
+        pass
+>>>>>>> Stashed changes
 
 
 class SinglePlayerView:
@@ -458,9 +470,13 @@ class SelectClientServerView(uix.Widget):
 
     def update(self, events):
         if self.layer["selection"]:
+<<<<<<< Updated upstream
             self.view.update(events)
         elif self.layer['server']:
             self.serverView.update(events)
+=======
+            self.view.create_widget()
+>>>>>>> Stashed changes
 
         elif self.layer['client']:
             room = self.roomInputBox.text
