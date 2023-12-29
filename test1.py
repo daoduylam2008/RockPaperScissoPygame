@@ -133,7 +133,7 @@ class MenuView:
         imageBackground.rect = imageBackground.image.get_rect(
         center=imageBackground.surface.get_rect().center)
         imageBackground.create()
-
+        pass
 
 
 class SinglePlayerView:
@@ -246,6 +246,8 @@ class SinglePlayerView:
         return self.who_win, self.numberPlayerChoice
 
 
+
+
 class ServerView(uix.Widget):
     def __init__(self, surface):
         rect = (0, 0, surface.get_width(), surface.get_height())
@@ -336,15 +338,16 @@ class SelectClientServerView(uix.Widget):
 
         # Create the button for view
         self.roomInputBox = uix.InputBox(self.surface, (
-        self.surface.get_rect().center[0] - 150, self.surface.get_rect().center[1] - 150, 100, 60))
+            self.surface.get_rect().center[0] - 150, self.surface.get_rect().center[1] - 150, 100, 60))
         self.joinRoomButton = uix.Button(self.surface, (
-        self.surface.get_rect().center[0] - 80, self.surface.get_rect().center[1] - 50, 160, 60), text='Join Room',
+            self.surface.get_rect().center[0] - 80, self.surface.get_rect().center[1] - 50, 160, 60), text='Join Room',
                                          color=(204, 204, 196), bottom_rect_color=(255, 255, 255),
                                          text_color='#FFFF00')
         self.joinRoomButton.on_press_action = self.joinRoom
 
         self.createRoomButton = uix.Button(self.surface, (
-        self.surface.get_rect().center[0] - 80, self.surface.get_rect().center[1] + 50, 160, 60), text='Create Room',
+            self.surface.get_rect().center[0] - 80, self.surface.get_rect().center[1] + 50, 160, 60),
+                                           text='Create Room',
                                            color=(32, 178, 170), bottom_rect_color=(255, 255, 255))
         self.createRoomButton.on_press_action = self.createRoomButton
 
@@ -356,12 +359,22 @@ class SelectClientServerView(uix.Widget):
                           (0, 0, 0)),
             self.createRoomButton
         ]
+        self.serverView = ServerView(self.surface)
+        self.clientView = ClientView(self.surface)
 
     def update(self, events):
         self.view.update(events)
 
     def create(self):
         self.view.create_widget()
+        if self.layer["selection"]:
+            pass
+
+        elif self.layer['client']:
+            pass
+
+        elif self.layer['server']:
+            pass
 
     def joinRoom(self):
         self.layer['selection'] = False
@@ -371,6 +384,11 @@ class SelectClientServerView(uix.Widget):
     def createRoom(self):
         self.layer['selection'] = False
         self.layer['server'] = True
+        self.layer['client'] = False
+
+    def backToSelection(self):
+        self.layer['selection'] = True
+        self.layer['server'] = False
         self.layer['client'] = False
 
 
@@ -392,6 +410,9 @@ class MultiPlayerView(uix.Widget):
 
     def update(self, events):
         self.view.update(events)
+
+    def back(self):
+        pass
 
 
 class Settings:
@@ -508,7 +529,7 @@ class RockPaperScissor:
             'Main Menu': True,
             'SinglePlay Menu': False,
             'Settings Menu': False,
-            'Back': True
+            'Back': False
         }
         self.SetingsView = {
             'Resize Window': False,
@@ -542,6 +563,7 @@ class RockPaperScissor:
     def run(self):
 
         while True:
+            self.screen.fill((0,0,0))
             # Fill the screen with BLACK instead of an empty screen
             self.menuView.image_background(self.screen)
 
@@ -572,7 +594,6 @@ class RockPaperScissor:
                 else:
                     self.settingsView.create_widgets()
                     self.settingsView.update(events)
-
             elif self.view['Main Menu']:
                 self.menuView.create_widgets()
                 self.menuView.update(events)
@@ -586,16 +607,28 @@ class RockPaperScissor:
 
     def single_play(self):
         self.view['SinglePlay Menu'] = True
+        self.view['Settings Menu'] = False
+        self.view['MultiPlay Menu'] = False
+        self.view['Main Menu'] = False
+
+    def multi_play(self):
+        self.view['SinglePlay Menu'] = False
+        self.view['Settings Menu'] = False
+        self.view['MultiPlay Menu'] = True
+        self.view['Main Menu'] = False
 
     def back(self):
         self.view['SinglePlay Menu'] = False
         self.view['Settings Menu'] = False
+        self.view['MultiPlay Menu'] = False
         self.view['Main Menu'] = True
 
     ##########
     # Warning: This code has to be inside the setting view class, not here
     def setting(self):
+        self.view['SinglePlay Menu'] = False
         self.view['Settings Menu'] = True
+        self.view['MultiPlay Menu'] = False
         self.view['Main Menu'] = False
 
     def backSettings(self):
