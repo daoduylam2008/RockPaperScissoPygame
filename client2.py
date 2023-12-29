@@ -12,8 +12,15 @@ uuid = data.createID()
 print("ID của bạn là", uuid)
 print("phòng: ", uuid)
 
+transform = {
+	"rock": "bua",
+	"scissors": "keo",
+	"paper": "bao"
+}
+
 
 def gameplay(server, client, host=""):
+	client = transform[client]
 	if server == client:
 		print("draw")
 	elif (server == "keo" and client == "bao") or (server == "bua" and client == "keo") or (

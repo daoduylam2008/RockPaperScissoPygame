@@ -86,6 +86,7 @@ class Client:
 	def joinRoom(self, room_id: str) -> bool:
 		self.room = self.room.child(room_id + "/")
 		userInRoom = 0
+		print(self.room.get())
 		try:
 			for i in self.room.get():
 				userInRoom += 1
