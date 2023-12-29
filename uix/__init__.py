@@ -29,19 +29,14 @@ class GroupWidget:
 
     def update(self, events):
         for widget in self.widgets:
-            try:
-                widget.update(events)
-            except Exception as bug:
-                print(bug)
-                print("There is no widget or your widget is not recognize as Widget")
+            widget.update(events)
+            #except Exception as bug:
+                #print(bug)
+                #print("There is no widget or your widget is not recognize as Widget")
 
     def create_widget(self):
         for widget in self.widgets:
-            try:
-                widget.create()
-            except Exception as bug:
-                print(bug)
-                print("There is no widget or your widget is not recognize as Widget")
+            widget.create()
 
 
 class Text(Widget):
@@ -293,12 +288,12 @@ class Image(Widget):
         self._resizable = False
         self.path = path
 
-        self.image = _pygame.image.load(self.path).convert_alpha()
+        self.image = _pygame.image.load(self.path).convert()
 
         self.action = None
 
     def create(self):
-        self.image = _pygame.image.load(self.path).convert_alpha()
+        self.image = _pygame.image.load(self.path).convert()
         self.surface.blit(self.image, self.rect)
 
     def scaleToFill(self, view="surface"):
@@ -341,11 +336,8 @@ class _SpriteImage(_Sprite):
         self.angle = angle
 
         for i in self.imageFolder:
-            img = pygame.image.load(imageFolder + i)
-            img = pygame.transform.scale(img, self.scale)
-            img = pygame.transform.flip(img, self.flip, False)
-            img = pygame.transform.rotate(img,self.angle)
-            self.images.append(img)
+            self.images = [pygame.transform.rotate(pygame.transform.flip(pygame.transform.scale(pygame.image.load(imageFolder + i),self.scale),self.flip,False),self.angle) for i in self.imageFolder]
+
 
         self.index = 0
 
@@ -360,11 +352,8 @@ class _SpriteImage(_Sprite):
         self.imageFolder = os.listdir(imageFolder)
         self.imageFolder.sort(reverse=False)
         for i in self.imageFolder:
-            img = pygame.image.load(imageFolder + i)
-            img = pygame.transform.scale(img, self.scale)
-            img = pygame.transform.flip(img, self.flip, False)
-            img = pygame.transform.rotate(img,self.angle)
-            self.images.append(img)
+            
+            self.images = [pygame.transform.rotate(pygame.transform.flip(pygame.transform.scale(pygame.image.load(imageFolder + i),self.scale),self.flip,False),self.angle) for i in self.imageFolder]
 
         self.index += 0.4
 
