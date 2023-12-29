@@ -2,3 +2,7 @@
 - file test1.py: animation image của bot tạo trong class single view, chạy fps thành 30 để tạo animation
 25/12/2023:
 - file test1.py: chỉnh lại các view, class RockPaperScissor chỉ chạy các view, các view phải được lập trình riêng biệt
+28/12/2023:
+- file test3.py: machine learning làm kỹ phần học thuật hơn, cho máy học lựa chọn củ user thay vì đánh giá lựa chọn nhiều nhất
+- file test1.py: sửa phần WARN lên các class
+- background.png: sửa lỗi phần background, hình ảnh không chạy được
