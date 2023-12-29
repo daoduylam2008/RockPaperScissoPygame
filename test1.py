@@ -125,11 +125,11 @@ class MenuView:
         self.groupWidget.update(events)
 
     def image_background(self, surface):
-        img = Image.open('data/background.png')
+        img = Image.open('data/menu1.png')
         img = img.resize((surface.get_width(),surface.get_height()),
                          Image.LANCZOS)
-        img.save('data/background.png', quality=95)
-        imageBackground = uix.Image(surface, 'data/background.png', (0, 0, 0, 0))
+        img.save('data/menu1.png', quality=95)
+        imageBackground = uix.Image(surface, 'data/menu1.png', (0, 0, 0, 0))
         imageBackground.rect = imageBackground.image.get_rect(
         center=imageBackground.surface.get_rect().center)
         imageBackground.create()
