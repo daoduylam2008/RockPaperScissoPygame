@@ -811,6 +811,3 @@ class RockPaperScissor:
 if __name__ == "__main__":
     game = RockPaperScissor()
     game.run()
-    # except Exception as bug:
-    #     print(bug)
-    #     game.close()

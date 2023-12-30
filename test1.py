@@ -624,12 +624,12 @@ class Settings:
 		difficultyButton = self.create_button(self.surface, text='Difficult Mode', y_offset=+50)
 
 		resizeBackButtonDiff = uix.Button(self.surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
-										  text_color='black', text_size=20)
+										text_color='black', text_size=20)
 		resizeBackButtonDiff.on_press_action = self.resizeBackButtonDiff
 
 		self.labelAnouncementEasy = uix.Text(self.surface, (
 			self.surface.get_rect().center[0] - 140, self.surface.get_rect().center[1] - 250, 150, 60),
-											 text='Defalut difficulty is easy', color='black')
+										text='Defalut difficulty is easy', color='black')
 
 		self.groupWidget_chooseDifficulty = uix.GroupWidget()
 		self.groupWidget_chooseDifficulty.widgets.extend([easyButton, difficultyButton, resizeBackButtonDiff])
@@ -813,6 +813,3 @@ class RockPaperScissor:
 if __name__ == "__main__":
 	game = RockPaperScissor()
 	game.run()
-	# except Exception as bug:
-	#     print(bug)
-	#     game.close()
