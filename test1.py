@@ -12,7 +12,6 @@ import pygame
 import sys
 import uix
 import random
-from PIL import Image
 
 import networking
 
@@ -104,7 +103,7 @@ class MenuView:
 		self.height = height
 
 		self.inputBox = uix.InputBox(surface,
-									 (surface.get_rect().center[0] - 160, surface.get_rect().center[1] - 150, 100, 60))
+									(surface.get_rect().center[0] - 160, surface.get_rect().center[1] - 150, 100, 60))
 		self.button_singleplay = self.create_button(surface, 'SinglePlayer', -50)
 		self.button_setting = self.create_button(surface, 'Settings', 150, self.BUTTON_QUIT_COLOR)
 		self.button_multiplay = self.create_button(surface, 'MultiPlayer', 50)
@@ -524,7 +523,7 @@ class MultiPlayerView(uix.Widget):
 
 	def update(self, events):
 		try:
-			self.user = networking.User(self.user_infor)
+			self.user = networking.User(self.user_infor, uuid)
 		except:
 			pass
 		self.view.update(events)
@@ -536,12 +535,12 @@ class Settings:
 	BUTTON_TEXT_COLOR = '#FFFF00'
 	BUTTON_QUIT_COLOR = (32, 178, 170)
 
-	def __init__(self, surface, width, height, func_back, view, SettingsView):
+	def __init__(self, surface, width, height, func_back, view, settingView):
 		self.width = width
 		self.height = height
 		self.surface = surface
 		self.view = view
-		self.SettingsView = SettingsView
+		self.settingsView = settingView
 
 		self.resizeWindow = self.create_button(surface, 'Resize Window', -150)
 		self.resizeWindow.on_press_action = self.resize
@@ -572,7 +571,7 @@ class Settings:
 		self.groupWidget_settings.update(events)
 
 	def resize(self):
-		self.SettingsView['Resize Window'] = True
+		self.settingsView['Resize Window'] = True
 
 		resizeSmallButton = self.create_button(self.surface, 'Small', -150)
 		resizeSmallButton.on_press_action = self.resize_small
@@ -604,7 +603,7 @@ class Settings:
 		self.label_anouncement.create(text='After resize your screen game, you need to restart')
 
 	def resize_back(self):
-		self.SettingsView['Resize Window'] = False
+		self.settingsView['Resize Window'] = False
 
 	def resize_small(self):
 		writeSizeScreen('small')
@@ -619,7 +618,7 @@ class Settings:
 		writeSizeScreen('fullscreen')
 
 	def choose_difficulty(self):
-		self.SettingsView['Difficulty'] = True
+		self.settingsView['Difficulty'] = True
 
 		easyButton = self.create_button(self.surface, text='Easy Mode', y_offset=-50)
 		difficultyButton = self.create_button(self.surface, text='Difficult Mode', y_offset=+50)
@@ -641,7 +640,7 @@ class Settings:
 		self.labelAnouncementEasy.create(text='Defalut difficulty is easy')
 
 	def resizeBackButtonDiff(self):
-		self.SettingsView['Difficulty'] = False
+		self.settingsView['Difficulty'] = False
 
 
 class RockPaperScissor:
@@ -736,9 +735,9 @@ class RockPaperScissor:
 				self.singlePlayerView.bot.create('Bot')
 			elif self.view['Settings Menu']:
 
-				if self.settingsView.SettingsView['Resize Window']:
+				if self.settingsView.settingsView['Resize Window']:
 					self.settingsView.resizeCreateUpdate(events)
-				elif self.settingsView.SettingsView['Difficulty']:
+				elif self.settingsView.settingsView['Difficulty']:
 					self.settingsView.chooseDifficultyCreateUpdate(events)
 				else:
 					self.settingsView.create_widgets()
