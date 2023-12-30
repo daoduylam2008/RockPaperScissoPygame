@@ -346,8 +346,8 @@ class ClientView(uix.Widget):
 
         # The Image Rock Paper Scissors in Single Player View for bot
         self.imageOpponent = uix.ImageAnimation(surface, rect=(surface.get_rect().topright[0] - 260, 10, 100, 100),
-                                           imageFolder='data/rock_animation/', scale=(230, 230),
-                                           flip=True, fps=90, angle=90)
+                                            imageFolder='data/rock_animation/', scale=(230, 230),
+                                            flip=True, fps=90, angle=90)
 
         self.who_will_win = uix.Text(surface, (
             surface.get_rect().center[0] - 53, surface.get_rect().center[1] - 20, 50, 50),
@@ -377,7 +377,8 @@ class ClientView(uix.Widget):
             try:
                 self.client.joinRoom(self.room)
                 self.isJoin = True
-            except: pass
+            except:
+                pass
 
         self.view.update(events)
         self.server = self.client.serverChoice()
@@ -440,7 +441,9 @@ class SelectClientServerView(uix.Widget):
         self.button_back.on_press_action = back_action
 
         self.message = ""
-        self.messageText = uix.Text(self.surface, (self.surface.get_rect().center[0] - 160, self.surface.get_rect().center[1] - 170, 100, 60), color=(255, 0, 0),text=self.message)
+        self.messageText = uix.Text(self.surface, (self.surface.get_rect().center[0] - 160,
+                                                   self.surface.get_rect().center[1] - 170, 100, 60), color=(255, 0, 0),
+                                    text=self.message)
 
         self.view.widgets = [
             self.roomInputBox,
@@ -522,7 +525,8 @@ class MultiPlayerView(uix.Widget):
     def update(self, events):
         try:
             self.user = networking.User(self.user_infor, uuid)
-        except: pass
+        except:
+            pass
 
         self.view.update(events)
 
@@ -534,6 +538,7 @@ class Settings:
     BUTTON_QUIT_COLOR = (32, 178, 170)
 
     def __init__(self, surface, width, height, func_back, view, SettingsView):
+        self.label_anouncement = None
         self.width = width
         self.height = height
         self.surface = surface
@@ -694,7 +699,8 @@ class RockPaperScissor:
         # Message
         self.message = ""
         self.messageText = uix.Text(self.screen,
-                                    (self.screen.get_rect().center[0] - 160, self.screen.get_rect().center[1] - 170, 100, 60),
+                                    (self.screen.get_rect().center[0] - 160,
+                                     self.screen.get_rect().center[1] - 170, 100, 60),
                                     color=(255, 0, 0))
 
         # Networking
@@ -747,7 +753,8 @@ class RockPaperScissor:
                     self.multiPlayerView.user = self.user
                     self.multiPlayerView.update(events)
                     self.multiPlayerView.create()
-                except: pass
+                except:
+                    pass
 
             # Update and set FPS
             self.clock.tick(FPS)
