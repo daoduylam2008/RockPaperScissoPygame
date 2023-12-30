@@ -442,7 +442,6 @@ class SelectClientServerView(uix.Widget):
 
         self.message = ""
         self.messageText = uix.Text(self.surface, (self.surface.get_rect().center[0] - 160, self.surface.get_rect().center[1] - 170, 100, 60), color=(255, 0, 0),text=self.message)
-        music('music_background')
 
         self.view.widgets = [
             self.roomInputBox,
@@ -463,8 +462,6 @@ class SelectClientServerView(uix.Widget):
             self.serverView.update(events)
 
         elif self.layer['client']:
-            room = self.roomInputBox.text
-            self.clientView.room = room
             self.clientView.update(events)
 
     def create(self):
@@ -476,7 +473,6 @@ class SelectClientServerView(uix.Widget):
             self.serverView.create()
         elif self.layer['client']:
             print(231)
-            self.clientView.room = self.roomInputBox.text
             self.clientView.create()
 
     def joinRoom(self):
@@ -485,6 +481,9 @@ class SelectClientServerView(uix.Widget):
         elif not self.clientView.client.joinRoom(self.roomInputBox.text):
             self.message = "Room not found"
         else:
+            room = self.roomInputBox.text
+            self.clientView.room = room
+            self.clientView.room = self.roomInputBox.text
             self.message = ""
             self.layer['selection'] = False
             self.layer['server'] = False
@@ -523,8 +522,9 @@ class MultiPlayerView(uix.Widget):
 
     def update(self, events):
         try:
-            self.user = networking.User(self.user_infor)
+            self.user = networking.User(self.user_infor, uuid)
         except: pass
+
         self.view.update(events)
 
 
@@ -680,6 +680,7 @@ class RockPaperScissor:
         self.menuView.button_singleplay.on_press_action = self.single_play
         self.menuView.button_setting.on_press_action = self.setting
         self.menuView.button_multiplay.on_press_action = self.multi_play
+        self.menuView.button_quit.on_press_action = self.close
 
         # The Single Player View
         self.singlePlayerView = SinglePlayerView(self.screen, self.width, self.height,
@@ -731,7 +732,6 @@ class RockPaperScissor:
                 self.singlePlayerView.playerName.create(self.menuView.inputBox.text)
                 self.singlePlayerView.bot.create('Bot')
             elif self.view['Settings Menu']:
-
                 if self.settingsView.SettingsView['Resize Window']:
                     self.settingsView.resizeCreateUpdate(events)
                 elif self.settingsView.SettingsView['Difficulty']:
@@ -795,7 +795,6 @@ class RockPaperScissor:
             self.view['Settings Menu'] = False
             self.view['MultiPlay Menu'] = True
             self.view['Main Menu'] = False
-
 
     def close(self):
         self.user.resetUserData()

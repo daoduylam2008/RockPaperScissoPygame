@@ -443,7 +443,6 @@ class SelectClientServerView(uix.Widget):
 
         self.message = ""
         self.messageText = uix.Text(self.surface, (self.surface.get_rect().center[0] - 160, self.surface.get_rect().center[1] - 170, 100, 60), color=(255, 0, 0),text=self.message)
-        music('music_background')
 
         self.view.widgets = [
             self.roomInputBox,
