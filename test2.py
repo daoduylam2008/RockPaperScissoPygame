@@ -12,7 +12,6 @@ import pygame
 import sys
 import uix
 import random
-from PIL import Image
 
 import networking
 
