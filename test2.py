@@ -458,13 +458,9 @@ class SelectClientServerView(uix.Widget):
 
     def update(self, events):
         if self.layer["selection"]:
-<<<<<<< Updated upstream
             self.view.update(events)
         elif self.layer['server']:
             self.serverView.update(events)
-=======
-            self.view.create_widget()
->>>>>>> Stashed changes
 
         elif self.layer['client']:
             room = self.roomInputBox.text
