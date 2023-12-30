@@ -193,7 +193,7 @@ class SinglePlayerView:
 
         self.backgroundImageSinglePlayer = pygame.image.load('data/background.png')
         self.backgroundImageSinglePlayer = pygame.transform.scale(self.backgroundImageSinglePlayer,
-                                                                  (int(self.width), int(self.height)))
+                                                                  (int(self.width)+90, int(self.height)+90))
 
     def create_buttons(self, surface, text, action, x_offset=0):
         match text:
@@ -216,17 +216,17 @@ class SinglePlayerView:
         self.groupWidget_single.update(events)
 
     def rock(self):
-        self.who_win, self.numberPlayerChoice = self.which_button_rpg_clicked('Rock')
+        self.who_win, self.numberPlayerChoice = self.which_button_rpg_clicked(1)
         self.imagePlayer.imageFolder = 'data/rock_animation/'
         music('button_sound')
 
     def paper(self):
-        self.who_win, self.numberPlayerChoice = self.which_button_rpg_clicked('Paper')
+        self.who_win, self.numberPlayerChoice = self.which_button_rpg_clicked(3)
         self.imagePlayer.imageFolder = 'data/paper_animation/'
         music('button_sound')
 
     def scissors(self):
-        self.who_win, self.numberPlayerChoice = self.which_button_rpg_clicked('Scissors')
+        self.who_win, self.numberPlayerChoice = self.which_button_rpg_clicked(2)
         self.imagePlayer.imageFolder = 'data/scissors_animation/'
         music('button_sound')
 
@@ -240,28 +240,29 @@ class SinglePlayerView:
         self.imageBot_choice_list.append(imageBot_choice)
         self.imageBot_choice_list = self.imageBot_choice_list[-1:]
 
-        match self.imageBot_choice_list[-1]:
-            case 1:
-                self.imageBot.imageFolder = 'data/rock_animation/'
-            case 2:
-                self.imageBot.imageFolder = 'data/scissors_animation/'
-            case 3:
-                self.imageBot.imageFolder = 'data/paper_animation/'
-        match playerChoice:
-            case 'Paper':
-                self.numberPlayerChoice = 3
+        rpg_choice = {
+            1:'rock',
+            2:'scissors',
+            3:'paper'
+        }
+        ourState = {
+            'Win':'4',
+            'Lose':'5',
+            'Draw':'6'
+        }
+        self.imageBot.imageFolder = 'data/'+rpg_choice[self.imageBot_choice_list[-1]]+'_animation/'
 
-            case 'Rock':
-                self.numberPlayerChoice = 1
+        self.who_win = game_play(playerChoice, self.imageBot_choice_list[-1])
 
-            case 'Scissors':
-                self.numberPlayerChoice = 2
+        with open('data/history.txt','a') as file:
+            file.write(str(playerChoice))
+        with open('data/history1.txt','a') as file1:
+            file1.write(ourState[self.who_win])
 
-        self.who_win = game_play(self.numberPlayerChoice, self.imageBot_choice_list[-1])
         return self.who_win, self.numberPlayerChoice
 
     def backgroundImageSingle(self, surface):
-        surface.blit(self.backgroundImageSinglePlayer, (0, 0))
+        surface.blit(self.backgroundImageSinglePlayer,(-50,-50) )
 
 
 class ServerView(uix.Widget):
@@ -790,7 +791,7 @@ class RockPaperScissor:
             self.view['Main Menu'] = False
 
     def close(self):
-        self.user.resetUserData()
+        #self.user.resetUserData()
         pygame.quit()
         sys.exit()
 
