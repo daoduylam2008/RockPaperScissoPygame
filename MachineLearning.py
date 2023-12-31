@@ -4,12 +4,12 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 import random
 import csv
+import time
 
 
 class Computer:
 
-    def __init__(self, choice):
-        self.player = choice
+    def __init__(self):
         self.computer_choices = ["rock", "paper", "scissors"]
         self.history = []
         self.our_state = []
@@ -26,10 +26,10 @@ class Computer:
         if not self.our_state or self.our_state == 6:
             return random.choice(self.computer_choices)
         elif self.our_state[-1] == 4:
-            return self.computer_choices[int(self.history[-1]) - 2]
+            return self.computer_choices[int(self.history[-2]) - 1]
         elif self.our_state[-1] == 5:
-            if self.history[-1] - 1 <= 1:
-                return self.computer_choices[self.history[-1]]
+            if self.history[-2] - 1 <= 1:
+                return self.computer_choices[self.history[-2]]
             else:
                 return self.computer_choices[0]
 
@@ -75,7 +75,7 @@ class Computer:
             y = df.dropna(axis=0)['our_choice']
             X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, test_size=0.2, random_state=0)
 
-            # Train and evaluate
+            # Train and evaluate models
             dt_model = DecisionTreeClassifier(random_state=1)
             dt_model.fit(X_train, y_train)
             dt_model_score = dt_model.score(X_test, y_test)

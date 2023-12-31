@@ -30,9 +30,9 @@ class GroupWidget:
     def update(self, events):
         for widget in self.widgets:
             widget.update(events)
-            #except Exception as bug:
-                #print(bug)
-                #print("There is no widget or your widget is not recognize as Widget")
+            # except Exception as bug:
+            # print(bug)
+            # print("There is no widget or your widget is not recognize as Widget")
 
     def create_widget(self):
         for widget in self.widgets:
@@ -54,12 +54,12 @@ class Text(Widget):
         self.color = color
         self.size = size
 
-    def create(self,text):
+    def create(self, text):
         self.text = text
         self._txt = self.render_text()
         self.surface.blit(self._txt, self.rect)
 
-    def update(self,events):
+    def update(self, events):
         pass
 
     def render_text(self):
@@ -321,7 +321,7 @@ class Image(Widget):
 
 
 class _SpriteImage(_Sprite):
-    def __init__(self, imageFolder, rect, scale, flip, fps,angle):
+    def __init__(self, imageFolder, rect, scale, flip, fps, angle):
         self.clock = pygame.time.Clock()
 
         super(_SpriteImage, self).__init__()
@@ -336,8 +336,9 @@ class _SpriteImage(_Sprite):
         self.angle = angle
 
         for i in self.imageFolder:
-            self.images = [pygame.transform.rotate(pygame.transform.flip(pygame.transform.scale(pygame.image.load(imageFolder + i),self.scale),self.flip,False),self.angle) for i in self.imageFolder]
-
+            self.images = [pygame.transform.rotate(
+                pygame.transform.flip(pygame.transform.scale(pygame.image.load(imageFolder + i), self.scale), self.flip,
+                                      False), self.angle) for i in self.imageFolder]
 
         self.index = 0
 
@@ -352,8 +353,9 @@ class _SpriteImage(_Sprite):
         self.imageFolder = os.listdir(imageFolder)
         self.imageFolder.sort(reverse=False)
         for i in self.imageFolder:
-            
-            self.images = [pygame.transform.rotate(pygame.transform.flip(pygame.transform.scale(pygame.image.load(imageFolder + i),self.scale),self.flip,False),self.angle) for i in self.imageFolder]
+            self.images = [pygame.transform.rotate(
+                pygame.transform.flip(pygame.transform.scale(pygame.image.load(imageFolder + i), self.scale), self.flip,
+                                      False), self.angle) for i in self.imageFolder]
 
         self.index += 0.4
 
@@ -366,7 +368,7 @@ class _SpriteImage(_Sprite):
 
 
 class ImageAnimation(Widget):
-    def __init__(self, surface, rect=None, imageFolder=None, scale=None, flip=None, fps=None,angle=0):
+    def __init__(self, surface, rect=None, imageFolder=None, scale=None, flip=None, fps=None, angle=0):
         super().__init__(surface, rect)
 
         if imageFolder is None:
@@ -376,7 +378,8 @@ class ImageAnimation(Widget):
         self.flip = flip
         self.fps = fps
         self.angle = angle
-        self._imageSprite = _SpriteImage(self.imageFolder, self.rect, scale=self.scale, flip=self.flip, fps=self.fps,angle = self.angle)
+        self._imageSprite = _SpriteImage(self.imageFolder, self.rect, scale=self.scale, flip=self.flip, fps=self.fps,
+                                         angle=self.angle)
         self._groupSprite = pygame.sprite.Group(self._imageSprite)
 
     def update(self, events):
