@@ -37,6 +37,7 @@ class Computer:
         if len(self.history) <= 2:
             return random.choice(self.computer_choices)
         else:
+            # Clean and setup data
             player_choice_dict = {1: 'Rock', 2: 'Paper', 3: 'Scissors'}
             our_state_dict = {4: 'Win', 5: 'Lose', 6: 'Draw'}
             fields = ['player_choice', 'our_choice', 'our_state']
@@ -74,6 +75,7 @@ class Computer:
             y = df.dropna(axis=0)['our_choice']
             X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, test_size=0.2, random_state=0)
 
+            # Train and evaluate
             dt_model = DecisionTreeClassifier(random_state=1)
             dt_model.fit(X_train, y_train)
             dt_model_score = dt_model.score(X_test, y_test)
@@ -82,6 +84,7 @@ class Computer:
             rf_model.fit(X_train, y_train)
             rf_model_score = rf_model.score(X_test, y_test)
 
+            # Compare evaluation
             if rf_model_score >= dt_model_score:
                 return player_choice_dict[(rf_model.predict([[self.history[len(self.history) - 1], 4]])[0])]
             else:
