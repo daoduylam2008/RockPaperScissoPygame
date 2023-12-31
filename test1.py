@@ -637,7 +637,7 @@ class Settings:
 	def chooseDifficultyCreateUpdate(self, events):
 		self.groupWidget_chooseDifficulty.create_widget()
 		self.groupWidget_chooseDifficulty.update(events)
-		self.labelAnouncementEasy.create(text='Defalut difficulty is easy')
+		self.labelAnouncementEasy.create(text='Default difficulty is easy')
 
 	def resizeBackButtonDiff(self):
 		self.settingsView['Difficulty'] = False
