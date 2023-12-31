@@ -4,7 +4,6 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 import random
 import csv
-import time
 
 
 class Computer:
