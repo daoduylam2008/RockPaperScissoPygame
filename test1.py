@@ -629,7 +629,7 @@ class Settings:
 
 		self.labelAnouncementEasy = uix.Text(self.surface, (
 			self.surface.get_rect().center[0] - 140, self.surface.get_rect().center[1] - 250, 150, 60),
-										text='Defalut difficulty is easy', color='black')
+										text='Default difficulty is easy', color='black')
 
 		self.groupWidget_chooseDifficulty = uix.GroupWidget()
 		self.groupWidget_chooseDifficulty.widgets.extend([easyButton, difficultyButton, resizeBackButtonDiff])
