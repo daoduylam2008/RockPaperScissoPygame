@@ -34,7 +34,7 @@ class Computer:
                 return self.computer_choices[0]
 
     def hard(self):
-        if len(self.history) <=2:
+        if len(self.history) <= 2:
             return random.choice(self.computer_choices)
         else:
             player_choice_dict = {1: 'Rock', 2: 'Paper', 3: 'Scissors'}
@@ -76,14 +76,13 @@ class Computer:
 
             dt_model = DecisionTreeClassifier(random_state=1)
             dt_model.fit(X_train, y_train)
-            dt_model_score = dt_model.score(X_test,y_test)
+            dt_model_score = dt_model.score(X_test, y_test)
 
             rf_model = RandomForestClassifier(random_state=1)
-            rf_model.fit(X_train,y_train)
-            rf_model_score = rf_model.score(X_test,y_test)
+            rf_model.fit(X_train, y_train)
+            rf_model_score = rf_model.score(X_test, y_test)
 
-            if rf_model_score>=dt_model_score:
+            if rf_model_score >= dt_model_score:
                 return player_choice_dict[(rf_model.predict([[self.history[len(self.history) - 1], 4]])[0])]
             else:
                 return player_choice_dict[(dt_model.predict([[self.history[len(self.history) - 1], 4]])[0])]
-
