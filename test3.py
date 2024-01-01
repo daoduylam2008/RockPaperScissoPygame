@@ -84,7 +84,7 @@ class Computer:
             rf_model.fit(X_train, y_train)
             rf_model_score = rf_model.score(X_test, y_test)
 
-            # Compare evaluation
+            # Compare evaluation and predict
             if rf_model_score >= dt_model_score:
                 return player_choice_dict[(rf_model.predict([[self.history[len(self.history) - 1], 4]])[0])]
             else:
