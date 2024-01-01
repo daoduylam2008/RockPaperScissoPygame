@@ -16,8 +16,6 @@ class User:
 		self.choice = choice
 		self.highestScore = 0
 
-		self.updateToData()
-
 	def getData(self):
 		return {
 			self.username: {
@@ -45,6 +43,7 @@ class Server:
 		self.room = db.reference("room/")
 
 	def createRoom(self):
+		print(self.user.getData())
 		self.room.update(
 			{
 				self.user.uid: self.user.getData()
@@ -86,7 +85,6 @@ class Client:
 	def joinRoom(self, room_id: str) -> bool:
 		self.room = self.room.child(room_id + "/")
 		userInRoom = 0
-		print(self.room.get())
 		try:
 			for i in self.room.get():
 				userInRoom += 1
@@ -134,8 +132,22 @@ class Database:
 
 	def getUsersName(self) -> list:
 		listOfUsers = []
-		for user in self.ref.child("Users/").get():
-			listOfUsers.append(user)
+		try:
+			for user in self.ref.child("Users/").get():
+				listOfUsers.append(user)
+		except:
+			self.ref.update({
+				"Users": {
+					"*": "*"
+				},
+
+				"room": {
+					"*":"*"
+				}
+
+			})
+			for user in self.ref.child("Users/").get():
+				listOfUsers.append(user)
 		return listOfUsers
 
 	def getRooms(self) -> list:

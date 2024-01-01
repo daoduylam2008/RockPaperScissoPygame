@@ -24,9 +24,10 @@ __author2__ = ""  # PHAM MINH KHOI
 __author3__ = ""  # LE CONG TIEN
 
 # ___ MAIN ___
-FPS = 60
+FPS = 90
 
 transform = {
+    "": 0,
     "rock": 1,
     "scissors": 2,
     "paper": 3
@@ -36,6 +37,8 @@ data = networking.Database()
 allUsers = data.getUsersName()
 
 uuid = data.createID()
+
+user = networking.User("",uuid)
 
 
 def game_play(player, opponent) -> str:
@@ -109,7 +112,7 @@ class MenuView:
         self.button_multiplay = self.create_button(surface, 'MultiPlayer', 50)
         self.button_quit = self.create_button(surface, 'Quit', 250)
 
-        self.button_quit.on_press_action = self.quit
+        self.button_quit.on_press_action = self.close
 
         self.groupWidget = uix.GroupWidget()
         self.groupWidget.widgets.extend(
@@ -126,7 +129,11 @@ class MenuView:
 
         return button
 
-    def quit(self):
+    def close(self):
+        try:
+            user.resetUserData()
+        except:
+            print("No user to delete")
         pygame.quit()
         sys.exit()
 
@@ -141,7 +148,6 @@ class MenuView:
 
 
 class SinglePlayerView:
-
     def __init__(self, surface, width, height, back, who_win, input_text):
         self.width = width
         self.height = height
@@ -267,7 +273,17 @@ class ServerView(uix.Widget):
     def __init__(self, surface, on_back_press):
         rect = (0, 0, surface.get_width(), surface.get_height())
         super().__init__(surface, rect)
+        # Networking
+        self.server = networking.Server(user)
+        try:
+            self.server.createRoom()
+        except: pass
+        self.room = self.server.provideRoomID()
+        self.isJoin = False
+        self.isChoose = False
+        self.who_win = ""
 
+        # View
         self.view = uix.GroupWidget()
         self.button_rock = uix.Button(surface, (
         surface.get_rect().bottomright[0] - 300, surface.get_rect().bottomright[1] - 80, 90, 50), 'Rock', '#ff6680',
@@ -285,6 +301,23 @@ class ServerView(uix.Widget):
         self.button_back = uix.Button(self.surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
                                       text_color='black', text_size=20)
 
+        self.imagePlayer = uix.ImageAnimation(surface, rect=(20, surface.get_rect().bottomright[1] - 235, 100, 100),
+                                              imageFolder='data/rock_animation/', scale=(230, 230), flip=False,
+                                              fps=60, angle=0)
+
+        # The Image Rock Paper Scissors in Single Player View for bot
+        self.imageOpponent = uix.ImageAnimation(surface, rect=(surface.get_rect().topright[0] - 260, 10, 100, 100),
+                                            imageFolder='data/rock_animation/', scale=(230, 230),
+                                            flip=True, fps=90, angle=90)
+        self.who_will_win = uix.Text(surface, (
+            surface.get_rect().center[0] - 53, surface.get_rect().center[1] - 20, 50, 50),
+                                     size=64,
+                                     color='white', text=self.who_win)
+        self.message = ""
+        self.messageText = uix.Text(self.surface, (150, 20, 100, 60), color=(255, 0, 0),
+                                    size=40,
+                                    text=self.message)
+
         # Action for button
         self.button_rock.on_press_action = self.on_rock_press
         self.button_paper.on_press_action = self.on_paper_press
@@ -295,29 +328,67 @@ class ServerView(uix.Widget):
         self.view.widgets.append(self.button_back)
         self.view.widgets.append(self.button_paper)
         self.view.widgets.append(self.button_scissors)
+        self.view.widgets.append(self.imagePlayer)
+        self.view.widgets.append(self.imageOpponent)
 
     def create(self):
+        self.who_will_win.create(self.who_win)
+        self.messageText.create(self.message)
         self.view.create_widget()
 
     def update(self, events):
+        self.message = "Room ID:" + self.room
+        try:
+            client = self.server.clientChoice()
+        except:
+            client = "101"
+            print("123")
+        if not self.isChoose:
+            self.server.updateChoice("")
+        else:
+            self.who_win = "Choose rock paper or scissors"
+        if client != "":
+            try:
+                self.who_win = game_play(transform[self.server.getChoice()], transform[client])
+            except:
+                pass
+
+            if self.isChoose:
+                self.imageOpponent.imageFolder = "data/" + client + "_animation/"
+            self.isChoose = False
+        elif client == "" and self.isChoose:
+            self.who_win = "Wait your opponent"
+        if client == "101":
+            self.who_win = "Wait your opponent to join the room\nThe room id:" + self.server.provideRoomID()
         self.view.update(events)
 
-    def on_rock_press(self): pass
+    def on_rock_press(self):
+        self.imagePlayer.imageFolder = "data/rock_animation/"
+        music('button_sound')
+        self.play("rock")
 
-    def on_scissors_press(self): pass
+    def on_scissors_press(self):
+        self.imagePlayer.imageFolder = "data/scissors_animation/"
+        music('button_sound')
+        self.play("scissors")
 
-    def on_paper_press(self): pass
+    def on_paper_press(self):
+        self.imagePlayer.imageFolder = "data/paper_animation/"
+        music('button_sound')
+        self.play("paper")
+
+    def play(self, choice):
+        self.server.updateChoice(choice)
+        self.isChoose = True
 
 
 class ClientView(uix.Widget):
-    def __init__(self, surface, on_back_press, room, user=None):
+    def __init__(self, surface, on_back_press):
         self.server = None
         rect = (0, 0, surface.get_width(), surface.get_height())
         super().__init__(surface, rect)
 
         self.who_win = "Fight"
-        self.room = room
-        self.user = user
 
         self.client = networking.Client
 
@@ -353,6 +424,11 @@ class ClientView(uix.Widget):
             surface.get_rect().center[0] - 53, surface.get_rect().center[1] - 20, 50, 50),
                                      size=64,
                                      color='white', text=self.who_win)        # Action for button
+        self.message = ""
+        self.messageText = uix.Text(self.surface, (self.surface.get_rect().center[0] - 160,
+                                                   self.surface.get_rect().center[1] - 170, 100, 60), color=(255, 0, 0),
+                                    text=self.message)
+
         self.button_rock.on_press_action = self.on_rock_press
         self.button_paper.on_press_action = self.on_paper_press
         self.button_scissors.on_press_action = self.on_scissors_press
@@ -362,26 +438,43 @@ class ClientView(uix.Widget):
         self.view.widgets.append(self.button_back)
         self.view.widgets.append(self.button_paper)
         self.view.widgets.append(self.button_scissors)
-        self.view.widgets.append(self.who_will_win)
         self.view.widgets.append(self.imagePlayer)
+        self.view.widgets.append(self.imageOpponent)
 
         # networking
-        self.client = networking.Client(self.user)
+        self.room = ""
+        self.client = networking.Client(user)
         self.isJoin = False
+        self.isChoose = False
 
     def create(self):
+        self.who_will_win.create(self.who_win)
+        self.messageText.create(self.message)
         self.view.create_widget()
 
     def update(self, events):
         if not self.isJoin:
+            self.client.joinRoom(self.room)
+            print("Joined to room id:", self.room)
+            self.isJoin = True
+        self.view.update(events)
+
+        server = self.client.serverChoice()
+        if not self.isChoose:
+            self.client.updateChoice("")
+        else:
+            self.who_win = "Choose rock paper or scissors"
+        if server != "":
             try:
-                self.client.joinRoom(self.room)
-                self.isJoin = True
+                self.who_win = game_play(transform[self.client.getChoice()], transform[server])
             except:
                 pass
 
-        self.view.update(events)
-        self.server = self.client.serverChoice()
+            if self.isChoose:
+                self.imageOpponent.imageFolder = "data/" + server + "_animation/"
+            self.isChoose = False
+        elif server == "" and self.isChoose:
+            self.who_win = "Wait your opponent"
 
     def on_rock_press(self):
         self.imagePlayer.imageFolder = "data/rock_animation/"
@@ -400,17 +493,16 @@ class ClientView(uix.Widget):
 
     def play(self, choice):
         self.client.updateChoice(choice)
-        if self.server != "":
-            self.who_win = game_play(transform[choice], self.server)
+        self.isChoose = True
 
 
 class SelectClientServerView(uix.Widget):
-    def __init__(self, surface, back_action, user):
+    def __init__(self, surface, back_action):
         rect = (0, 0, surface.get_width(), surface.get_height())
         super().__init__(surface, rect)
 
         # Networking
-        self.user = user
+
         # View
         self.view = uix.GroupWidget()
 
@@ -424,17 +516,18 @@ class SelectClientServerView(uix.Widget):
         # Create the button for view
         self.roomInputBox = uix.InputBox(self.surface, (
             self.surface.get_rect().center[0] - 150, self.surface.get_rect().center[1] - 150, 100, 60))
+
         self.joinRoomButton = uix.Button(self.surface, (
-            self.surface.get_rect().center[0] - 80, self.surface.get_rect().center[1] - 50, 160, 60), text='Join Room',
-                                         color=(204, 204, 196), bottom_rect_color=(255, 255, 255),
-                                         text_color='#FFFF00')
+            self.surface.get_rect().center[0] - 80, self.surface.get_rect().center[1] - 50, 160, 60),
+                                           text='Join Room',
+                                           color=(32, 178, 170), bottom_rect_color=(255, 255, 255))
         self.joinRoomButton.on_press_action = self.joinRoom
 
         self.createRoomButton = uix.Button(self.surface, (
             self.surface.get_rect().center[0] - 80, self.surface.get_rect().center[1] + 50, 160, 60),
                                            text='Create Room',
                                            color=(32, 178, 170), bottom_rect_color=(255, 255, 255))
-        self.createRoomButton.on_press_action = self.createRoomButton
+        self.createRoomButton.on_press_action = self.createRoom
 
         self.button_back = uix.Button(surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
                                       text_color='black', text_size=20)
@@ -455,14 +548,13 @@ class SelectClientServerView(uix.Widget):
             self.button_back,
         ]
         self.serverView = ServerView(self.surface, self.backToSelection)
-        self.clientView = ClientView(self.surface, self.backToSelection, self.roomInputBox.text, self.user)
+        self.clientView = ClientView(self.surface, self.backToSelection)
 
     def update(self, events):
         if self.layer["selection"]:
             self.view.update(events)
         elif self.layer['server']:
             self.serverView.update(events)
-
         elif self.layer['client']:
             self.clientView.update(events)
 
@@ -474,29 +566,27 @@ class SelectClientServerView(uix.Widget):
         elif self.layer['server']:
             self.serverView.create()
         elif self.layer['client']:
-            print(231)
             self.clientView.create()
 
     def joinRoom(self):
         if self.roomInputBox.text not in data.getRooms():
             self.message = "Type room again"
-        elif not self.clientView.client.joinRoom(self.roomInputBox.text):
-            self.message = "Room not found"
         else:
-            room = self.roomInputBox.text
-            self.clientView.room = room
-            self.clientView.room = self.roomInputBox.text
             self.message = ""
+            self.clientView.room = self.roomInputBox.text
             self.layer['selection'] = False
             self.layer['server'] = False
             self.layer['client'] = True
 
     def createRoom(self):
+        print("Created room successfully")
         self.layer['selection'] = False
         self.layer['server'] = True
         self.layer['client'] = False
 
     def backToSelection(self):
+        user.resetUserData()
+        print("Reset user data")
         self.layer['selection'] = True
         self.layer['server'] = False
         self.layer['client'] = False
@@ -510,10 +600,9 @@ class MultiPlayerView(uix.Widget):
         self.view = uix.GroupWidget()
 
         # Networking
-        self.user = None
         self.user_infor = None
 
-        self.selectionView = SelectClientServerView(surface, back_action, self.user)
+        self.selectionView = SelectClientServerView(surface, back_action)
 
         self.view.widgets = [
             self.selectionView
@@ -523,11 +612,6 @@ class MultiPlayerView(uix.Widget):
         self.view.create_widget()
 
     def update(self, events):
-        try:
-            self.user = networking.User(self.user_infor, uuid)
-        except:
-            pass
-
         self.view.update(events)
 
 
@@ -538,6 +622,8 @@ class Settings:
     BUTTON_QUIT_COLOR = (32, 178, 170)
 
     def __init__(self, surface, width, height, func_back, view, SettingsView):
+        self.labelAnouncementEasy = None
+        self.groupWidget_chooseDifficulty = None
         self.label_anouncement = None
         self.width = width
         self.height = height
@@ -703,9 +789,6 @@ class RockPaperScissor:
                                      self.screen.get_rect().center[1] - 170, 100, 60),
                                     color=(255, 0, 0))
 
-        # Networking
-        self.user = None
-
     def run(self):
 
         while True:
@@ -748,13 +831,12 @@ class RockPaperScissor:
                 self.menuView.create_widgets()
                 self.menuView.update(events)
             elif self.view['MultiPlay Menu']:
-                try:
-                    self.user = networking.User(self.menuView.inputBox.text, uuid)
-                    self.multiPlayerView.user = self.user
-                    self.multiPlayerView.update(events)
-                    self.multiPlayerView.create()
-                except:
-                    pass
+
+                # self.multiPlayerView.view.widgets = [
+                #     self.multiPlayerView
+                # ]
+                self.multiPlayerView.update(events)
+                self.multiPlayerView.create()
 
             # Update and set FPS
             self.clock.tick(FPS)
@@ -797,23 +879,39 @@ class RockPaperScissor:
         elif self.multiPlayerView.selectionView.roomInputBox.text == "":
             self.message = "Please type your room"
             self.message = ""
+
             self.view['SinglePlay Menu'] = False
             self.view['Settings Menu'] = False
             self.view['MultiPlay Menu'] = True
             self.view['Main Menu'] = False
+            user.username = self.menuView.inputBox.text
+
+            print("Update user's data")
+            user.updateToData()
 
     def close(self):
-        self.user.resetUserData()
+        try:
+            user.resetUserData()
+        except:
+            print("No user to delete")
+        try:
+            self.multiPlayerView.selectionView.clientView.client.resetData()
+        except:
+            print("Client is not recognized")
+        print("Exit program...")
         pygame.quit()
         sys.exit()
 
     @staticmethod
     def readSizeScreen():
+        print("Read screen's size...")
         with open('data/size.txt', 'r') as file:
             size = [i.rstrip() for i in file.readlines()]
         return size
 
 
 if __name__ == "__main__":
+    print("Start running program...")
     game = RockPaperScissor()
     game.run()
+

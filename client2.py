@@ -42,6 +42,7 @@ if host == 1:
 		print("Tên đã có người dùng")
 		name = input("Tên: ")
 	user = networking.User(name, uuid)
+	user.updateToData()
 
 	server = networking.Server(user)
 	server.createRoom()
@@ -72,6 +73,7 @@ elif host == 0:
 		name = input("Tên: ")
 
 	user = networking.User(name, uuid)
+	user.updateToData()
 
 	client = networking.Client(user)
 

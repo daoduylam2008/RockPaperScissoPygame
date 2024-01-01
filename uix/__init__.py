@@ -30,9 +30,12 @@ class GroupWidget:
     def update(self, events):
         for widget in self.widgets:
             widget.update(events)
+<<<<<<< Updated upstream
             # except Exception as bug:
             # print(bug)
             # print("There is no widget or your widget is not recognize as Widget")
+=======
+>>>>>>> Stashed changes
 
     def create_widget(self):
         for widget in self.widgets:
