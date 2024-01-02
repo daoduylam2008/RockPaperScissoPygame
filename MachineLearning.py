@@ -9,7 +9,7 @@ import csv
 class Computer:
 
     def __init__(self):
-        self.computer_choices = ["rock", "paper", "scissors"]
+        self.computer_choices = [1, 2, 3]
         self.history = []
         self.our_state = []
 
@@ -22,7 +22,7 @@ class Computer:
         return random.choice(self.computer_choices)
 
     def medium(self):
-        if not self.our_state or self.our_state == 6:
+        if not  self.our_state == 6:
             return random.choice(self.computer_choices)
         elif self.our_state[-1] == 4:
             return self.computer_choices[int(self.history[-2]) - 1]
@@ -31,9 +31,11 @@ class Computer:
                 return self.computer_choices[self.history[-2]]
             else:
                 return self.computer_choices[0]
+        else:
+            return random.choice(self.computer_choices)
 
     def hard(self):
-        if len(self.history) <= 2:
+        if len(self.history) <= 3:
             return random.choice(self.computer_choices)
         else:
             # Clean and setup data
@@ -85,6 +87,8 @@ class Computer:
 
             # Compare evaluation
             if rf_model_score >= dt_model_score:
-                return player_choice_dict[(rf_model.predict([[self.history[len(self.history) - 1], 4]])[0])]
+                return (rf_model.predict([[self.history[len(self.history) - 1], 4]])[0])
             else:
-                return player_choice_dict[(dt_model.predict([[self.history[len(self.history) - 1], 4]])[0])]
+                return (dt_model.predict([[self.history[len(self.history) - 1], 4]])[0])
+
+print(Computer().easy())

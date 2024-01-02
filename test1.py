@@ -21,8 +21,8 @@ import MachineLearning
 
 # Authorize information, gmail
 __author1__ = "daoduylam2020@gmail.com"  # DAO DUY LAM
-__author2__ = ""  # PHAM MINH KHOI
-__author3__ = ""  # LE CONG TIEN
+__author2__ = "phamminhkhoi10122008@gmail.com"  # PHAM MINH KHOI
+__author3__ = "ltien9505@gmail.com"  # LE CONG TIEN
 
 # ___ MAIN ___
 FPS = 90
@@ -248,7 +248,7 @@ class SinglePlayerView:
             imageBot_choice = MachineLearning.Computer().easy()
         elif difficulty == "medium":
             imageBot_choice = MachineLearning.Computer().medium()
-        elif difficulty == "medium":
+        elif difficulty == "hard":
             imageBot_choice = MachineLearning.Computer().hard()
         else:
             imageBot_choice = MachineLearning.Computer().easy()
@@ -256,16 +256,16 @@ class SinglePlayerView:
         self.imageBot_choice_list.append(imageBot_choice)
         self.imageBot_choice_list = self.imageBot_choice_list[-1:]
 
-        rpg_choice = {
-            1: 'rock',
-            2: 'scissors',
-            3: 'paper'
+        rpg_choice= {1:'rock',
+                     2:'scissors',
+                     3:'paper'
         }
         ourState = {
             'Win': '4',
             'Lose': '5',
             'Draw': '6'
         }
+
         self.imageBot.imageFolder = 'data/' + rpg_choice[self.imageBot_choice_list[-1]] + '_animation/'
 
         self.who_win = game_play(playerChoice, self.imageBot_choice_list[-1])
@@ -745,8 +745,8 @@ class Settings:
         self.settingsView['Difficulty'] = True
 
         easyButton = self.create_button(self.surface, text='Easy Mode', y_offset=-50)
-        mediumButton = self.create_button(self.surface, text="Medium mode", y_offset=+50)
-        difficultyButton = self.create_button(self.surface, text='Difficult Mode', y_offset=+100)
+        mediumButton = self.create_button(self.surface, text="Medium mode", y_offset=50)
+        difficultyButton = self.create_button(self.surface, text='Difficult Mode', y_offset=+150)
 
         easyButton.on_press_action = self.on_easy
         mediumButton.on_press_action = self.on_medium

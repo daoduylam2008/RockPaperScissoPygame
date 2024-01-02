@@ -34,7 +34,7 @@ class Computer:
                 return self.computer_choices[0]
 
     def hard(self):
-        if len(self.history) <= 2:
+        if len(self.history) <= 3:
             return random.choice(self.computer_choices)
         else:
             # Clean and setup data
@@ -89,3 +89,5 @@ class Computer:
                 return player_choice_dict[(rf_model.predict([[self.history[len(self.history) - 1], 4]])[0])]
             else:
                 return player_choice_dict[(dt_model.predict([[self.history[len(self.history) - 1], 4]])[0])]
+
+print(Computer().easy())
