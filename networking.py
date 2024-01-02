@@ -1,6 +1,5 @@
 import firebase_admin
-from firebase_admin import credentials, db, firestore
-import json
+from firebase_admin import credentials, db
 
 # Create environment for firebase
 cred = credentials.Certificate("data/serviceKey/serviceAccountKey.json")

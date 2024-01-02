@@ -7,25 +7,692 @@ Developed by DAO DUY LAM, PHAM MINH KHOI, LE CONG TIEN
 """
 # Python Package Index
 import pygame
+import pygame as _pygame
+from pygame.sprite import Sprite as _Sprite
+pygame.init()
 
 # System Module and Libraries
 import sys
-import uix
+import os
+
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
 import random
+import csv
 
-import networking
-import MachineLearning
-
-# Color
-
+import firebase_admin
+from firebase_admin import credentials, db
 
 # Authorize information, gmail
 __author1__ = "daoduylam2020@gmail.com"  # DAO DUY LAM
 __author2__ = "phamminhkhoi10122008@gmail.com"  # PHAM MINH KHOI
 __author3__ = "ltien9505@gmail.com"  # LE CONG TIEN
 
+
 # ___ MAIN ___
-FPS = 90
+# Graphic User Interface
+class Widget:
+	def __init__(self, surface, rect):
+		self.surface = surface
+		self.rect = _pygame.Rect(rect)
+
+	def update(self, events):
+		pass
+
+	def create(self):
+		pass
+
+
+class GroupWidget:
+	def __init__(self,
+				 widgets=None):
+		if widgets is None:
+			widgets = []
+		self.widgets = widgets
+
+	def update(self, events):
+		for widget in self.widgets:
+			widget.update(events)
+
+	def create_widget(self):
+		for widget in self.widgets:
+			widget.create()
+
+
+class Text(Widget):
+	def __init__(self,
+				 surface,
+				 rect,
+				 text="text",
+				 size=32,
+				 color=(0, 0, 0)
+				 ):
+		super().__init__(surface, rect)
+		self._font = None
+		self._txt = None
+		self.text = text
+		self.color = color
+		self.size = size
+
+	def create(self, text):
+		self.text = text
+		self._txt = self.render_text()
+		self.surface.blit(self._txt, self.rect)
+
+	def update(self, events):
+		pass
+
+	def render_text(self):
+		self._font = _pygame.font.Font(None, self.size)
+		_txt = self._font.render(self.text, True, self.color)
+		return _txt
+
+
+class Button(Widget):
+	def __init__(self,
+				 surface,
+				 rect: tuple,
+				 text="Button",
+				 color=(180, 180, 180),
+				 on_touch_color=(150, 150, 150),
+				 bottom_rect_color=(0, 0, 0),
+				 text_color=(255, 255, 255),
+				 on_press_action=...,
+				 on_touch_action=...,
+				 button=1,
+				 alignment="center",
+				 text_size=30,
+				 elevation=6,
+				 border_radius=10
+				 ):
+		super().__init__(surface, rect)
+
+		self.original_color = color
+		self.color = color
+		self.on_touch_color = on_touch_color
+		self.text_color = text_color
+
+		self.text_size = text_size
+
+		self.text = self.textForButton(text)
+
+		self.on_press_action = on_press_action
+		self.on_touch_action = on_touch_action
+
+		self.button = button
+
+		self.alignment = alignment
+
+		# Make the elevation for button
+		self.elevation = elevation
+		self.border_radius = border_radius
+
+		# The bottom rectangle under the top rectangle
+		self.bottom_rect = pygame.Rect(rect)
+		self.bottom_rect_color = bottom_rect_color
+
+		self.access = False
+
+	def create(self):
+		mouse_pos = _pygame.mouse.get_pos()
+		start_time, time = 110, 0
+		timing = pygame.time.get_ticks()
+
+		x, y = self._alignment(self.alignment)
+
+		self.bottom_rect.center = self.rect.center
+		self.bottom_rect.y = self.rect.y + self.elevation + 2
+
+		if self.rect.collidepoint(mouse_pos):
+			if _pygame.mouse.get_pressed()[0]:
+				#
+				self.rect.y += self.elevation
+
+				y += 3
+				_pygame.draw.rect(self.surface, self.bottom_rect_color, self.bottom_rect,
+								  border_radius=self.border_radius)
+				_pygame.draw.rect(self.surface, self.color, self.rect, border_radius=self.border_radius)
+
+				if timing - time > start_time:
+					time = timing
+					self.rect.y -= self.elevation
+
+
+			else:
+				_pygame.draw.rect(self.surface, self.bottom_rect_color, self.bottom_rect,
+								  border_radius=self.border_radius)
+				_pygame.draw.rect(self.surface, self.color, self.rect, border_radius=self.border_radius)
+
+		else:
+			_pygame.draw.rect(self.surface, self.bottom_rect_color, self.bottom_rect, border_radius=self.border_radius)
+			_pygame.draw.rect(self.surface, self.color, self.rect, border_radius=self.border_radius)
+
+			try:
+				self.on_touch_action()
+			except:
+				pass
+
+		self.surface.blit(self.text, (x, y))
+
+	def update(self, events):
+		mouse_pos = _pygame.mouse.get_pos()
+
+		for event in events:
+			if event.type == pygame.MOUSEBUTTONDOWN:
+				if event.button == self.button:
+					if self.rect.collidepoint(mouse_pos):
+						if pygame.mouse.get_pressed()[0]:
+							self.on_press_action()
+
+	def _alignment(self, alignment):
+		if alignment == "center":
+			x = self.rect.x + (self.rect.width - self.text.get_width()) / 2
+			y = self.rect.y + (self.rect.height - self.text.get_height()) / 2
+		elif alignment == "left":
+			x = self.rect.x
+			y = self.rect.y + (self.rect.height - self.text.get_height()) / 2
+		elif alignment == "right":
+			x = self.rect.x + self.rect.width - self.text.get_width()
+			y = self.rect.y + (self.rect.height - self.text.get_height()) / 2
+		elif alignment == "top":
+			x = self.rect.x + (self.rect.width - self.text.get_width()) / 2
+			y = self.rect.y
+		elif alignment == "bottom":
+			x = self.rect.x + (self.rect.width - self.text.get_width()) / 2
+			y = self.rect.y + self.rect.height - self.text.get_height()
+		elif alignment == "top-left":
+			x = self.rect.x
+			y = self.rect.y
+		elif alignment == "top-right":
+			x = self.rect.x + self.rect.width - self.text.get_width()
+			y = self.rect.y
+		elif alignment == "bottom-left":
+			x = self.rect.x
+			y = self.rect.y + self.rect.height - self.text.get_height()
+		elif alignment == "bottom-right":
+			x = self.rect.x + self.rect.width - self.text.get_width()
+			y = self.rect.y + self.rect.height - self.text.get_height()
+		else:
+			x = 0
+			y = 0
+		return x, y
+
+	def textForButton(self, text):
+		font = _pygame.font.SysFont('timesnewroman', self.text_size)
+		txt = font.render(text, True, self.text_color)
+
+		return txt
+
+
+class InputBox(Widget):
+
+	def __init__(self,
+				 surface,
+				 rect,
+				 text='',
+				 action=None
+				 ):
+		super().__init__(surface, rect)
+
+		self._COLOR_INACTIVE = _pygame.Color('lightskyblue3')
+		self._COLOR_ACTIVE = _pygame.Color('dodgerblue2')
+		self._FONT = _pygame.font.Font(None, self.rect.height - 20)
+
+		self.color = self._COLOR_INACTIVE
+
+		self.text = text
+		self.txt_surface = self._FONT.render(text, True, self.color)
+
+		self.active = False
+
+		self.action = action
+
+	def _update(self):
+		# Resize the box if the text is too long.
+		width = max(300, self.txt_surface.get_width() + 10)
+		self.rect.w = width
+
+	def update(self, events):
+		for event in events:
+			if event.type == _pygame.MOUSEBUTTONDOWN:
+				# If the user clicked on the input_box rect.
+				if self.rect.collidepoint(event.pos):
+					# Toggle the active variable.
+					self.active = not self.active
+				else:
+					self.active = False
+
+				# Change the current color of the input box.
+				self.color = self._COLOR_ACTIVE if self.active else self._COLOR_INACTIVE
+			if event.type == _pygame.KEYDOWN:
+				if self.active:
+					if event.key == _pygame.K_RETURN:
+						self.text = ''
+						try:
+							self.action()
+						except:
+							pass
+					elif event.key == _pygame.K_BACKSPACE:
+						self.text = self.text[:-1]
+					else:
+						if len(self.text) <= 6:
+							self.text += event.unicode
+					# Re-render the text.
+					self.txt_surface = self._FONT.render(self.text, True, self.color)
+
+	def create(self):
+		# Update input box's width
+		self._update()
+
+		# Blit the text.
+		self.surface.blit(self.txt_surface, (self.rect.x + 90, self.rect.y + 5))
+
+		# Blit the rect.
+		_pygame.draw.rect(self.surface, self.color, self.rect, 2)
+
+	def reset_text(self):
+		self.text = self.text[:-1]
+
+
+class Image(Widget):
+	def __init__(self,
+				 surface,
+				 path,
+				 pos: tuple,
+				 view=None,
+				 animation=None
+				 ):
+		super().__init__(surface, pos)
+		self.view = view
+
+		self._resizable = False
+		self.path = path
+
+		self.image = _pygame.image.load(self.path).convert()
+
+		self.action = None
+
+	def create(self):
+		self.image = _pygame.image.load(self.path).convert()
+		self.surface.blit(self.image, self.rect)
+
+	def scaleToFill(self, view="surface"):
+		if view == "surface" and self._resizable:
+			self.image = _pygame.transform.scale(self.image, (self.surface.get_width(), self.surface.get_height()))
+		elif view == "view" and self._resizable:
+			pass
+
+	def onTap(self, action):
+		self.action = action
+
+	def update(self, events):
+		mouse_pos = _pygame.mouse.get_pos()
+		for event in events:
+			if event.type == _pygame.MOUSEBUTTONDOWN:
+				if self.rect.collidepoint(mouse_pos):
+					try:
+						self.action()
+					except:
+						pass
+
+	def frame(self, width=0, height=0):
+		if self._resizable:
+			pass
+
+
+class _SpriteImage(_Sprite):
+	def __init__(self, imageFolder, rect, scale, flip, fps, angle):
+		self.clock = pygame.time.Clock()
+
+		super(_SpriteImage, self).__init__()
+
+		self.imageFolder = os.listdir(imageFolder)
+		self.images = []
+
+		self.fps = fps
+
+		self.scale = scale
+		self.flip = flip
+		self.angle = angle
+
+		for i in self.imageFolder:
+			self.images = [pygame.transform.rotate(
+				pygame.transform.flip(pygame.transform.scale(pygame.image.load(imageFolder + i), self.scale), self.flip,
+									  False), self.angle) for i in self.imageFolder]
+
+		self.index = 0
+
+		self.image = self.images[self.index]
+
+		self.rect = _pygame.Rect(rect)
+
+	def update(self, imageFolder):
+		self.clock.tick(self.fps)
+
+		self.images.clear()
+		self.imageFolder = os.listdir(imageFolder)
+		self.imageFolder.sort(reverse=False)
+		for i in self.imageFolder:
+			self.images = [pygame.transform.rotate(
+				pygame.transform.flip(pygame.transform.scale(pygame.image.load(imageFolder + i), self.scale), self.flip,
+									  False), self.angle) for i in self.imageFolder]
+
+		self.index += 0.4
+
+		if self.index > len(self.images):
+			self.index = len(self.images) - 1
+		self.image = self.images[int(self.index)]
+
+	def returnIndex(self):
+		self.index = 0
+
+
+class ImageAnimation(Widget):
+	def __init__(self, surface, rect=None, imageFolder=None, scale=None, flip=None, fps=None, angle=0):
+		super().__init__(surface, rect)
+
+		if imageFolder is None:
+			imageFolder = ''
+		self.imageFolder = imageFolder
+		self.scale = scale
+		self.flip = flip
+		self.fps = fps
+		self.angle = angle
+		self._imageSprite = _SpriteImage(self.imageFolder, self.rect, scale=self.scale, flip=self.flip, fps=self.fps,
+										 angle=self.angle)
+		self._groupSprite = pygame.sprite.Group(self._imageSprite)
+
+	def update(self, events):
+		self._groupSprite.update(self.imageFolder)
+
+	def returnIndex(self):
+		self._imageSprite.returnIndex()
+
+	def create(self):
+		self._groupSprite.draw(self.surface)
+
+
+class Separator(Widget):
+	def __init__(self, surface, rect, color):
+		super().__init__(surface, rect)
+
+		self.color = color
+
+	def update(self, events): pass
+
+	def create(self):
+		pygame.draw.rect(self.surface, self.color, self.rect)
+
+
+# networking
+# Create environment for firebase
+cred = credentials.Certificate("data/serviceKey/serviceAccountKey.json")
+firebase_admin.initialize_app(cred, {
+	'databaseURL': "https://rockpaperscissor-6753d-default-rtdb.asia-southeast1.firebasedatabase.app/"
+})
+
+
+class User:
+	def __init__(self, username, uuid, choice=""):
+		self.username = username
+		self.uid = uuid
+		self.choice = choice
+		self.highestScore = 0
+
+	def getData(self):
+		return {
+			self.username: {
+				"username": self.username,
+				"id": self.uid,
+				"choice": self.choice,
+				"highest_score": self.highestScore,
+			}
+		}
+
+	def updateToData(self):
+		# Write data directly to database
+		data = db.reference("/")
+		data.child("Users/").update(self.getData())
+
+	def resetUserData(self):
+		# After using data we should delete user data to prevent from overloading
+		data = db.reference("/")
+		data.child("Users/" + self.username + "/").set({})
+
+
+class Server:
+	def __init__(self, user: User):
+		self.user = user
+		self.room = db.reference("room/")
+
+	def createRoom(self):
+		print(self.user.getData())
+		self.room.update(
+			{
+				self.user.uid: self.user.getData()
+			}
+		)
+
+	def updateChoice(self, choice):
+		self.user.choice = choice
+		self.room.child(self.user.uid + "/" + self.user.username).update({"choice": choice})
+
+	def provideRoomID(self) -> str:
+		return self.user.uid
+
+	def getChoice(self) -> str:
+		return self.user.choice
+
+	def clientChoice(self) -> str:
+		userInRoom = self.room.child(self.provideRoomID()).get()
+
+		client = {}
+
+		for user in userInRoom:
+			if user != self.user.username:
+				client = userInRoom[user]
+		try:
+			return client["choice"]
+		except:
+			return ""
+
+	def resetRoomData(self):
+		self.room.child(self.provideRoomID()).set({})
+
+
+class Client:
+	def __init__(self, user: User):
+		self.user = user
+		self.room = db.reference("room/")
+
+	def joinRoom(self, room_id: str) -> bool:
+		self.room = self.room.child(room_id + "/")
+		userInRoom = 0
+		try:
+			for i in self.room.get():
+				userInRoom += 1
+		except:
+			userInRoom = -1
+
+		if userInRoom == 1:
+			self.room.update(self.user.getData())
+			print("tham gia vô vòng", room_id)
+			return True
+		elif userInRoom == -1:
+			print("Khong tim thay")
+			return False
+		else:
+			print("Phòng đầy người")
+			return False
+
+	def updateChoice(self, choice):
+		self.user.choice = choice
+		self.room.child(self.user.username).update({"choice": choice})
+
+	def getChoice(self) -> str:
+		return self.user.choice
+
+	def serverChoice(self) -> str:
+		userInRoom = self.room.get()
+
+		server = {}
+
+		for user in userInRoom:
+			if user != self.user.username:
+				server = userInRoom[user]
+		try:
+			return server["choice"]
+		except:
+			return ""
+
+	def resetData(self):
+		self.room.child(self.user.username).set({})
+
+
+class Database:
+	def __init__(self):
+		self.ref = db.reference("/")
+
+	def getUsersName(self) -> list:
+		listOfUsers = []
+		try:
+			for user in self.ref.child("Users/").get():
+				listOfUsers.append(user)
+		except:
+			self.ref.update({
+				"Users": {
+					"*": "*"
+				},
+
+				"room": {
+					"*": "*"
+				}
+
+			})
+			for user in self.ref.child("Users/").get():
+				listOfUsers.append(user)
+		return listOfUsers
+
+	def getRooms(self) -> list:
+		rooms = []
+		for room in self.ref.child("room/").get():
+			rooms.append(room)
+		return rooms
+
+	def getIDS(self) -> list:
+		IDS = []
+		users = self.getUsersName()
+		users.remove("*")
+		for user in users:
+			IDS.append(self.ref.child("Users/" + user + "/").get()["id"])
+
+		return IDS
+
+	def createID(self) -> str:
+		IDS = self.getIDS()
+		max_id = [i for i in range(1, 999999)]
+		availableID = max_id
+		try:
+			for i in IDS:
+				for j in max_id:
+					if int(i) - j == 0:
+						availableID.remove(j)
+		except:
+			availableID = [1]
+
+		return str((6 - len(str(availableID[0]))) * "0" + str(availableID[0]))
+
+
+# Machine Learning
+class Computer:
+	def __init__(self):
+		self.computer_choices = [1, 2, 3]
+		self.history = []
+		self.our_state = []
+
+		with open('data/history.txt', 'r') as file:
+			self.history = [int(i) for i in file.read()]
+		with open('data/history1.txt', 'r') as file1:
+			self.our_state = [int(i) for i in file1.read()]
+
+	def easy(self):
+		return random.choice(self.computer_choices)
+
+	def medium(self):
+		if not self.our_state == 6:
+			return random.choice(self.computer_choices)
+		elif self.our_state[-1] == 4:
+			return self.computer_choices[int(self.history[-2]) - 1]
+		elif self.our_state[-1] == 5:
+			if self.history[-2] - 1 <= 1:
+				return self.computer_choices[self.history[-2]]
+			else:
+				return self.computer_choices[0]
+		else:
+			return random.choice(self.computer_choices)
+
+	def hard(self):
+		if len(self.history) <= 3:
+			return random.choice(self.computer_choices)
+		else:
+			# Clean and setup data
+			player_choice_dict = {1: 'Rock', 2: 'Paper', 3: 'Scissors'}
+			our_state_dict = {4: 'Win', 5: 'Lose', 6: 'Draw'}
+			fields = ['player_choice', 'our_choice', 'our_state']
+			rows = []
+			our_choice = 0
+			for i in range(len(self.history) - 1):
+				if our_state_dict[self.our_state[i]] == 'Draw':
+					our_choice = self.history[i]
+				elif our_state_dict[self.our_state[i]] == 'Win':
+					match player_choice_dict[self.history[i]]:
+						case 'Rock':
+							our_choice = 2
+						case 'Paper':
+							our_choice = 3
+						case 'Scissors':
+							our_choice = 1
+				else:
+					match player_choice_dict[self.history[i]]:
+						case 'Rock':
+							our_choice = 3
+						case 'Paper':
+							our_choice = 1
+						case 'Scissors':
+							our_choice = 2
+				rows.append([self.history[i], our_choice, self.our_state[i]])
+
+			with open('data/temp.csv', 'w') as csv_file:
+				csvwriter = csv.writer(csv_file)
+				csvwriter.writerow(fields)
+				csvwriter.writerows(rows)
+
+			df = pd.read_csv('data/temp.csv')
+			features = ['player_choice', 'our_state']
+			X = df.dropna(axis=0)[features].values
+			y = df.dropna(axis=0)['our_choice']
+			X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, test_size=0.2, random_state=0)
+
+			# Train and evaluate models
+			dt_model = DecisionTreeClassifier(random_state=1)
+			dt_model.fit(X_train, y_train)
+			dt_model_score = dt_model.score(X_test, y_test)
+
+			rf_model = RandomForestClassifier(random_state=1)
+			rf_model.fit(X_train, y_train)
+			rf_model_score = rf_model.score(X_test, y_test)
+
+			# Compare evaluation
+			if rf_model_score >= dt_model_score:
+				return (rf_model.predict([[self.history[len(self.history) - 1], 4]])[0])
+			else:
+				return (dt_model.predict([[self.history[len(self.history) - 1], 4]])[0])
+
+
+# Initialization
+FPS = 30
 
 transform = {
 	"": 0,
@@ -34,12 +701,12 @@ transform = {
 	"paper": 3
 }
 
-data = networking.Database()
+data = Database()
 allUsers = data.getUsersName()
 
 uuid = data.createID()
 
-user = networking.User("", uuid)
+user = User("", uuid)
 
 
 def game_play(player, opponent) -> str:
@@ -108,7 +775,7 @@ class MenuView:
 		self.width = width
 		self.height = height
 
-		self.inputBox = uix.InputBox(surface,
+		self.inputBox = InputBox(surface,
 									 (surface.get_rect().center[0] - 160, surface.get_rect().center[1] - 150, 100, 60))
 		self.button_singleplay = self.create_button(surface, 'SinglePlayer', -50)
 		self.button_setting = self.create_button(surface, 'Settings', 150, self.BUTTON_QUIT_COLOR)
@@ -117,7 +784,7 @@ class MenuView:
 
 		self.button_quit.on_press_action = self.close
 
-		self.groupWidget = uix.GroupWidget()
+		self.groupWidget = GroupWidget()
 		self.groupWidget.widgets.extend(
 			[self.button_singleplay, self.button_multiplay, self.button_setting, self.button_quit, self.inputBox])
 
@@ -125,7 +792,7 @@ class MenuView:
 		self.background_image = pygame.transform.scale(self.background_image, (int(self.width), int(self.height)))
 
 	def create_button(self, surface, text, y_offset, color=BUTTON_COLOR):
-		button = uix.Button(surface, (
+		button = Button(surface, (
 			surface.get_rect().center[0] - 80, surface.get_rect().center[1] + y_offset, 150, 60), text=text,
 							color=color, bottom_rect_color=self.BUTTON_RECT_COLOR,
 							text_color=self.BUTTON_TEXT_COLOR)
@@ -169,35 +836,35 @@ class SinglePlayerView:
 		self.buttons = {name: self.create_buttons(surface, name.capitalize(), action) for name, action in
 						self.button_action.items()}
 
-		self.button_back = uix.Button(surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
+		self.button_back = Button(surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
 									  text_color='black', text_size=20)
 		self.button_back.on_press_action = back
 
-		self.groupWidget_single = uix.GroupWidget()
+		self.groupWidget_single = GroupWidget()
 		self.groupWidget_single.widgets.extend(self.buttons.values())
 		self.groupWidget_single.widgets.append(self.button_back)
 
 		# The Image Rock Paper Scissors in Single Player View for player
-		self.imagePlayer = uix.ImageAnimation(surface, rect=(20, surface.get_rect().bottomright[1] - 235, 100, 100),
+		self.imagePlayer = ImageAnimation(surface, rect=(20, surface.get_rect().bottomright[1] - 235, 100, 100),
 											  imageFolder='data/scissors_animation/', scale=(230, 230), flip=False,
 											  fps=60, angle=0)
 
 		# The Image Rock Paper Scissors in Single Player View for bot
-		self.imageBot = uix.ImageAnimation(surface, rect=(surface.get_rect().topright[0] - 260, 10, 100, 100),
+		self.imageBot = ImageAnimation(surface, rect=(surface.get_rect().topright[0] - 260, 10, 100, 100),
 										   imageFolder='data/scissors_animation/', scale=(230, 230),
 										   flip=True, fps=90, angle=90)
 
 		# Blit the text win or lose or draw
-		self.who_will_win = uix.Text(surface, (
+		self.who_will_win = Text(surface, (
 			surface.get_rect().center[0] - 53, surface.get_rect().center[1] - 20, 50, 50),
 									 size=64,
 									 color='black', text=self.who_win)
 		# The Player Name
-		self.playerName = uix.Text(surface, (50, surface.get_rect().bottomright[1] - 100, 50, 50), size=32,
+		self.playerName = Text(surface, (50, surface.get_rect().bottomright[1] - 100, 50, 50), size=32,
 								   color='black',
 								   text=self.input_text)
 		# The Bot nAME
-		self.bot = uix.Text(surface, (surface.get_rect().topright[0] - 130, 80, 50, 50), size=32, color='black',
+		self.bot = Text(surface, (surface.get_rect().topright[0] - 130, 80, 50, 50), size=32, color='black',
 							text='Bot')
 
 		self.backgroundImageSinglePlayer = pygame.image.load('data/background.png')
@@ -212,7 +879,7 @@ class SinglePlayerView:
 				x_offset = 200
 			case 'Paper':
 				x_offset = 100
-		button = uix.Button(surface, rect=(
+		button = Button(surface, rect=(
 			surface.get_rect().bottomright[0] - x_offset, surface.get_rect().bottomright[1] - 80, 90, 50), text=text,
 							color='#ff6680', bottom_rect_color='#ed7700', text_color='black', text_size=23)
 		button.on_press_action = action
@@ -247,13 +914,13 @@ class SinglePlayerView:
 		difficulty = self.getDifficulty()
 
 		if difficulty == "easy":
-			imageBot_choice = MachineLearning.Computer().easy()
+			imageBot_choice = Computer().easy()
 		elif difficulty == "medium":
-			imageBot_choice = MachineLearning.Computer().medium()
+			imageBot_choice = Computer().medium()
 		elif difficulty == "hard":
-			imageBot_choice = MachineLearning.Computer().hard()
+			imageBot_choice = Computer().hard()
 		else:
-			imageBot_choice = MachineLearning.Computer().easy()
+			imageBot_choice = Computer().easy()
 
 		self.imageBot_choice_list.append(imageBot_choice)
 		self.imageBot_choice_list = self.imageBot_choice_list[-1:]
@@ -287,12 +954,12 @@ class SinglePlayerView:
 			return f.readline()
 
 
-class ServerView(uix.Widget):
+class ServerView(Widget):
 	def __init__(self, surface, on_back_press):
 		rect = (0, 0, surface.get_width(), surface.get_height())
 		super().__init__(surface, rect)
 		# Networking
-		self.server = networking.Server(user)
+		self.server = Server(user)
 		try:
 			self.server.createRoom()
 		except:
@@ -303,39 +970,39 @@ class ServerView(uix.Widget):
 		self.who_win = ""
 
 		# View
-		self.view = uix.GroupWidget()
-		self.button_rock = uix.Button(surface, (
+		self.view = GroupWidget()
+		self.button_rock = Button(surface, (
 			surface.get_rect().bottomright[0] - 300, surface.get_rect().bottomright[1] - 80, 90, 50), 'Rock', '#ff6680',
 									  bottom_rect_color='#ed7700', text_color='black', text_size=23)
 
-		self.button_scissors = uix.Button(surface, (
+		self.button_scissors = Button(surface, (
 			surface.get_rect().bottomright[0] - 200, surface.get_rect().bottomright[1] - 80, 90, 50), 'Scissors',
 										  '#ff6680',
 										  bottom_rect_color='#ed7700', text_color='black', text_size=23)
 
-		self.button_paper = uix.Button(surface, (
+		self.button_paper = Button(surface, (
 			surface.get_rect().bottomright[0] - 100, surface.get_rect().bottomright[1] - 80, 90, 50), 'Paper',
 									   '#ff6680',
 									   bottom_rect_color='#ed7700',
 									   text_color='black', text_size=23)
 
-		self.button_back = uix.Button(self.surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
+		self.button_back = Button(self.surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
 									  text_color='black', text_size=20)
 
-		self.imagePlayer = uix.ImageAnimation(surface, rect=(20, surface.get_rect().bottomright[1] - 235, 100, 100),
+		self.imagePlayer = ImageAnimation(surface, rect=(20, surface.get_rect().bottomright[1] - 235, 100, 100),
 											  imageFolder='data/rock_animation/', scale=(230, 230), flip=False,
 											  fps=60, angle=0)
 
 		# The Image Rock Paper Scissors in Single Player View for bot
-		self.imageOpponent = uix.ImageAnimation(surface, rect=(surface.get_rect().topright[0] - 260, 10, 100, 100),
+		self.imageOpponent = ImageAnimation(surface, rect=(surface.get_rect().topright[0] - 260, 10, 100, 100),
 												imageFolder='data/rock_animation/', scale=(230, 230),
 												flip=True, fps=90, angle=90)
-		self.who_will_win = uix.Text(surface, (
+		self.who_will_win = Text(surface, (
 			surface.get_rect().center[0] - 53, surface.get_rect().center[1] - 20, 50, 50),
 									 size=64,
 									 color='black', text=self.who_win)
 		self.message = ""
-		self.messageText = uix.Text(self.surface, (150, 20, 100, 60), color=(255, 0, 0),
+		self.messageText = Text(self.surface, (150, 20, 100, 60), color=(255, 0, 0),
 									size=40,
 									text=self.message)
 
@@ -403,7 +1070,7 @@ class ServerView(uix.Widget):
 		self.isChoose = True
 
 
-class ClientView(uix.Widget):
+class ClientView(Widget):
 	def __init__(self, surface, on_back_press):
 		self.server = None
 		rect = (0, 0, surface.get_width(), surface.get_height())
@@ -411,42 +1078,42 @@ class ClientView(uix.Widget):
 
 		self.who_win = "Fight"
 
-		self.client = networking.Client
+		self.client = Client
 
-		self.view = uix.GroupWidget()
-		self.button_rock = uix.Button(surface, (
+		self.view = GroupWidget()
+		self.button_rock = Button(surface, (
 			surface.get_rect().bottomright[0] - 300, surface.get_rect().bottomright[1] - 80, 90, 50), 'Rock', '#ff6680',
 									  bottom_rect_color='#ed7700', text_color='black', text_size=23)
 
-		self.button_scissors = uix.Button(surface, (
+		self.button_scissors = Button(surface, (
 			surface.get_rect().bottomright[0] - 200, surface.get_rect().bottomright[1] - 80, 90, 50), 'Scissors',
 										  '#ff6680',
 										  bottom_rect_color='#ed7700', text_color='black', text_size=23)
 
-		self.button_paper = uix.Button(surface, (
+		self.button_paper = Button(surface, (
 			surface.get_rect().bottomright[0] - 100, surface.get_rect().bottomright[1] - 80, 90, 50), 'Paper',
 									   '#ff6680',
 									   bottom_rect_color='#ed7700',
 									   text_color='black', text_size=23)
 
-		self.button_back = uix.Button(self.surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
+		self.button_back = Button(self.surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
 									  text_color='black', text_size=20)
 
-		self.imagePlayer = uix.ImageAnimation(surface, rect=(20, surface.get_rect().bottomright[1] - 235, 100, 100),
+		self.imagePlayer = ImageAnimation(surface, rect=(20, surface.get_rect().bottomright[1] - 235, 100, 100),
 											  imageFolder='data/rock_animation/', scale=(230, 230), flip=False,
 											  fps=60, angle=0)
 
 		# The Image Rock Paper Scissors in Single Player View for bot
-		self.imageOpponent = uix.ImageAnimation(surface, rect=(surface.get_rect().topright[0] - 260, 10, 100, 100),
+		self.imageOpponent = ImageAnimation(surface, rect=(surface.get_rect().topright[0] - 260, 10, 100, 100),
 												imageFolder='data/rock_animation/', scale=(230, 230),
 												flip=True, fps=90, angle=90)
 
-		self.who_will_win = uix.Text(surface, (
+		self.who_will_win = Text(surface, (
 			surface.get_rect().center[0] - 53, surface.get_rect().center[1] - 20, 50, 50),
 									 size=64,
 									 color='black', text=self.who_win)  # Action for button
 		self.message = ""
-		self.messageText = uix.Text(self.surface, (self.surface.get_rect().center[0] - 160,
+		self.messageText = Text(self.surface, (self.surface.get_rect().center[0] - 160,
 												   self.surface.get_rect().center[1] - 170, 100, 60), color=(255, 0, 0),
 									text=self.message)
 
@@ -464,7 +1131,7 @@ class ClientView(uix.Widget):
 
 		# networking
 		self.room = ""
-		self.client = networking.Client(user)
+		self.client = Client(user)
 		self.isJoin = False
 		self.isChoose = False
 
@@ -517,7 +1184,7 @@ class ClientView(uix.Widget):
 		self.isChoose = True
 
 
-class SelectClientServerView(uix.Widget):
+class SelectClientServerView(Widget):
 	def __init__(self, surface, back_action):
 		rect = (0, 0, surface.get_width(), surface.get_height())
 		super().__init__(surface, rect)
@@ -525,7 +1192,7 @@ class SelectClientServerView(uix.Widget):
 		# Networking
 
 		# View
-		self.view = uix.GroupWidget()
+		self.view = GroupWidget()
 
 		# Layer for view
 		self.layer = {
@@ -535,34 +1202,34 @@ class SelectClientServerView(uix.Widget):
 		}
 
 		# Create the button for view
-		self.roomInputBox = uix.InputBox(self.surface, (
+		self.roomInputBox = InputBox(self.surface, (
 			self.surface.get_rect().center[0] - 150, self.surface.get_rect().center[1] - 150, 100, 60))
 
-		self.joinRoomButton = uix.Button(self.surface, (
+		self.joinRoomButton = Button(self.surface, (
 			self.surface.get_rect().center[0] - 80, self.surface.get_rect().center[1] - 50, 160, 60),
 										 text='Join Room',
 										 color=(32, 178, 170), bottom_rect_color=(255, 255, 255))
 		self.joinRoomButton.on_press_action = self.joinRoom
 
-		self.createRoomButton = uix.Button(self.surface, (
+		self.createRoomButton = Button(self.surface, (
 			self.surface.get_rect().center[0] - 80, self.surface.get_rect().center[1] + 50, 160, 60),
 										   text='Create Room',
 										   color=(32, 178, 170), bottom_rect_color=(255, 255, 255))
 		self.createRoomButton.on_press_action = self.createRoom
 
-		self.button_back = uix.Button(surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
+		self.button_back = Button(surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
 									  text_color='black', text_size=20)
 		self.button_back.on_press_action = back_action
 
 		self.message = ""
-		self.messageText = uix.Text(self.surface, (self.surface.get_rect().center[0] - 160,
+		self.messageText = Text(self.surface, (self.surface.get_rect().center[0] - 160,
 												   self.surface.get_rect().center[1] - 170, 100, 60), color=(255, 0, 0),
 									text=self.message)
 
 		self.view.widgets = [
 			self.roomInputBox,
 			self.joinRoomButton,
-			uix.Separator(self.surface,
+			Separator(self.surface,
 						  (self.surface.get_rect().center[0] - 80, self.surface.get_rect().center[1] + 25, 150, 2),
 						  (0, 0, 0)),
 			self.createRoomButton,
@@ -613,12 +1280,12 @@ class SelectClientServerView(uix.Widget):
 		self.layer['client'] = False
 
 
-class MultiPlayerView(uix.Widget):
+class MultiPlayerView(Widget):
 	def __init__(self, surface, back_action):
 		rect = (0, 0, surface.get_width(), surface.get_height())
 		super().__init__(surface, rect)
 
-		self.view = uix.GroupWidget()
+		self.view = GroupWidget()
 
 		# Networking
 		self.user_infor = None
@@ -657,19 +1324,19 @@ class Settings:
 		self.difficulty = self.create_button(surface, 'Difficulty', -50)
 		self.difficulty.on_press_action = self.choose_difficulty
 
-		self.button_back = uix.Button(surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
+		self.button_back = Button(surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
 									  text_color='black', text_size=20)
 		self.button_back.on_press_action = func_back
 
-		self.groupWidget_settings = uix.GroupWidget()
+		self.groupWidget_settings = GroupWidget()
 		self.groupWidget_settings.widgets.extend([self.resizeWindow, self.button_back, self.difficulty])
 
-		self.groupWidget_resize = uix.GroupWidget()
+		self.groupWidget_resize = GroupWidget()
 
 		self.difficultyString = "Default difficulty is Medium"
 
 	def create_button(self, surface, text, y_offset, color=BUTTON_COLOR):
-		button = uix.Button(surface, (
+		button = Button(surface, (
 			surface.get_rect().center[0] - 80, surface.get_rect().center[1] + y_offset, 150, 60), text=text,
 							color=color, bottom_rect_color=self.BUTTON_RECT_COLOR,
 							text_color=self.BUTTON_TEXT_COLOR)
@@ -696,11 +1363,11 @@ class Settings:
 		resizeFullScreenButton = self.create_button(self.surface, 'Full Screen', 150)
 		resizeFullScreenButton.on_press_action = self.resize_fullscreen
 
-		resizeBackButton = uix.Button(self.surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
+		resizeBackButton = Button(self.surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
 									  text_color='black', text_size=20)
 		resizeBackButton.on_press_action = self.resize_back
 
-		self.label_anouncement = uix.Text(self.surface, (
+		self.label_anouncement = Text(self.surface, (
 			self.surface.get_rect().center[0] - 240, self.surface.get_rect().center[1] - 250, 150, 60),
 										  text='After resize your screen game, you need to restart game', color='black')
 
@@ -757,15 +1424,15 @@ class Settings:
 		mediumButton.on_press_action = self.on_medium
 		difficultyButton.on_press_action = self.on_hard
 
-		resizeBackButtonDiff = uix.Button(self.surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
+		resizeBackButtonDiff = Button(self.surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
 										  text_color='black', text_size=20)
 		resizeBackButtonDiff.on_press_action = self.resizeBackButtonDiff
 
-		self.labelAnouncementEasy = uix.Text(self.surface, (
+		self.labelAnouncementEasy = Text(self.surface, (
 			self.surface.get_rect().center[0] - 140, self.surface.get_rect().center[1] - 250, 150, 60),
 											 text=self.difficultyString, color='black')
 
-		self.groupWidget_chooseDifficulty = uix.GroupWidget()
+		self.groupWidget_chooseDifficulty = GroupWidget()
 		self.groupWidget_chooseDifficulty.widgets.extend(
 			[easyButton, mediumButton, difficultyButton, resizeBackButtonDiff])
 
@@ -832,7 +1499,7 @@ class RockPaperScissor:
 		music('music_background')
 		# Message
 		self.message = ""
-		self.messageText = uix.Text(self.screen,
+		self.messageText = Text(self.screen,
 									(self.screen.get_rect().center[0] - 160,
 									 self.screen.get_rect().center[1] - 170, 100, 60),
 									color=(255, 0, 0))
@@ -945,6 +1612,5 @@ class RockPaperScissor:
 		return size
 
 
-if __name__ == "__main__":
-	game = RockPaperScissor()
-	game.run()
+game = RockPaperScissor()
+game.run()
