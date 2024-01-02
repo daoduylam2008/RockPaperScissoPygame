@@ -93,7 +93,7 @@ def writeSizeScreen(size):
             file.write('fullscreen')
     pygame.quit()
     sys.exit()
-
+    user.resetUserData()
 
 class MenuView:
     BUTTON_COLOR = (204, 204, 196)

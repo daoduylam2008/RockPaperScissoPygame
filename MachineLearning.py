@@ -90,5 +90,3 @@ class Computer:
                 return (rf_model.predict([[self.history[len(self.history) - 1], 4]])[0])
             else:
                 return (dt_model.predict([[self.history[len(self.history) - 1], 4]])[0])
-
-print(Computer().easy())
