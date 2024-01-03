@@ -11,20 +11,19 @@ import pygame
 # System Module and Libraries
 import sys
 import uix
-import random
 
 import networking
 import MachineLearning
 
-# Color
-
 
 # Authorize information, gmail
 __author1__ = "daoduylam2020@gmail.com"  # DAO DUY LAM
-__author2__ = ""  # PHAM MINH KHOI
-__author3__ = ""  # LE CONG TIEN
+__author2__ = "phamminhkhoi10122008@gmail.com"  # PHAM MINH KHOI
+__author3__ = "ltien9505@gmail.com"  # LE CONG TIEN
 
 # ___ MAIN ___
+
+
 FPS = 90
 
 transform = {
@@ -33,13 +32,16 @@ transform = {
     "scissors": 2,
     "paper": 3
 }
+error = ""
+try:
+    data = networking.Database()
+    allUsers = data.getUsersName()
 
-data = networking.Database()
-allUsers = data.getUsersName()
+    uuid = data.createID()
 
-uuid = data.createID()
-
-user = networking.User("",uuid)
+    user = networking.User("", uuid)
+except:
+    error = "Unconnected"
 
 
 def game_play(player, opponent) -> str:
@@ -91,6 +93,8 @@ def writeSizeScreen(size):
         elif size == 'fullscreen':
             file.write('fullscreen\n')
             file.write('fullscreen')
+    user.resetUserData()
+
     pygame.quit()
     sys.exit()
 
@@ -107,7 +111,7 @@ class MenuView:
         self.height = height
 
         self.inputBox = uix.InputBox(surface,
-                                    (surface.get_rect().center[0] - 160, surface.get_rect().center[1] - 150, 100, 60))
+                                     (surface.get_rect().center[0] - 160, surface.get_rect().center[1] - 150, 100, 60))
         self.button_singleplay = self.create_button(surface, 'SinglePlayer', -50)
         self.button_setting = self.create_button(surface, 'Settings', 150, self.BUTTON_QUIT_COLOR)
         self.button_multiplay = self.create_button(surface, 'MultiPlayer', 50)
@@ -189,7 +193,7 @@ class SinglePlayerView:
         self.who_will_win = uix.Text(surface, (
             surface.get_rect().center[0] - 53, surface.get_rect().center[1] - 20, 50, 50),
                                      size=64,
-                                     color='white', text=self.who_win)
+                                     color='black', text=self.who_win)
         # The Player Name
         self.playerName = uix.Text(surface, (50, surface.get_rect().bottomright[1] - 100, 50, 50), size=32,
                                    color='black',
@@ -248,7 +252,7 @@ class SinglePlayerView:
             imageBot_choice = MachineLearning.Computer().easy()
         elif difficulty == "medium":
             imageBot_choice = MachineLearning.Computer().medium()
-        elif difficulty == "medium":
+        elif difficulty == "hard":
             imageBot_choice = MachineLearning.Computer().hard()
         else:
             imageBot_choice = MachineLearning.Computer().easy()
@@ -256,16 +260,16 @@ class SinglePlayerView:
         self.imageBot_choice_list.append(imageBot_choice)
         self.imageBot_choice_list = self.imageBot_choice_list[-1:]
 
-        rpg_choice = {
-            1: 'rock',
-            2: 'scissors',
-            3: 'paper'
-        }
+        rpg_choice = {1: 'rock',
+                      2: 'scissors',
+                      3: 'paper'
+                      }
         ourState = {
             'Win': '4',
             'Lose': '5',
             'Draw': '6'
         }
+
         self.imageBot.imageFolder = 'data/' + rpg_choice[self.imageBot_choice_list[-1]] + '_animation/'
 
         self.who_win = game_play(playerChoice, self.imageBot_choice_list[-1])
@@ -293,7 +297,8 @@ class ServerView(uix.Widget):
         self.server = networking.Server(user)
         try:
             self.server.createRoom()
-        except: pass
+        except:
+            pass
         self.room = self.server.provideRoomID()
         self.isJoin = False
         self.isChoose = False
@@ -302,15 +307,17 @@ class ServerView(uix.Widget):
         # View
         self.view = uix.GroupWidget()
         self.button_rock = uix.Button(surface, (
-        surface.get_rect().bottomright[0] - 300, surface.get_rect().bottomright[1] - 80, 90, 50), 'Rock', '#ff6680',
+            surface.get_rect().bottomright[0] - 300, surface.get_rect().bottomright[1] - 80, 90, 50), 'Rock', '#ff6680',
                                       bottom_rect_color='#ed7700', text_color='black', text_size=23)
 
         self.button_scissors = uix.Button(surface, (
-        surface.get_rect().bottomright[0] - 200, surface.get_rect().bottomright[1] - 80, 90, 50), 'Scissors', '#ff6680',
+            surface.get_rect().bottomright[0] - 200, surface.get_rect().bottomright[1] - 80, 90, 50), 'Scissors',
+                                          '#ff6680',
                                           bottom_rect_color='#ed7700', text_color='black', text_size=23)
 
         self.button_paper = uix.Button(surface, (
-        surface.get_rect().bottomright[0] - 100, surface.get_rect().bottomright[1] - 80, 90, 50), 'Paper', '#ff6680',
+            surface.get_rect().bottomright[0] - 100, surface.get_rect().bottomright[1] - 80, 90, 50), 'Paper',
+                                       '#ff6680',
                                        bottom_rect_color='#ed7700',
                                        text_color='black', text_size=23)
 
@@ -323,12 +330,12 @@ class ServerView(uix.Widget):
 
         # The Image Rock Paper Scissors in Single Player View for bot
         self.imageOpponent = uix.ImageAnimation(surface, rect=(surface.get_rect().topright[0] - 260, 10, 100, 100),
-                                            imageFolder='data/rock_animation/', scale=(230, 230),
-                                            flip=True, fps=90, angle=90)
+                                                imageFolder='data/rock_animation/', scale=(230, 230),
+                                                flip=True, fps=90, angle=90)
         self.who_will_win = uix.Text(surface, (
             surface.get_rect().center[0] - 53, surface.get_rect().center[1] - 20, 50, 50),
                                      size=64,
-                                     color='white', text=self.who_win)
+                                     color='black', text=self.who_win)
         self.message = ""
         self.messageText = uix.Text(self.surface, (150, 20, 100, 60), color=(255, 0, 0),
                                     size=40,
@@ -433,13 +440,13 @@ class ClientView(uix.Widget):
 
         # The Image Rock Paper Scissors in Single Player View for bot
         self.imageOpponent = uix.ImageAnimation(surface, rect=(surface.get_rect().topright[0] - 260, 10, 100, 100),
-                                            imageFolder='data/rock_animation/', scale=(230, 230),
-                                            flip=True, fps=90, angle=90)
+                                                imageFolder='data/rock_animation/', scale=(230, 230),
+                                                flip=True, fps=90, angle=90)
 
         self.who_will_win = uix.Text(surface, (
             surface.get_rect().center[0] - 53, surface.get_rect().center[1] - 20, 50, 50),
                                      size=64,
-                                     color='white', text=self.who_win)        # Action for button
+                                     color='black', text=self.who_win)  # Action for button
         self.message = ""
         self.messageText = uix.Text(self.surface, (self.surface.get_rect().center[0] - 160,
                                                    self.surface.get_rect().center[1] - 170, 100, 60), color=(255, 0, 0),
@@ -535,8 +542,8 @@ class SelectClientServerView(uix.Widget):
 
         self.joinRoomButton = uix.Button(self.surface, (
             self.surface.get_rect().center[0] - 80, self.surface.get_rect().center[1] - 50, 160, 60),
-                                           text='Join Room',
-                                           color=(32, 178, 170), bottom_rect_color=(255, 255, 255))
+                                         text='Join Room',
+                                         color=(32, 178, 170), bottom_rect_color=(255, 255, 255))
         self.joinRoomButton.on_press_action = self.joinRoom
 
         self.createRoomButton = uix.Button(self.surface, (
@@ -745,23 +752,24 @@ class Settings:
         self.settingsView['Difficulty'] = True
 
         easyButton = self.create_button(self.surface, text='Easy Mode', y_offset=-50)
-        mediumButton = self.create_button(self.surface, text="Medium mode", y_offset=+50)
-        difficultyButton = self.create_button(self.surface, text='Difficult Mode', y_offset=+100)
+        mediumButton = self.create_button(self.surface, text="Medium mode", y_offset=50)
+        difficultyButton = self.create_button(self.surface, text='Difficult Mode', y_offset=+150)
 
         easyButton.on_press_action = self.on_easy
         mediumButton.on_press_action = self.on_medium
         difficultyButton.on_press_action = self.on_hard
 
         resizeBackButtonDiff = uix.Button(self.surface, (0, 0, 70, 30), 'Back', '#ff6680', bottom_rect_color='#ed7700',
-                                        text_color='black', text_size=20)
+                                          text_color='black', text_size=20)
         resizeBackButtonDiff.on_press_action = self.resizeBackButtonDiff
 
         self.labelAnouncementEasy = uix.Text(self.surface, (
             self.surface.get_rect().center[0] - 140, self.surface.get_rect().center[1] - 250, 150, 60),
-                                        text=self.difficultyString, color='black')
+                                             text=self.difficultyString, color='black')
 
         self.groupWidget_chooseDifficulty = uix.GroupWidget()
-        self.groupWidget_chooseDifficulty.widgets.extend([easyButton, mediumButton, difficultyButton, resizeBackButtonDiff])
+        self.groupWidget_chooseDifficulty.widgets.extend(
+            [easyButton, mediumButton, difficultyButton, resizeBackButtonDiff])
 
     def chooseDifficultyCreateUpdate(self, events):
         self.groupWidget_chooseDifficulty.create_widget()
@@ -830,7 +838,6 @@ class RockPaperScissor:
                                     (self.screen.get_rect().center[0] - 160,
                                      self.screen.get_rect().center[1] - 170, 100, 60),
                                     color=(255, 0, 0))
-
 
     def run(self):
 
@@ -911,22 +918,25 @@ class RockPaperScissor:
     ##########
 
     def multi_play(self):
-        if self.menuView.inputBox.text == "":
-            self.message = "Please type your name"
-        elif self.menuView.inputBox.text in data.getUsersName():
-            self.message = "This name has been used"
-        elif self.multiPlayerView.selectionView.roomInputBox.text == "":
-            self.message = "Please type your room"
-            self.message = ""
+        if error == "Unconnected":
+            self.message = "Please reconnect your network and restart application"
+        else:
+            if self.menuView.inputBox.text == "":
+                self.message = "Please type your name"
+            elif self.menuView.inputBox.text in data.getUsersName():
+                self.message = "This name has been used"
+            elif self.multiPlayerView.selectionView.roomInputBox.text == "":
+                self.message = "Please type your room"
+                self.message = ""
 
-            self.view['SinglePlay Menu'] = False
-            self.view['Settings Menu'] = False
-            self.view['MultiPlay Menu'] = True
-            self.view['Main Menu'] = False
-            user.username = self.menuView.inputBox.text
+                self.view['SinglePlay Menu'] = False
+                self.view['Settings Menu'] = False
+                self.view['MultiPlay Menu'] = True
+                self.view['Main Menu'] = False
+                user.username = self.menuView.inputBox.text
 
-            print("Update user's data")
-            user.updateToData()
+                print("Update user's data")
+                user.updateToData()
 
     def close(self):
         # self.user.resetUserData()
