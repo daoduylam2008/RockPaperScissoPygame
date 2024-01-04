@@ -11,10 +11,24 @@ import pygame
 # System Module and Libraries
 import sys
 import uix
+import requests
 
-import networking
+
+def internet_connection():
+	try:
+		response = requests.get("https://dns.tutorialspoint.com", timeout=5)
+		return True
+	except requests.ConnectionError:
+		return False
+
+
+if internet_connection():
+	import networking
+	error = "connected"
+else:
+	import non_network as networking
+	error = "unconnected"
 import MachineLearning
-
 
 # Authorize information, gmail
 __author1__ = "daoduylam2020@gmail.com"  # DAO DUY LAM
@@ -915,22 +929,25 @@ class RockPaperScissor:
 	##########
 
 	def multi_play(self):
-		if self.menuView.inputBox.text == "":
-			self.message = "Please type your name"
-		elif self.menuView.inputBox.text in data.getUsersName():
-			self.message = "This name has been used"
-		elif self.multiPlayerView.selectionView.roomInputBox.text == "":
-			self.message = "Please type your room"
-			self.message = ""
+		if error == "unconnected":
+			self.message = "Please connect to your network and restart the program"
+		elif error == "connected":
+			if self.menuView.inputBox.text == "":
+				self.message = "Please type your name"
+			elif self.menuView.inputBox.text in data.getUsersName():
+				self.message = "This name has been used"
+			elif self.multiPlayerView.selectionView.roomInputBox.text == "":
+				self.message = "Please type your room"
+				self.message = ""
 
-			self.view['SinglePlay Menu'] = False
-			self.view['Settings Menu'] = False
-			self.view['MultiPlay Menu'] = True
-			self.view['Main Menu'] = False
-			user.username = self.menuView.inputBox.text
+				self.view['SinglePlay Menu'] = False
+				self.view['Settings Menu'] = False
+				self.view['MultiPlay Menu'] = True
+				self.view['Main Menu'] = False
+				user.username = self.menuView.inputBox.text
 
-			print("Update user's data")
-			user.updateToData()
+				print("Update user's data")
+				user.updateToData()
 
 	def close(self):
 		# self.user.resetUserData()
